@@ -1,0 +1,199 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('mis-libros').style.display = 'none';
+            document.getElementById('mis-clubes').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-inicio').classList.remove('active-tab');
+            document.getElementById('tab-mis-libros').classList.remove('active-tab');
+            document.getElementById('tab-mis-clubes').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+        <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
+    </div>
+    <div class="d-flex align-items-center">
+        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
+        <button class="btn btn-dark rounded-right" >
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+        <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+        <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+        <div id="profile-menu" class="profile-menu">
+            <a href="#">Mi perfil</a>
+            <a href="#">Configuración</a>
+            <a href="#">Cerrar sesión</a>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+<div class="bg-cover bg-center" style="background-image: url('images/portada.png'); height: 200px;"></div>
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3">
+        <li class="nav-item">
+            <a id="tab-inicio" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('inicio', 'tab-inicio')">Inicio</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-libros" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-libros', 'tab-mis-libros')">Mis libros</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-clubes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Mis clubes</a>
+        </li>
+    </ul>
+</nav>
+<main class="p-4">
+    <section id="inicio">
+        <h2 class="font-weight-bold mb-3">Libros recomendados</h2>
+        <div class="d-flex overflow-auto">
+            <img alt="Libro 1" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+            <img alt="Libro 2" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+            <img alt="Libro 3" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/3TEvXRt734nnqvXkREi3-S9xW401APmoaJaX5Yqwgd0.jpg"/>
+            <img alt="Libro 4" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/X5UCwXSBm-goP17foN-UsU3sRdzzphjIVH8XD4PsqsE.jpg"/>
+            <img alt="Libro 5" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/wKD-I-Tv-d6Wfri52zms1DSQOcGI1f62QXxdnzvcdFc.jpg"/>
+            <img alt="Libro 6" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/1931NbGur3HgPBlgLXZkHOuNifRY8d56sJGNNH6Mo-U.jpg"/>
+            <img alt="Libro 7" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/0tayYbgWm1QoCyAcqSsVBbKlCTvIUWKZkBSayzTBTxc.jpg"/>
+            <img alt="Libro 8" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/pALbT1W2aC95_XdNxxXQifsvcljsItAs5oWICxrk-Lg.jpg"/>
+        </div>
+        <section class="mt-5">
+            <h2 class="font-weight-bold mb-3">Clubes recomendados</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card club-banner-container">
+                        <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                        <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                        <div class="club-footer">
+                            <span>Romántica</span>
+                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
+                            <div class="options-menu" id="options-menu-1">
+                                <a href="#">Opción 1</a>
+                                <a href="#">Opción 2</a>
+                                <a href="#">Opción 3</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card club-banner-container">
+                        <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                        <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                        <div class="club-footer">
+                            <span>Ficción</span>
+                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
+                            <div class="options-menu" id="options-menu-2">
+                                <a href="#">Opción 1</a>
+                                <a href="#">Opción 2</a>
+                                <a href="#">Opción 3</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+    <section id="mis-libros" style="display: none;">
+        <h2 class="font-weight-bold mb-3">Mis libros</h2>
+        <div class="row">
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 3" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/3TEvXRt734nnqvXkREi3-S9xW401APmoaJaX5Yqwgd0.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 4" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/X5UCwXSBm-goP17foN-UsU3sRdzzphjIVH8XD4PsqsE.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 5" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/wKD-I-Tv-d6Wfri52zms1DSQOcGI1f62QXxdnzvcdFc.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 6" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/1931NbGur3HgPBlgLXZkHOuNifRY8d56sJGNNH6Mo-U.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 7" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/0tayYbgWm1QoCyAcqSsVBbKlCTvIUWKZkBSayzTBTxc.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 8" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/pALbT1W2aC95_XdNxxXQifsvcljsItAs5oWICxrk-Lg.jpg"/>
+            </div>
+        </div>
+    </section>
+    <section id="mis-clubes" style="display: none;">
+        <h2 class="font-weight-bold mb-3">Mis clubes</h2>
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card club-banner-container">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Género del club / Romántica</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-3')"></i>
+                        <div class="options-menu" id="options-menu-3">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mb-4">
+                <div class="card club-banner-container">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Género del club / Ficción</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-4')"></i>
+                        <div class="options-menu" id="options-menu-4">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.active-tab {
+    color: #2e2b26; /* Dark color */
+    font-weight: bold;
+}
+
+.book-cover {
+    height: 250px;
+    width: 170px;
+}
+
+.club-banner {
+    height: 270px;
+}
+
+.profile-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    width: 150px;
+    z-index: 1000;
+}
+
+.profile-menu a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.profile-menu a:hover {
+    background-color: #f8f9fa;
+}
+
+.bg-custom {
+    background-color: #dff1f3;
+}
+.bg-primary-custom {
+    background-color: #007bff;
+}
+.club-banner-container {
+    position: relative;
+}
+.club-banner-container .favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: #ff0000;
+    cursor: pointer;
+}
+.club-banner-container .club-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+}
+.club-banner-container .options-menu {
+    position: absolute;
+    bottom: 40px;
+    right: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    z-index: 10;
+}
+.club-banner-container .options-menu a {
+    display: block;
+    padding: 5px 10px;
+    color: black;
+    text-decoration: none;
+}
+.club-banner-container .options-menu a:hover {
+    background: #f0f0f0;
+}
+
+#login
+.bg-custom {
+    background-color: #dff1f3;
+  }
+  .bg-primary-custom {
+    background-color: #007bff;
+  }
