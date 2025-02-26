@@ -35,6 +35,18 @@
             const menu = document.getElementById(menuId);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
     </script>
 </head>
 <body class="bg-light">
@@ -91,7 +103,7 @@
             <h2 class="font-weight-bold mb-3">Clubes recomendados</h2>
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <div class="card club-banner-container">
+                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                         <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                         <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
                         <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
@@ -106,8 +118,9 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-6 mb-4">
-                    <div class="card club-banner-container">
+                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                         <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                         <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
                         <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
@@ -126,7 +139,13 @@
         </section>
     </section>
     <section id="mis-libros" style="display: none;">
-        <h2 class="font-weight-bold mb-3">Mis libros</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="font-weight-bold">Mis libros</h2>
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+                <i class="fas fa-plus"></i> Subir libro
+            </button>
+        </div>   
+
         <div class="row">
             <div class="col-6 col-md-3 mb-4">
                 <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
@@ -155,10 +174,16 @@
         </div>
     </section>
     <section id="mis-clubes" style="display: none;">
-        <h2 class="font-weight-bold mb-3">Mis clubes</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="font-weight-bold">Mis clubes</h2>
+            <button class="btn btn-success" onclick="showModal('modalCrearClub')">
+                <i class="fas fa-plus"></i> Crear club
+            </button>
+        </div>
+
         <div class="row">
             <div class="col-12 mb-4">
-                <div class="card club-banner-container">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                     <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
                     <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
@@ -174,7 +199,7 @@
                 </div>
             </div>
             <div class="col-12 mb-4">
-                <div class="card club-banner-container">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                     <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
                     <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
@@ -192,6 +217,83 @@
         </div>
     </section>
 </main>
+
+<!-- Modal Subir Libro -->
+<div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir libro</h5>
+                <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="tituloLibro">Título del libro</label>
+                        <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="autorLibro">Autor</label>
+                        <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaLibro">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaLibro">
+                    </div>
+                    <div class="form-group">
+                        <label for="archivoLibro">Archivo Libro</label>
+                        <input type="file" class="form-control-file" id="archivoLibro">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
+                <button type="button" class="btn btn-primary">Subir libro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Club -->
+<div class="modal" id="modalCrearClub" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear club</h5>
+                <button type="button" class="close" onclick="hideModal('modalCrearClub')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="nombreClub">Nombre del club</label>
+                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="generoClub">Género del club</label>
+                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcionClub">Descripción</label>
+                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaClub">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaClub">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
+                <button type="button" class="btn btn-primary">Crear club</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
