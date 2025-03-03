@@ -26,6 +26,11 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        function toggleNotificationMenu() {
+            let menu = document.getElementById('notification-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
         function toggleFavorite(icon) {
             icon.classList.toggle('fas');
             icon.classList.toggle('far');
@@ -61,13 +66,27 @@
             <i class="fas fa-search"></i>
         </button>
     </div>
-    <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-        <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
-        <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
-        <div id="profile-menu" class="profile-menu">
-            <a href="#">Mi perfil</a>
-            <a href="#">Configuración</a>
-            <a href="#">Cerrar sesión</a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
+            <i class="fas fa-bell text-dark mr-3 position-relative" style="font-size: 1.5rem;">
+                <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -15px; right: -15px; display: none;">3</span>
+            </i>
+            <div id="notification-menu" class="notification-menu">
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
+            </div>
+        </div> 
+    
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="#">Mi perfil</a>
+                <a href="#">Configuración</a>
+                <a href="#">Cerrar sesión</a>
+            </div>
         </div>
     </div>
 </header>
@@ -299,3 +318,35 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+<script>
+let notificationCount = 3; // Número inicial de notificaciones
+
+    function updateNotificationBadge() {
+        let badge = document.getElementById('notification-badge');
+        if (notificationCount > 0) {
+            badge.textContent = notificationCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function markAsRead(event, element) {
+        event.stopPropagation(); // Evita que el clic cierre el menú
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.style.background = 'white'; // Quita el resaltado
+            notificationCount--;
+            updateNotificationBadge();
+        }
+    }
+
+    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
+    updateNotificationBadge();
+</script>

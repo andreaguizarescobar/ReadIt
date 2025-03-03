@@ -39,6 +39,30 @@ body {
     background-color: #f8f9fa;
 }
 
+
+.notification-menu {
+    display: none;
+    position: absolute;
+    right: 50px;
+    top: 70px;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    width: 150px;
+    z-index: 1000;
+}
+
+.notification-menu a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.notification-menu a:hover {
+    background-color: #f8f9fa;
+}
+
 .bg-custom {
     background-color: #dff1f3;
 }
@@ -86,6 +110,26 @@ body {
 }
 .club-banner-container .options-menu a:hover {
     background: #f0f0f0;
+}
+
+#Notificaciones
+.notification-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.notification-item {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+}
+.notification-item.unread {
+    font-weight: bold;
+    background: #f8d7da; /* Rojo claro para resaltar */
 }
 
 #login

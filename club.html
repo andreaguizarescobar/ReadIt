@@ -1,0 +1,308 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('informacion').style.display = 'none';
+            document.getElementById('lecturas').style.display = 'none';
+            document.getElementById('eventos').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-informacion').classList.remove('active-tab');
+            document.getElementById('tab-lecturas').classList.remove('active-tab');
+            document.getElementById('tab-eventos').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleNotificationMenu() {
+            let menu = document.getElementById('notification-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+        <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
+    </div>
+    <div class="d-flex align-items-center">
+        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
+        <button class="btn btn-dark rounded-right" >
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
+            <i class="fas fa-bell text-dark mr-3 position-relative" style="font-size: 1.5rem;">
+                <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -15px; right: -15px; display: none;">3</span>
+            </i>
+            <div id="notification-menu" class="notification-menu">
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
+            </div>
+        </div> 
+    
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="#">Mi perfil</a>
+                <a href="#">Configuración</a>
+                <a href="#">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+<img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+<div class="d-flex align-items-center bg-primary" style="height: 70px;">
+  <h1 class="text-dark font-weight-bold ml-2">Nombre del club</h1>
+</div>
+
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <!-- Género literario alineado a la izquierda -->
+    <div class="col-6">
+      <h4 class="text-dark font-weight-bold ml-2">Género literario del club</h4>
+    </div>
+
+    <!-- Botón y Me gusta alineados a la derecha con margen superior -->
+    <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
+      <!-- Botón de Unirse -->
+      <button class="btn btn-primary join-btn">Unirse al Club</button>
+
+      <!-- Me gusta -->
+      <span class="like-btn ml-3 text-danger"><i class="far fa-heart"></i> 120</span>
+    </div>
+  </div>
+</div>
+
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3">
+        <li class="nav-item">
+            <a id="tab-informacion" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('informacion', 'tab-informacion')">Información</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-lecturas" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('lecturas', 'tab-lecturas')">Lecturas</a>
+        </li>
+        <li class="nav-item">
+          <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('eventos', 'tab-eventos')">Eventos</a>
+      </li>
+    </ul>
+</nav>
+<main class="p-4">
+    <section id="informacion">
+        <h2 class="font-weight-bold mb-3">Descripción</h2>
+        <p class="text-muted">Un espacio para los amantes de la literatura romántica. Compartimos reseñas, recomendaciones y organizamos lecturas conjuntas.</p>
+      
+        </div>
+
+        <section class="mt-5">
+            <h2 class="font-weight-bold mb-3">Sobre el club</h2>
+                <!-- Administrador y Miembros -->
+                <p class="mt-2">Administrado por: <strong>Juan Pérez</strong></p>
+                <p>Miembros: <strong>256</strong></p>
+              
+            </div>
+        </section>
+    </section>
+    <section id="lecturas" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="font-weight-bold">Libros en curso</h2>
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+                <i class="fas fa-plus"></i> Subir libro
+            </button>
+        </div>   
+
+        <div class="row">
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-6 col-md-3 mb-4">
+              <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+          </div>
+      </div>
+    </section>
+    <section id="eventos" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="font-weight-bold">Próximos Eventos</h3>
+            <button class="btn btn-success" onclick="showModal('modalCrearClub')">
+                <i class="fas fa-plus"></i> Crear Evento
+            </button>
+        </div>
+
+        <div class="row">
+          <div class="container mt-4">
+            <div class="event-card">
+                <h5>Club de Lectura: Orgullo y Prejuicio</h5>
+                <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
+                <p><i class="fas fa-video"></i> Reunión Virtual</p>
+            </div>
+        </div>
+    
+        <div class="container mt-4">
+          <div class="event-card">
+              <h5>Club de Lectura: Orgullo y Prejuicio</h5>
+              <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
+              <p><i class="fas fa-video"></i> Reunión Virtual</p>
+          </div>
+      </div>
+      
+    </section>
+</main>
+
+<!-- Modal Subir Libro -->
+<div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir libro</h5>
+                <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="tituloLibro">Título del libro</label>
+                        <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="autorLibro">Autor</label>
+                        <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaLibro">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaLibro">
+                    </div>
+                    <div class="form-group">
+                        <label for="archivoLibro">Archivo Libro</label>
+                        <input type="file" class="form-control-file" id="archivoLibro">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
+                <button type="button" class="btn btn-primary">Subir libro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Club -->
+<div class="modal" id="modalCrearClub" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear club</h5>
+                <button type="button" class="close" onclick="hideModal('modalCrearClub')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="nombreClub">Nombre del club</label>
+                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="generoClub">Género del club</label>
+                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcionClub">Descripción</label>
+                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaClub">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaClub">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
+                <button type="button" class="btn btn-primary">Crear club</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<script>
+let notificationCount = 3; // Número inicial de notificaciones
+
+    function updateNotificationBadge() {
+        let badge = document.getElementById('notification-badge');
+        if (notificationCount > 0) {
+            badge.textContent = notificationCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function markAsRead(event, element) {
+        event.stopPropagation(); // Evita que el clic cierre el menú
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.style.background = 'white'; // Quita el resaltado
+            notificationCount--;
+            updateNotificationBadge();
+        }
+    }
+
+    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
+    updateNotificationBadge();
+</script>
+
+
