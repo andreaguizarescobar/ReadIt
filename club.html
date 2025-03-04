@@ -21,6 +21,19 @@
             document.getElementById(tabId).classList.add('active-tab');
         }
 
+        function toggleEvento() {
+            let tipoEvento = document.getElementById("tipoEvento").value;
+            let campoVirtual = document.getElementById("campoVirtual");
+            let campoPresencial = document.getElementById("campoPresencial");
+
+            if (tipoEvento === "virtual") {
+                campoVirtual.classList.remove("d-none");
+                campoPresencial.classList.add("d-none");
+            } else {
+                campoVirtual.classList.add("d-none");
+                campoPresencial.classList.remove("d-none");
+            }
+        }
 
         function toggleProfileMenu() {
             let menu = document.getElementById('profile-menu');
@@ -107,7 +120,7 @@
     <!-- Botón y Me gusta alineados a la derecha con margen superior -->
     <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
       <!-- Botón de Unirse -->
-      <button class="btn btn-primary join-btn">Unirse al Club</button>
+      <button class="btn btn-primary join-btn" onclick="toggleMembership(this)">Unirse al Club</button>
 
       <!-- Me gusta -->
       <span class="like-btn ml-3 text-danger"><i class="far fa-heart"></i> 120</span>
@@ -132,139 +145,210 @@
     <section id="informacion">
         <h2 class="font-weight-bold mb-3">Descripción</h2>
         <p class="text-muted">Un espacio para los amantes de la literatura romántica. Compartimos reseñas, recomendaciones y organizamos lecturas conjuntas.</p>
-      
-        </div>
-
+    
         <section class="mt-5">
             <h2 class="font-weight-bold mb-3">Sobre el club</h2>
                 <!-- Administrador y Miembros -->
                 <p class="mt-2">Administrado por: <strong>Juan Pérez</strong></p>
-                <p>Miembros: <strong>256</strong></p>
-              
-            </div>
+                <p>Miembros: <strong id="memberCount">256</strong></p>
         </section>
     </section>
     <section id="lecturas" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="font-weight-bold">Libros en curso</h2>
-            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
-                <i class="fas fa-plus"></i> Subir libro
-            </button>
-        </div>   
-
-        <div class="row">
-            <div class="col-6 col-md-3 mb-4">
-                <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
-            </div>
-        </div>
-        <div class="row">
-          <div class="col-6 col-md-3 mb-4">
-              <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
-          </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="font-weight-bold">Libros en curso</h3>
+          <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+              <i class="fas fa-plus"></i> Subir libro
+          </button>
       </div>
-    </section>
+  
+      <div class="container mt-4">
+          <div class="row align-items-center book-card">
+              <div class="col-md-4">
+                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+              </div>
+              <div class="col-md-8">
+                  <h5>El Arte de la Guerra</h5>
+                  <p><strong>Autor:</strong> Sun Tzu</p>
+                  <p class="book-description">Estrategias militares aplicadas a la vida y los negocios.</p>
+                  <p><strong>Inicio:</strong> 10/02/2024</p>
+                  <p><strong>Fin:</strong> 25/03/2024</p>
+                  <a href="discusion.html" class="btn btn-primary btn-sm">
+                    <i class="fas fa-comments"></i> Ir a la discusión
+                  </a>
+              </div>
+          </div>
+      </div>    
+  
+      <div class="container mt-4">
+          <div class="row align-items-center book-card">
+              <div class="col-md-4">
+                  <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+              </div>
+              <div class="col-md-8">
+                  <h5>Cien años de soledad</h5>
+                  <p><strong>Autor:</strong> Gabriel García Márquez</p>
+                  <p class="book-description">Historia de la familia Buendía y la ciudad de Macondo.</p>
+                  <p><strong>Inicio:</strong> 15/02/2024</p>
+                  <p><strong>Fin:</strong> 30/04/2024</p>
+                  <a href="discusion.html" class="btn btn-primary btn-sm">
+                    <i class="fas fa-comments"></i> Ir a la discusión
+                  </a>
+              </div>
+          </div>
+      </div> 
+  </section>  
     <section id="eventos" style="display: none;">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="font-weight-bold">Próximos Eventos</h3>
-            <button class="btn btn-success" onclick="showModal('modalCrearClub')">
+            <button class="btn btn-success" onclick="showModal('modalCrearEvento')">
                 <i class="fas fa-plus"></i> Crear Evento
             </button>
         </div>
 
-        <div class="row">
-          <div class="container mt-4">
-            <div class="event-card">
-                <h5>Club de Lectura: Orgullo y Prejuicio</h5>
-                <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
-                <p><i class="fas fa-video"></i> Reunión Virtual</p>
-            </div>
-        </div>
-    
         <div class="container mt-4">
-          <div class="event-card">
-              <h5>Club de Lectura: Orgullo y Prejuicio</h5>
-              <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
-              <p><i class="fas fa-video"></i> Reunión Virtual</p>
+          <div class="row align-items-center event-card">
+              <div class="col-md-4">
+                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+              </div>
+              <div class="col-md-8">
+                  <h5>Club de Lectura: Orgullo y Prejuicio</h5>
+                  <p class="event-description">Disfruta de una charla sobre esta obra maestra de Jane Austen y comparte tu opinión con otros lectores apasionados.</p>
+                  <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
+                  <p><i class="fas fa-video"></i> Reunión Virtual</p>
+              </div>
+          </div>
+      </div>    
+      
+      <div class="container mt-4">
+          <div class="row align-items-center event-card">
+              <div class="col-md-4">
+                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+              </div>
+              <div class="col-md-8">
+                  <h5>Club de Lectura: Coraline</h5>
+                  <p class="event-description">Exploraremos los temas de amor, orgullo y clase social en la novela y cómo siguen siendo relevantes en la actualidad.</p>
+                  <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
+                  <p id="event-location">
+                      <i class="fas fa-map-marker-alt"></i> <span id="event-type">Reunión Presencial - Biblioteca Central</span>
+                  </p>
+              </div>
           </div>
       </div>
-      
+             
     </section>
 </main>
 
 <!-- Modal Subir Libro -->
 <div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir libro</h5>
-                <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="tituloLibro">Título del libro</label>
-                        <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
-                    </div>
-                    <div class="form-group">
-                        <label for="autorLibro">Autor</label>
-                        <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
-                    </div>
-                    <div class="form-group">
-                        <label for="portadaLibro">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaLibro">
-                    </div>
-                    <div class="form-group">
-                        <label for="archivoLibro">Archivo Libro</label>
-                        <input type="file" class="form-control-file" id="archivoLibro">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
-                <button type="button" class="btn btn-primary">Subir libro</button>
-            </div>
-        </div>
-    </div>
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Subir libro</h5>
+              <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+              <form>
+                  <div class="form-group">
+                      <label for="tituloLibro">Título del libro</label>
+                      <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
+                  </div>
+                  <div class="form-group">
+                      <label for="autorLibro">Autor</label>
+                      <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
+                  </div>
+                  <div class="form-group">
+                    <label for="descripcionLibro">Descripción</label>
+                    <textarea class="form-control" id="descripcionLibro" rows="3" placeholder="Breve descripción del libro"></textarea>
+                 </div>
+                  <div class="form-group">
+                      <label for="fechaInicioLibro">Fecha de inicio</label>
+                      <input type="date" class="form-control" id="fechaInicioLibro">
+                  </div>
+                  <div class="form-group">
+                      <label for="fechaFinLibro">Fecha de fin</label>
+                      <input type="date" class="form-control" id="fechaFinLibro">
+                  </div>
+                  <div class="form-group">
+                      <label for="portadaLibro">Portada</label>
+                      <input type="file" class="form-control-file" id="portadaLibro">
+                  </div>
+                  <div class="form-group">
+                      <label for="archivoLibro">Archivo del libro (Opcional)</label>
+                      <input type="file" class="form-control-file" id="archivoLibro">
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
+              <button type="button" class="btn btn-primary">Subir libro</button>
+          </div>
+      </div>
+  </div>
 </div>
 
-<!-- Modal Crear Club -->
-<div class="modal" id="modalCrearClub" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Crear club</h5>
-                <button type="button" class="close" onclick="hideModal('modalCrearClub')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="nombreClub">Nombre del club</label>
-                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club">
-                    </div>
-                    <div class="form-group">
-                        <label for="generoClub">Género del club</label>
-                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcionClub">Descripción</label>
-                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="portadaClub">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaClub">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
-                <button type="button" class="btn btn-primary">Crear club</button>
-            </div>
-        </div>
-    </div>
+
+<!-- Modal Crear Evento -->
+<div class="modal" id="modalCrearEvento" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Crear evento</h5>
+              <button type="button" class="close" onclick="hideModal('modalCrearEvento')" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          
+          <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
+          <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+              <form>
+                  <div class="form-group">
+                      <label for="nombreEvento">Nombre del evento</label>
+                      <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento">
+                  </div>
+                  <!-- Descripción del evento -->
+                  <div class="form-group">
+                    <label for="descripcionEvento">Descripción del evento</label>
+                    <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label for="fechaEvento">Fecha del evento</label>
+                      <input type="date" class="form-control" id="fechaEvento">
+                  </div>
+
+                  <!-- Tipo de evento -->
+                  <div class="form-group">
+                      <label>Tipo de evento</label>
+                      <div>
+                          <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()">
+                          <label for="virtual">Virtual</label>
+                          
+                          <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()">
+                          <label for="presencial">Presencial</label>
+                      </div>
+                  </div>
+
+                  <!-- Campo dinámico: Lugar o Link -->
+                  <div class="form-group">
+                      <label id="labelLugar">Link a videollamada</label>
+                      <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada">
+                  </div>
+
+                  <div class="form-group">
+                      <label for="portadaEvento">Portada</label>
+                      <input type="file" class="form-control-file" id="portadaEvento">
+                  </div>
+              </form>
+          </div>
+
+          <!-- Fijar el footer para que siempre se vea -->
+          <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10;">
+              <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearEvento')">Cancelar</button>
+              <button type="button" class="btn btn-primary">Crear evento</button>
+          </div>
+      </div>
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -303,6 +387,41 @@ let notificationCount = 3; // Número inicial de notificaciones
 
     // Llamar a la función para asegurarse de que se muestre correctamente al cargar
     updateNotificationBadge();
+</script>
+
+<script>
+  function toggleLugar() {
+      let isVirtual = document.getElementById("virtual").checked;
+      let labelLugar = document.getElementById("labelLugar");
+      let inputLugar = document.getElementById("lugarEvento");
+
+      if (isVirtual) {
+          labelLugar.innerText = "Link a videollamada";
+          inputLugar.placeholder = "Ingrese el enlace a la videollamada";
+      } else {
+          labelLugar.innerText = "Dirección del evento";
+          inputLugar.placeholder = "Ingrese la dirección del evento";
+      }
+  }
+</script>
+
+<script>
+  function toggleMembership(button) {
+      let memberCountElement = document.getElementById("memberCount");
+      let currentMembers = parseInt(memberCountElement.textContent);
+
+      if (button.textContent === "Unirse al Club") {
+          button.textContent = "Miembro del Club";
+          button.classList.remove("btn-primary");
+          button.classList.add("btn-success");
+          memberCountElement.textContent = currentMembers + 1;
+      } else {
+          button.textContent = "Unirse al Club";
+          button.classList.remove("btn-success");
+          button.classList.add("btn-primary");
+          memberCountElement.textContent = currentMembers - 1;
+      }
+  }
 </script>
 
 

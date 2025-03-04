@@ -139,3 +139,9 @@ body {
   .bg-primary-custom {
     background-color: #007bff;
   }
+
+.book-cover {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
