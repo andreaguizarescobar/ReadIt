@@ -107,20 +107,20 @@
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
 <div class="d-flex align-items-center bg-primary" style="height: 70px;">
-  <h1 class="text-dark font-weight-bold ml-2">Nombre del club</h1>
+  <h1 class="text-dark font-weight-bold ml-2" id="NombreClub"></h1>
 </div>
 
 <div class="container-fluid">
   <div class="row align-items-center">
     <!-- Género literario alineado a la izquierda -->
     <div class="col-6">
-      <h4 class="text-dark font-weight-bold ml-2">Género literario del club</h4>
+      <h4 class="text-dark font-weight-bold ml-2" id="genero">Género literario del club</h4>
     </div>
 
     <!-- Botón y Me gusta alineados a la derecha con margen superior -->
     <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
       <!-- Botón de Unirse -->
-      <button class="btn btn-primary join-btn" onclick="toggleMembership(this)">Unirse al Club</button>
+      <button class="btn btn-primary join-btn" onclick="mostrarModalEditar()">Editar Club</button>
 
       <!-- Me gusta -->
       <span class="like-btn ml-3 text-danger"><i class="far fa-heart"></i> 120</span>
@@ -137,20 +137,20 @@
             <a id="tab-lecturas" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('lecturas', 'tab-lecturas')">Lecturas</a>
         </li>
         <li class="nav-item">
-          <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('eventos', 'tab-eventos')">Eventos</a>
+          <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos</a>
       </li>
     </ul>
 </nav>
 <main class="p-4">
     <section id="informacion">
         <h2 class="font-weight-bold mb-3">Descripción</h2>
-        <p class="text-muted">Un espacio para los amantes de la literatura romántica. Compartimos reseñas, recomendaciones y organizamos lecturas conjuntas.</p>
+        <p class="text-muted"></p>
     
         <section class="mt-5">
             <h2 class="font-weight-bold mb-3">Sobre el club</h2>
                 <!-- Administrador y Miembros -->
-                <p class="mt-2">Administrado por: <strong>Juan Pérez</strong></p>
-                <p>Miembros: <strong id="memberCount">256</strong></p>
+                <p class="mt-2" id="admin">Administrado por: <strong></strong></p>
+                <p>Miembros: <strong id="memberCount"></strong></p>
         </section>
     </section>
     <section id="lecturas" style="display: none;">
@@ -197,46 +197,58 @@
           </div>
       </div> 
   </section>  
-    <section id="eventos" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="font-weight-bold">Próximos Eventos</h3>
-            <button class="btn btn-success" onclick="showModal('modalCrearEvento')">
-                <i class="fas fa-plus"></i> Crear Evento
-            </button>
-        </div>
 
-        <div class="container mt-4">
-          <div class="row align-items-center event-card">
-              <div class="col-md-4">
-                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
-              </div>
-              <div class="col-md-8">
-                  <h5>Club de Lectura: Orgullo y Prejuicio</h5>
-                  <p class="event-description">Disfruta de una charla sobre esta obra maestra de Jane Austen y comparte tu opinión con otros lectores apasionados.</p>
-                  <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
-                  <p><i class="fas fa-video"></i> Reunión Virtual</p>
-              </div>
-          </div>
-      </div>    
-      
-      <div class="container mt-4">
-          <div class="row align-items-center event-card">
-              <div class="col-md-4">
-                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
-              </div>
-              <div class="col-md-8">
-                  <h5>Club de Lectura: Coraline</h5>
-                  <p class="event-description">Exploraremos los temas de amor, orgullo y clase social en la novela y cómo siguen siendo relevantes en la actualidad.</p>
-                  <p><i class="far fa-calendar-alt"></i> 10 de Marzo, 6:00 PM</p>
-                  <p id="event-location">
-                      <i class="fas fa-map-marker-alt"></i> <span id="event-type">Reunión Presencial - Biblioteca Central</span>
-                  </p>
-              </div>
-          </div>
-      </div>
+  <section id="seccionEventos" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="font-weight-bold">Próximos Eventos</h3>
+        <button class="btn btn-success" onclick="showModal('modalCrearEvento')">
+            <i class="fas fa-plus"></i> Crear Evento
+        </button>
+    </div>
+    <div id="eventos">
+
+    </div>
              
     </section>
 </main>
+
+<!-- Modal Actualizar Club -->
+<div class="modal" id="modalActualizarClub" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar club</h5>
+                <button type="button" class="close" onclick="hideModal('modalActualizarClub')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="nombreClub">Nombre del club</label>
+                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="generoClub">Género del club</label>
+                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcionClub">Descripción</label>
+                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaClub">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaClub">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalActualizarClub')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarClub()">Editar club</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal Subir Libro -->
 <div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
@@ -404,7 +416,7 @@ let notificationCount = 3; // Número inicial de notificaciones
       }
   }
 </script>
-
+<!--
 <script>
   function toggleMembership(button) {
       let memberCountElement = document.getElementById("memberCount");
@@ -423,5 +435,149 @@ let notificationCount = 3; // Número inicial de notificaciones
       }
   }
 </script>
+-->
+<script>
+    let nombreClub = "";
+    let clubActual = {}; // Guarda la información actual del club
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+        nombreClub = params.get("club");
+    
+        if (nombreClub) {
+            fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`)
+                .then(response => response.json())
+                .then(club => {
+                    clubActual = club; // Guardamos la información actual
+    
+                    // Rellenamos los campos con la información actual
+                    document.getElementById("descripcionClub").value = club.Descripcion || "";
+                    document.getElementById("generoClub").value = club.Genero || "";
+                })
+                .catch(error => console.error("Error al obtener los detalles del club:", error));
+        }
+    });
+    
+    function mostrarModalEditar() {
+        document.getElementById("modalActualizarClub").style.display = "block";
+    }
+    
+    function cerrarModalEditar() {
+        document.getElementById("modalActualizarClub").style.display = "none";
+    }
+    
+    function actualizarClub() {
+        const descripcion = document.getElementById("descripcionClub").value;
+        const genero = document.getElementById("generoClub").value;
+        const portadaInput = document.getElementById("portadaClub");
+    
+        if (portadaInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(portadaInput.files[0]);
+            reader.onload = function () {
+                const portadaBase64 = reader.result; // Convertimos la imagen a Base64
+    
+                enviarActualizacion(descripcion, genero, portadaBase64);
+            };
+        } else {
+            // Si no se seleccionó nueva imagen, usamos la portada actual
+            enviarActualizacion(descripcion, genero, clubActual.Portada);
+        }
+    }
+    
+    function enviarActualizacion(descripcion, genero, portada) {
+        const clubActualizado = {
+            "Descripcion": descripcion,
+            "Genero": genero,
+            "Portada": portada // Imagen en Base64 o la URL actual
+        };
+    
+        fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(clubActualizado)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Club actualizado exitosamente");
+            cerrarModalEditar();
+            location.reload(); // Recargar la página para ver los cambios
+        })
+        .catch(error => {
+            console.error("Error al actualizar el club:", error);
+            alert("Hubo un error al actualizar el club");
+        });
+    }
+    </script>
+    
+    
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+        const nombreClub = params.get("club");
 
+        if (nombreClub) {
+            fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`)
+                .then(response => response.json())
+                .then(club => {
+                    document.getElementById("NombreClub").textContent = club.NombreClub;
+                    document.querySelector(".club-banner").src = club.Portada;
+                    document.querySelector(".text-muted").textContent = club.Descripcion;
+                    document.getElementById("admin").textContent = "Administrado por: " + club.Administrador;
+                    document.getElementById("memberCount").textContent = club.Miembros;
+                    document.getElementById("genero").textContent = club.Genero;
+                    
+                    cargarLecturas(club.Lecturas);
+                    cargarEventos(club.Eventos);
+                })
+                .catch(error => console.error("Error al obtener los detalles del club:", error));
+        }
+    });
+
+    function cargarLecturas(lecturas) {
+        let lecturasContainer = document.getElementById("lecturas");
+        lecturasContainer.innerHTML = "";
+
+        lecturas.forEach(libro => {
+            let libroCard = `
+                <div class="container mt-4">
+                    <div class="row align-items-center book-card">
+                        <div class="col-md-4">
+                            <img class="img-fluid book-cover" src="${libro.Portada}" alt="${libro.Libro}">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>${libro.Libro}</h5>
+                            <p><strong>Inicio:</strong> ${libro.F_Inicio}</p>
+                            <p><strong>Fin:</strong> ${libro.F_Fin}</p>
+                        </div>
+                    </div>
+                </div>`;
+            lecturasContainer.innerHTML += libroCard;
+        });
+    }
+
+    function cargarEventos(eventos) {
+        let eventosContainer = document.getElementById("eventos");
+        eventosContainer.innerHTML = "";
+
+        eventos.forEach(evento => {
+            let eventoCard = `
+                <div class="container mt-4">
+                    <div class="row align-items-center event-card">
+                        <div class="col-md-4">
+                            <img class="img-fluid" src="data:image/jpeg;base64,${ club.Portada }" alt="Portada del Club">
+
+                        </div>
+                        <div class="col-md-8">
+                            <h5>${evento.Evento}</h5>
+                            <p>${evento.Descripcion}</p>
+                            <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                            <p><i class="fas fa-${evento.Tipo === 'Virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                        </div>
+                    </div>
+                </div>`;
+            eventosContainer.innerHTML += eventoCard;
+        });
+    }
+</script>

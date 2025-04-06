@@ -120,41 +120,7 @@
         </div>
         <section class="mt-5">
             <h2 class="font-weight-bold mb-3">Clubes recomendados</h2>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                        <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                        <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                        <div class="club-footer">
-                            <span>Romántica</span>
-                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
-                            <div class="options-menu" id="options-menu-1">
-                                <a href="#">Opción 1</a>
-                                <a href="#">Opción 2</a>
-                                <a href="#">Opción 3</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                        <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                        <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
-                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                        <div class="club-footer">
-                            <span>Ficción</span>
-                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
-                            <div class="options-menu" id="options-menu-2">
-                                <a href="#">Opción 1</a>
-                                <a href="#">Opción 2</a>
-                                <a href="#">Opción 3</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="row" id="clubes-container"></div>
         </section>
     </section>
     <section id="mis-libros" style="display: none;">
@@ -301,13 +267,13 @@
                     </div>
                     <div class="form-group">
                         <label for="portadaClub">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaClub">
+                        <input type="file" class="form-control-file" id="portadaClub" accept="image/*" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
-                <button type="button" class="btn btn-primary">Crear club</button>
+                <button type="button" class="btn btn-primary" onclick="crearClub()">Crear club</button>
             </div>
         </div>
     </div>
@@ -316,6 +282,54 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function crearClub() {
+        const nombre = document.getElementById("nombreClub").value;
+        const genero = document.getElementById("generoClub").value;
+        const descripcion = document.getElementById("descripcionClub").value;
+        const portadaInput = document.getElementById("portadaClub");
+    
+        if (portadaInput.files.length === 0) {
+            alert("Por favor selecciona una imagen.");
+            return;
+        }
+    
+        const reader = new FileReader();
+        reader.readAsDataURL(portadaInput.files[0]);
+        reader.onload = function () {
+            const imagenBase64 = reader.result; // Imagen convertida a Base64
+    
+            const clubData = {
+                "NombreClub": nombre,
+                "Descripcion": descripcion,
+                "Administrador": "Administrador1",  
+                "Genero": genero,
+                "Miembros": 1,
+                "Portada": imagenBase64,  // Guardamos la imagen en Base64
+                "Lecturas": [],
+                "Eventos": []
+            };
+    
+            fetch("http://localhost:5000/ReadIt/clubNuevo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(clubData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Club creado exitosamente");
+                hideModal("modalCrearClub");
+                location.reload();
+            })
+            .catch(error => {
+                console.error("Error al crear el club:", error);
+                alert("Hubo un error al crear el club");
+            });
+        };
+    }
+    </script>    
+    
 </body>
 </html>
 
@@ -350,3 +364,55 @@ let notificationCount = 3; // Número inicial de notificaciones
     // Llamar a la función para asegurarse de que se muestre correctamente al cargar
     updateNotificationBadge();
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:5000/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query: `
+                    query {
+                        clubes {
+                            nombreClub
+                            portada
+                            genero
+                        }
+                    }
+                `
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let clubesContainer = document.getElementById("clubes-container"); 
+            clubesContainer.innerHTML = ""; // Limpiar contenido previo
+
+            data.data.clubes.forEach(club => {
+                let clubCard = `
+                    <div class="col-md-6 mb-4">
+                        <div class="card club-banner-container" onclick="goToClubPage('${club.nombreClub}')">
+                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.nombreClub}</div>
+                            <img class="card-img-top club-banner" src="${club.portada}" alt="${club.nombreClub}"/>
+                            <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
+                            <div class="club-footer">
+                                <span>${club.genero}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                clubesContainer.innerHTML += clubCard;
+            });
+        })
+        .catch(error => console.error("Error al obtener los clubes:", error));
+    });
+
+    function goToClubPage(nombreClub) {
+        window.location.href = `club.html?club=${encodeURIComponent(nombreClub)}`;
+    }
+
+    function toggleFavorite(event, element) {
+        event.stopPropagation();
+        element.classList.toggle("favorited");
+    }
+</script>
+
