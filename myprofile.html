@@ -1,0 +1,300 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('mis-clubes').style.display = 'none';
+            document.getElementById('mis-insignias').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-mis-clubes').classList.remove('active-tab');
+            document.getElementById('tab-mis-insignias').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleNotificationMenu() {
+            let menu = document.getElementById('notification-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+        <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
+    </div>
+    <div class="d-flex align-items-center">
+        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
+        <button class="btn btn-dark rounded-right" >
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
+            <i class="fas fa-bell text-dark mr-3" style="font-size: 1.5rem;"></i>
+            <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -5px; right: 5px; display: none;">3</span>
+            
+            <div id="notification-menu" class="notification-menu">
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
+            </div>
+        </div>        
+    
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="myprofile.html">Mi perfil</a>
+                <a href="#">Configuración</a>
+                <a href="#">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+
+<div class="bg-cover bg-center" style="background-image: url('images/portadausuario2.jpg'); height: 300px;"></div>
+ 
+<section id="datosusuario" class="mt-5" >
+    <div class="d-flex align-items-center ml-4 justify-content-between">
+        <div>
+            <img src="images/fotoperfil.jpg" alt="Foto de perfil" 
+             class="rounded-circle position-absolute profile-pic">
+             
+            <div class="profile-username">
+                <h2 class="font-weight-bold mb-0 mr-4 ">andyvianney</h2>
+                <p class="mb-1">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</p>
+                <p class="mb-1">Ubicación: Ciudad de México</p>
+                <p class="mb-1">Fecha de registro: Enero 2022</p>
+            </div>
+        
+        </div>
+
+        <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">Editar mi perfil</button>
+    </div>
+</section>
+
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3">
+        <li class="nav-item">
+            <a id="tab-mis-clubes" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Clubes</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-insignias" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-insignias', 'tab-mis-insignias')">Insignias</a>
+        </li>
+    </ul>
+</nav>
+
+<main class="p-4">
+    <section id="mis-clubes">
+        <h2 class="font-weight-bold mb-3">Clubes de andyvianney</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Romántica</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
+                        <div class="options-menu" id="options-menu-1">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Ficción</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
+                        <div class="options-menu" id="options-menu-2">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mis-insignias" style="display: none;">
+        <h2 class="font-weight-bold mb-4">Insignias de andivianney</h2>
+            <div class="badge-box">
+                <img src="images/insignias/insignialectorinicial.png" alt="Insignia Lector Inicial" class="img-fluid badge-img">
+                <span class="tooltip">¡Felicidades! Has comenzado tu camino lector.</span>
+                <p>Lector Inicial</p>
+            </div>
+          <div class="badge-box">
+            <img src="images/insignias/insignia5libros.png" alt="Insignia 5 libros" class="img-fluid badge-img">
+            <span class="tooltip">¡Buen empiezo lector! Sigue leyendo...</span>
+            <p>5 Libros Leídos</p>
+          </div>
+          <div class="badge-box">
+            <img src="images/insignias/insigniacreadorclub.png" alt="Insignia Recomendador" class="img-fluid badge-img">
+            <span class="tooltip">Fundador de un club literario</span>
+            <p>Creador de Clubes</p>
+          </div>
+          <div class="badge-box">
+            <img src="images/insignias/insignialectorcritico.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
+            <span class="tooltip">Por escribir 10 reseñas, ¡sigue compartiendo tus reflexiones!</span>
+            <p>Lector Crítico</p>
+          </div>
+          <div class="badge-box">
+            <img src="images/insignias/insigniacoleccionistadeclubes.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
+            <span class="tooltip">¡Eres miembro de 5 clubes!</span>
+            <p>Coleccionista de Clubes</p>
+          </div>
+          <div class="badge-box">
+            <img src="images/insignias/insigniaprimercomentario.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
+            <span class="tooltip">¡Tu voz importa! Has comentado por primera vez.</span>
+            <p>Primer comentario</p>
+          </div>
+        </div>
+      </section>
+          
+</main>
+
+<!-- Modal Editar Perfil -->
+<div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display: none; background: rgba(0,0,0,0.6); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Perfil</h5>
+          <button type="button" class="close" onclick="hideModal('modalEditarPerfil')">
+            <span>&times;</span>
+          </button>
+        </div>
+  
+        <div class="modal-body">
+          <form>
+            <!-- Foto de portada -->
+            <div class="form-group">
+              <label for="fotoPortada">Foto de portada</label>
+              <input type="file" class="form-control-file" id="fotoPortada">
+            </div>
+  
+            <!-- Foto de perfil -->
+            <div class="form-group">
+              <label for="fotoPerfil">Foto de perfil</label>
+              <input type="file" class="form-control-file" id="fotoPerfil">
+            </div>
+  
+            <!-- Nombre de usuario -->
+            <div class="form-group">
+              <label for="nombreUsuario">Nombre de usuario</label>
+              <input type="text" class="form-control" id="nombreUsuario" value="andyvianney">
+            </div>
+  
+            <!-- Descripción -->
+            <div class="form-group">
+              <label for="descripcionPerfil">Descripción</label>
+              <textarea class="form-control" id="descripcionPerfil" rows="3">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</textarea>
+            </div>
+  
+            <!-- Ubicación -->
+            <div class="form-group">
+              <label for="ubicacionUsuario">Ubicación</label>
+              <input type="text" class="form-control" id="ubicacionUsuario" value="Ciudad de México">
+            </div>
+  
+            <!-- Fecha de registro (no editable) -->
+            <div class="form-group">
+              <label for="fechaRegistro">Fecha de registro</label>
+              <input type="text" class="form-control" id="fechaRegistro" value="Enero 2022" readonly>
+            </div>
+          </form>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="hideModal('modalEditarPerfil')">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<script>
+let notificationCount = 3; // Número inicial de notificaciones
+
+    function updateNotificationBadge() {
+        let badge = document.getElementById('notification-badge');
+        if (notificationCount > 0) {
+            badge.textContent = notificationCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function markAsRead(event, element) {
+        event.stopPropagation(); // Evita que el clic cierre el menú
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.style.background = 'white'; // Quita el resaltado
+            notificationCount--;
+            updateNotificationBadge();
+        }
+    }
+
+    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
+    updateNotificationBadge();
+
+    
+</script>
