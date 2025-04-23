@@ -1,12 +1,13 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Readit Login</title>
+  <link rel="icon" href="images/logo.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
-
+  <link href="styles.css" rel="stylesheet">
   <script>
     function toggleForm(formType) {
       const loginForm = document.getElementById('loginForm');
@@ -32,22 +33,21 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("loginForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Evita el envío del formulario
-      window.location.href = "index.html"; // Redirige a otra página
-    });
+      document.getElementById("loginForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        window.location.href = "index.html";
+      });
     });
   </script>
 </head>
 <body class="bg-custom d-flex align-items-center justify-content-center min-vh-100">
-    <div class="container bg-white rounded-lg shadow-lg d-flex flex-column flex-md-row w-100 max-w-4xl">
- 
+  <div class="container bg-white rounded-lg shadow-lg d-flex flex-column flex-md-row w-100 max-w-4xl">
     <div class="bg-primary-custom text-white p-4 rounded-top rounded-md-start d-flex flex-column align-items-center justify-content-center w-100 w-md-50">
       <h1 class="h4 font-bold mb-3">Readit</h1>
       <p class="h6 mb-4">¡Bienvenido Lector!</p>
       <img alt="Ilustración" class="w-50 h-50" src="images/bienvenida.png"/>
     </div>
-    
+
     <div class="p-4 w-100 w-md-50">
       <div class="d-flex justify-content-center mb-4">
         <img alt="Readit logo" class="w-25 h-25" src="images/logo.png"/>
@@ -56,15 +56,17 @@
         <button class="btn btn-link text-dark border-bottom border-dark px-3 py-1" id="loginButton" onclick="toggleForm('login')">Inicio de sesión</button>
         <button class="btn btn-link text-secondary px-3 py-1" id="registerButton" onclick="toggleForm('register')">Registrarse</button>
       </div>
+
+      <!-- Formulario de inicio de sesión -->
       <form id="loginForm">
         <div class="mb-3 position-relative">
-          <i class="fas fa-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Correo electrónico" type="email"/>
+          <i class="fas fa-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+          <input class="form-control ps-5" placeholder="Nombre de usuario" type="text" required />
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" placeholder="Contraseña" type="password"/>
+          <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
         <div class="mb-3 text-end">
           <a class="text-warning" href="#">¿Olvidaste tu contraseña?</a>
@@ -73,20 +75,26 @@
           <button class="btn btn-primary w-100" type="submit">Iniciar sesión</button>
         </div>
       </form>
+
+      <!-- Formulario de registro -->
       <form class="d-none" id="registerForm">
+        <div class="mb-3 position-relative">
+          <i class="fas fa-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+          <input class="form-control ps-5" placeholder="Nombre de usuario" type="text" required />
+        </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
           <input class="form-control ps-5" placeholder="Correo electrónico" type="email"/>
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" placeholder="Contraseña" type="password"/>
+          <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Confirmar contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" placeholder="Confirmar contraseña" type="password"/>
+          <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
         <div>
           <button class="btn btn-primary w-100" type="submit">Registrarse</button>
@@ -94,6 +102,25 @@
       </form>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para mostrar/ocultar contraseña -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleIcons = document.querySelectorAll(".toggle-password");
+
+      toggleIcons.forEach(icon => {
+        icon.addEventListener("click", function () {
+          const input = this.previousElementSibling;
+          const isPassword = input.type === "password";
+
+          input.type = isPassword ? "text" : "password";
+          this.classList.toggle("fa-eye-slash");
+          this.classList.toggle("fa-eye");
+        });
+      });
+    });
+  </script>
 </body>
 </html>

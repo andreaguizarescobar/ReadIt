@@ -2,7 +2,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>ReadIt</title>
+    <title>ReadIt Club</title>
+    <link rel="icon" href="images/logo.png">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
@@ -18,6 +19,16 @@
             document.getElementById('tab-informacion').classList.remove('active-tab');
             document.getElementById('tab-lecturas').classList.remove('active-tab');
             document.getElementById('tab-eventos').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function showSection2(sectionId, tabId) {
+            document.getElementById('libro-curso').style.display = 'none';
+            document.getElementById('proxima-lectura').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-libro-curso').classList.remove('active-tab');
+            document.getElementById('tab-proxima-lectura').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
         }
 
@@ -153,15 +164,27 @@
                 <p>Miembros: <strong id="memberCount"></strong></p>
         </section>
     </section>
+    
     <section id="lecturas" style="display: none;">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="font-weight-bold">Libros en curso</h3>
-          <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
-              <i class="fas fa-plus"></i> Subir libro
-          </button>
-      </div>
-  
-      <div class="container mt-4">
+        <nav class="bg-white shadow-sm">
+            <ul class="nav justify-content-right p-3">
+                <li class="nav-item">
+                    <a id="tab-libro-curso" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection2('libro-curso', 'tab-libro-curso')">Libros en curso</a>
+                </li>
+                <li class="nav-item">
+                    <a id="tab-proxima-lectura" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection2('proxima-lectura', 'tab-proxima-lectura')">Votación próxima lectura</a>
+                </li>
+            </ul>
+        </nav>
+
+    <section id="libro-curso" >
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="font-weight-bold">Lecturas del club en curso</h3>
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+                <i class="fas fa-plus"></i> Subir libro
+            </button>
+        </div>
+        <div class="container mt-4">
           <div class="row align-items-center book-card">
               <div class="col-md-4">
                   <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
@@ -198,6 +221,34 @@
       </div> 
   </section>  
 
+    <section id="proxima-lectura" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="font-weight-bold">Votaciones del club en curso</h3>
+        <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+          <i class="fas fa-plus"></i> Crear votación
+        </button>
+      </div>
+
+      <div class="card text-center">
+        <h5>Gráfico de votación entre títulos</h5>
+        <div id="chart" class="bg-light border rounded p-3">
+          <div class="bar-container" id="barContainer">
+            <!-- Barras generadas dinámicamente -->
+          </div>
+        </div>
+      
+        <div class="vote-buttons" id="voteButtons">
+          <!-- Botones generados dinámicamente -->
+        </div>
+      </div>
+    
+      <div class="mensaje" id="mensajeVoto"></div>
+    </section>
+</section>
+ 
+</section>
+  
+
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="font-weight-bold">Próximos Eventos</h3>
@@ -210,6 +261,7 @@
     </div>
              
     </section>
+    
 </main>
 
 <!-- Modal Actualizar Club -->
@@ -511,8 +563,67 @@ let notificationCount = 3; // Número inicial de notificaciones
     </script>
     
     
-
+<!-- VOTACIONES DE Lecturas -->
 <script>
+    const opciones = ['Cien Años de Soledad', '1984', 'Don Quijote', 'El Principito'];
+    const votos = opciones.reduce((acc, titulo) => ({ ...acc, [titulo]: 0 }), {});
+    const barContainer = document.getElementById('barContainer');
+    const voteButtons = document.getElementById('voteButtons');
+    const mensajeVoto = document.getElementById('mensajeVoto');
+  
+    const almacenados = localStorage.getItem('votosTotales');
+    if (almacenados) {
+      Object.assign(votos, JSON.parse(almacenados));
+    }
+  
+    function renderChart() {
+      barContainer.innerHTML = '';
+      const totalVotos = Object.values(votos).reduce((a, b) => a + b, 0) || 1;
+  
+      opciones.forEach(titulo => {
+        const porcentaje = (votos[titulo] / totalVotos) * 100;
+  
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+  
+        const barFill = document.createElement('div');
+        barFill.className = 'bar-fill';
+        barFill.style.width = porcentaje + '%';
+        barFill.textContent = `${titulo} — ${votos[titulo]} voto(s)`;
+  
+        bar.appendChild(barFill);
+        barContainer.appendChild(bar);
+      });
+    }
+  
+    function renderButtons() {
+      voteButtons.innerHTML = '';
+  
+      if (localStorage.getItem('votoRealizado')) {
+        mensajeVoto.textContent = 'Ya has votado. Gracias por participar.';
+        return;
+      }
+  
+      opciones.forEach(titulo => {
+        const btn = document.createElement('button');
+        btn.textContent = `Votar por "${titulo}"`;
+        btn.onclick = () => {
+          votos[titulo]++;
+          localStorage.setItem('votoRealizado', 'true');
+          localStorage.setItem('votosTotales', JSON.stringify(votos));
+          mensajeVoto.textContent = `Gracias por votar por "${titulo}"`;
+          renderChart();
+          renderButtons();
+        };
+        voteButtons.appendChild(btn);
+      });
+    }
+  
+    renderButtons();
+    renderChart();
+  </script>
+    
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
         const params = new URLSearchParams(window.location.search);
         const nombreClub = params.get("club");
