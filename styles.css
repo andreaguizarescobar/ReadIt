@@ -273,3 +273,26 @@ header {
     font-weight: bold;
     color: green;
   }
+
+  scrollable-hidden {
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+
+  .scrollable-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari y Opera */
+  }
+
+  /* Estilo para resaltar el color cuando se pasa el mouse por encima de "Responder" */
+  .responder:hover {
+    color: #007bff; /* Cambia el color aquí, por ejemplo, azul */
+    cursor: pointer; /* Cambia el cursor para indicar que es interactivo */
+    text-decoration: underline; /* Agrega subrayado */
+  }
+
+  /* Estilo para el "Me gusta" */
+  .me-gusta {
+    cursor: pointer;
+    color: #007bff;
+  }
