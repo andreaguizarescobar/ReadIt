@@ -3,11 +3,34 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>ReadIt</title>
+    <link rel="icon" href="images/logo.png">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
+    <script>
+        function isTokenExpired(token) {
+            if (!token) return true;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp;
+                if (!exp) return true;
+                const now = Math.floor(Date.now() / 1000);
+                return now >= exp;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('jwtToken');
+        if (!token || isTokenExpired(token)) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'signing.html';
+        }
+        });
+    </script>
     <script>
         function showSection(sectionId, tabId) {
             document.getElementById('inicio').style.display = 'none';
@@ -369,35 +392,21 @@ let notificationCount = 3; // Número inicial de notificaciones
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:5000/graphql", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                query: `
-                    query {
-                        clubes {
-                            nombreClub
-                            portada
-                            genero
-                        }
-                    }
-                `
-            })
-        })
+        fetch("http://localhost:3050/clubes")
         .then(response => response.json())
         .then(data => {
             let clubesContainer = document.getElementById("clubes-container"); 
             clubesContainer.innerHTML = ""; // Limpiar contenido previo
-
-            data.data.clubes.forEach(club => {
+            console.log(data);
+            data.forEach(club => {
                 let clubCard = `
                     <div class="col-md-6 mb-4">
-                        <div class="card club-banner-container" onclick="goToClubPage('${club.nombreClub}')">
-                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.nombreClub}</div>
-                            <img class="card-img-top club-banner" src="${club.portada}" alt="${club.nombreClub}"/>
+                        <div class="card club-banner-container" onclick="goToClubPage('${club.NombreClub}')">
+                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.NombreClub}</div>
+                            <img class="card-img-top club-banner" src="${club.Portada}" alt="${club.NombreClub}"/>
                             <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
                             <div class="club-footer">
-                                <span>${club.genero}</span>
+                                <span>${club.Genero}</span>
                             </div>
                         </div>
                     </div>
@@ -408,8 +417,9 @@ let notificationCount = 3; // Número inicial de notificaciones
         .catch(error => console.error("Error al obtener los clubes:", error));
     });
 
-    function goToClubPage(nombreClub) {
-        window.location.href = `club.html?club=${encodeURIComponent(nombreClub)}`;
+    function goToClubPage(NombreClub) {
+        sessionStorage.setItem('selectedClub', NombreClub);
+        window.location.href = 'club.html';
     }
 
     function toggleFavorite(event, element) {

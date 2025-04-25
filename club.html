@@ -2,17 +2,40 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>ReadIt</title>
+    <title>ReadIt Club</title>
+    <link rel="icon" href="images/logo.png">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
+        function isTokenExpired(token) {
+            if (!token) return true;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp;
+                if (!exp) return true;
+                const now = Math.floor(Date.now() / 1000);
+                return now >= exp;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('jwtToken');
+        if (!token || isTokenExpired(token)) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'signing.html';
+        }
+        });
+    </script>
+    <script>
         function showSection(sectionId, tabId) {
             document.getElementById('informacion').style.display = 'none';
             document.getElementById('lecturas').style.display = 'none';
-            document.getElementById('eventos').style.display = 'none';
+            document.getElementById('seccionEventos').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
 
             document.getElementById('tab-informacion').classList.remove('active-tab');
@@ -20,6 +43,15 @@
             document.getElementById('tab-eventos').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
         }
+        function showSection2(sectionId, tabId) {
+             document.getElementById('libro-curso').style.display = 'none';
+             document.getElementById('proxima-lectura').style.display = 'none';
+             document.getElementById(sectionId).style.display = 'block';
+ 
+             document.getElementById('tab-libro-curso').classList.remove('active-tab');
+             document.getElementById('tab-proxima-lectura').classList.remove('active-tab');
+             document.getElementById(tabId).classList.add('active-tab');
+         }
 
         function toggleEvento() {
             let tipoEvento = document.getElementById("tipoEvento").value;
@@ -97,7 +129,7 @@
             <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
-                <a href="#">Mi perfil</a>
+                <a href="myprofile.html">Mi perfil</a>
                 <a href="#">Configuración</a>
                 <a href="#">Cerrar sesión</a>
             </div>
@@ -107,14 +139,14 @@
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
 <div class="d-flex align-items-center bg-primary" style="height: 70px;">
-  <h1 class="text-dark font-weight-bold ml-2" id="NombreClub"></h1>
+  <h1 class="text-white font-weight-bold ml-2" id="NombreClub"></h1>
 </div>
 
 <div class="container-fluid">
   <div class="row align-items-center">
     <!-- Género literario alineado a la izquierda -->
     <div class="col-6">
-      <h4 class="text-dark font-weight-bold ml-2" id="genero">Género literario del club</h4>
+      <h3 class="text-dark font-weight-bold ml-2" style="margin-top: 10px;">Género literario del club: </h3><h4 class="text-dark font-weight-bold ml-2" id="genero"></h4>
     </div>
 
     <!-- Botón y Me gusta alineados a la derecha con margen superior -->
@@ -154,12 +186,24 @@
         </section>
     </section>
     <section id="lecturas" style="display: none;">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="font-weight-bold">Libros en curso</h3>
-          <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
-              <i class="fas fa-plus"></i> Subir libro
-          </button>
-      </div>
+        <nav class="bg-white shadow-sm">
+            <ul class="nav justify-content-right p-3">
+                <li class="nav-item">
+                    <a id="tab-libro-curso" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection2('libro-curso', 'tab-libro-curso')">Libros en curso</a>
+                </li>
+                <li class="nav-item">
+                    <a id="tab-proxima-lectura" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection2('proxima-lectura', 'tab-proxima-lectura')">Votación próxima lectura</a>
+                </li>
+            </ul>
+        </nav>
+
+    <section id="libro-curso" >
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="font-weight-bold">Lecturas del club en curso</h3>
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+                <i class="fas fa-plus"></i> Subir libro
+            </button>
+        </div>
   
       <div class="container mt-4">
           <div class="row align-items-center book-card">
@@ -197,6 +241,35 @@
           </div>
       </div> 
   </section>  
+
+  <section id="proxima-lectura" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="font-weight-bold">Votaciones del club en curso</h3>
+      <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+        <i class="fas fa-plus"></i> Crear votación
+      </button>
+    </div>
+
+    <div class="card text-center">
+      <h5>Gráfico de votación entre títulos</h5>
+      <div id="chart" class="bg-light border rounded p-3">
+        <div class="bar-container" id="barContainer">
+          <!-- Barras generadas dinámicamente -->
+        </div>
+      </div>
+    
+      <div class="vote-buttons" id="voteButtons">
+        <!-- Botones generados dinámicamente -->
+      </div>
+    </div>
+  
+    <div class="mensaje" id="mensajeVoto"></div>
+  </section>
+</section>
+
+</section>
+
+
 
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -436,47 +509,122 @@ let notificationCount = 3; // Número inicial de notificaciones
   }
 </script>
 -->
+
+<!-- VOTACIONES DE Lecturas -->
+<script>
+    const opciones = ['Cien Años de Soledad', '1984', 'Don Quijote', 'El Principito'];
+    const votos = opciones.reduce((acc, titulo) => ({ ...acc, [titulo]: 0 }), {});
+    const barContainer = document.getElementById('barContainer');
+    const voteButtons = document.getElementById('voteButtons');
+    const mensajeVoto = document.getElementById('mensajeVoto');
+  
+    const almacenados = localStorage.getItem('votosTotales');
+    if (almacenados) {
+      Object.assign(votos, JSON.parse(almacenados));
+    }
+  
+    function renderChart() {
+      barContainer.innerHTML = '';
+      const totalVotos = Object.values(votos).reduce((a, b) => a + b, 0) || 1;
+  
+      opciones.forEach(titulo => {
+        const porcentaje = (votos[titulo] / totalVotos) * 100;
+  
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+  
+        const barFill = document.createElement('div');
+        barFill.className = 'bar-fill';
+        barFill.style.width = porcentaje + '%';
+        barFill.textContent = `${titulo} — ${votos[titulo]} voto(s)`;
+  
+        bar.appendChild(barFill);
+        barContainer.appendChild(bar);
+      });
+    }
+  
+    function renderButtons() {
+      voteButtons.innerHTML = '';
+  
+      if (localStorage.getItem('votoRealizado')) {
+        mensajeVoto.textContent = 'Ya has votado. Gracias por participar.';
+        return;
+      }
+  
+      opciones.forEach(titulo => {
+        const btn = document.createElement('button');
+        btn.textContent = `Votar por "${titulo}"`;
+        btn.onclick = () => {
+          votos[titulo]++;
+          localStorage.setItem('votoRealizado', 'true');
+          localStorage.setItem('votosTotales', JSON.stringify(votos));
+          mensajeVoto.textContent = `Gracias por votar por "${titulo}"`;
+          renderChart();
+          renderButtons();
+        };
+        voteButtons.appendChild(btn);
+      });
+    }
+  
+    renderButtons();
+    renderChart();
+  </script>
+    
 <script>
     let nombreClub = "";
     let clubActual = {}; // Guarda la información actual del club
-    
-    document.addEventListener("DOMContentLoaded", function () {
+
+    function fetchAndDisplayClub() {
         const params = new URLSearchParams(window.location.search);
-        nombreClub = params.get("club");
-    
+        nombreClub = params.get("club") || sessionStorage.getItem('selectedClub');
+
         if (nombreClub) {
-            fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`)
+            fetch(`http://localhost:3050/clubes/${encodeURIComponent(nombreClub)}`)
                 .then(response => response.json())
                 .then(club => {
-                    clubActual = club; // Guardamos la información actual
-    
-                    // Rellenamos los campos con la información actual
+                    clubActual = club;
+
+                    // Update page elements
+                    document.getElementById("NombreClub").textContent = club.NombreClub;
+                    document.querySelector(".club-banner").src = club.Portada;
+                    document.querySelector(".text-muted").textContent = club.Descripcion;
+                    document.getElementById("admin").textContent = "Administrado por: " + club.Administrador;
+                    document.getElementById("memberCount").textContent = club.Miembros;
+                    document.getElementById("genero").textContent = club.Genero;
+
+                    // Update form fields in edit modal
+                    document.getElementById("nombreClub").value = club.NombreClub || "";
                     document.getElementById("descripcionClub").value = club.Descripcion || "";
                     document.getElementById("generoClub").value = club.Genero || "";
+
+                    cargarLecturas(club.Lecturas);
+                    cargarEventos(club.Eventos);
                 })
                 .catch(error => console.error("Error al obtener los detalles del club:", error));
         }
-    });
-    
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchAndDisplayClub);
+
     function mostrarModalEditar() {
         document.getElementById("modalActualizarClub").style.display = "block";
     }
-    
+
     function cerrarModalEditar() {
         document.getElementById("modalActualizarClub").style.display = "none";
     }
-    
+
     function actualizarClub() {
         const descripcion = document.getElementById("descripcionClub").value;
         const genero = document.getElementById("generoClub").value;
         const portadaInput = document.getElementById("portadaClub");
-    
+
         if (portadaInput.files.length > 0) {
             const reader = new FileReader();
             reader.readAsDataURL(portadaInput.files[0]);
             reader.onload = function () {
                 const portadaBase64 = reader.result; // Convertimos la imagen a Base64
-    
+
                 enviarActualizacion(descripcion, genero, portadaBase64);
             };
         } else {
@@ -484,15 +632,15 @@ let notificationCount = 3; // Número inicial de notificaciones
             enviarActualizacion(descripcion, genero, clubActual.Portada);
         }
     }
-    
+
     function enviarActualizacion(descripcion, genero, portada) {
         const clubActualizado = {
             "Descripcion": descripcion,
             "Genero": genero,
             "Portada": portada // Imagen en Base64 o la URL actual
         };
-    
-        fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`, {
+
+        fetch(`http://localhost:3050/clubes/${encodeURIComponent(nombreClub)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(clubActualizado)
@@ -508,35 +656,9 @@ let notificationCount = 3; // Número inicial de notificaciones
             alert("Hubo un error al actualizar el club");
         });
     }
-    </script>
-    
-    
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const params = new URLSearchParams(window.location.search);
-        const nombreClub = params.get("club");
-
-        if (nombreClub) {
-            fetch(`http://localhost:5000/ReadIt/club/${encodeURIComponent(nombreClub)}`)
-                .then(response => response.json())
-                .then(club => {
-                    document.getElementById("NombreClub").textContent = club.NombreClub;
-                    document.querySelector(".club-banner").src = club.Portada;
-                    document.querySelector(".text-muted").textContent = club.Descripcion;
-                    document.getElementById("admin").textContent = "Administrado por: " + club.Administrador;
-                    document.getElementById("memberCount").textContent = club.Miembros;
-                    document.getElementById("genero").textContent = club.Genero;
-                    
-                    cargarLecturas(club.Lecturas);
-                    cargarEventos(club.Eventos);
-                })
-                .catch(error => console.error("Error al obtener los detalles del club:", error));
-        }
-    });
 
     function cargarLecturas(lecturas) {
-        let lecturasContainer = document.getElementById("lecturas");
+        let lecturasContainer = document.getElementById("libro-curso");
         lecturasContainer.innerHTML = "";
 
         lecturas.forEach(libro => {
@@ -548,8 +670,13 @@ let notificationCount = 3; // Número inicial de notificaciones
                         </div>
                         <div class="col-md-8">
                             <h5>${libro.Libro}</h5>
+                            <p><strong>Autor:</strong> ${libro.Autor}</p>
+                            <p class="book-description">${libro.descripcion}</p>
                             <p><strong>Inicio:</strong> ${libro.F_Inicio}</p>
                             <p><strong>Fin:</strong> ${libro.F_Fin}</p>
+                            <a href="discusion.html" class="btn btn-primary btn-sm">
+                                <i class="fas fa-comments"></i> Ir a la discusión
+                            </a>
                         </div>
                     </div>
                 </div>`;

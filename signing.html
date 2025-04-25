@@ -1,12 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Readit Login</title>
+  <link rel="icon" href="images/logo.png">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
-
+  <link href="styles.css" rel="stylesheet"> 
   <script>
     function toggleForm(formType) {
       const loginForm = document.getElementById('loginForm');
@@ -32,10 +34,41 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("loginForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Evita el envío del formulario
-      window.location.href = "index.html"; // Redirige a otra página
-    });
+      document.getElementById("loginForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const emailInput = document.getElementById("loginEmail");
+        const passwordInput = document.getElementById("loginPassword");
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          alert("Por favor, ingrese correo y contraseña.");
+          return;
+        }
+
+        try {
+          const response = await fetch('http://localhost:3050/usuarios/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            localStorage.setItem('jwtToken', data.token);
+            alert(`Bienvenido ${data.user.name}`);
+            window.location.href = "index.html";
+          } else {
+            alert(data.message || 'Error en el inicio de sesión');
+          }
+        } catch (error) {
+          console.error('Error en la solicitud de inicio de sesión:', error);
+          alert('Error en la solicitud de inicio de sesión');
+        }
+      });
     });
   </script>
 </head>
@@ -56,44 +89,146 @@
         <button class="btn btn-link text-dark border-bottom border-dark px-3 py-1" id="loginButton" onclick="toggleForm('login')">Inicio de sesión</button>
         <button class="btn btn-link text-secondary px-3 py-1" id="registerButton" onclick="toggleForm('register')">Registrarse</button>
       </div>
+      
+      <!-- Formulario de inicio de sesión -->
       <form id="loginForm">
         <div class="mb-3 position-relative">
           <i class="fas fa-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Correo electrónico" type="email"/>
+          <input class="form-control ps-5" id="loginEmail" placeholder="Correo electronico" type="email"/>
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" id="loginPassword" placeholder="Contraseña" type="password"/>
+           <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
+
         <div class="mb-3 text-end">
           <a class="text-warning" href="#">¿Olvidaste tu contraseña?</a>
         </div>
-        <div>
+        <div style="margin-bottom: 10px;">
           <button class="btn btn-primary w-100" type="submit">Iniciar sesión</button>
         </div>
+        <div id="g_id_onload"
+             data-client_id="442472453936-ihjkn2bismfff6safne168lj91mtolrb.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse">
+        </div>
+      
+        <div class="g_id_signin" data-type="standard"></div>
       </form>
+
+      <!-- Formulario de registro -->
       <form class="d-none" id="registerForm">
         <div class="mb-3 position-relative">
+          <i class="fas fa-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+          <input class="form-control ps-5" id="registerName" placeholder="Nombre de usuario" type="text" required />
+        </div>
+        <div class="mb-3 position-relative">
           <i class="fas fa-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Correo electrónico" type="email"/>
+          <input class="form-control ps-5" id="registerEmail" placeholder="Correo electrónico" type="email" required/>
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" id="registerPassword" placeholder="Contraseña" type="password" required/>
+          <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
         <div class="mb-3 position-relative">
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-          <input class="form-control ps-5" placeholder="Confirmar contraseña" type="password"/>
-          <i class="fas fa-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+          <input class="form-control ps-5 password-input" id="registerConfirmPassword" placeholder="Confirmar contraseña" type="password" required/>
+          <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
         </div>
-        <div>
+        <div style="margin-bottom: 10px;">
           <button class="btn btn-primary w-100" type="submit">Registrarse</button>
         </div>
+        <div id="g_id_onload"
+        data-client_id="442472453936-ihjkn2bismfff6safne168lj91mtolrb.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse">
+        </div>
+    
+        <div class="g_id_signin" data-type="standard"></div>
       </form>
+
+      <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+          event.preventDefault();
+
+          const name = document.getElementById('registerName').value.trim();
+          const email = document.getElementById('registerEmail').value.trim();
+          const password = document.getElementById('registerPassword').value;
+          const confirmPassword = document.getElementById('registerConfirmPassword').value;
+          const reader = new FileReader();
+          reader.readAsDataURL("images/fotoperfil.jpg");
+              const picture = reader.result;
+          if (password !== confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+          }
+
+          try {
+            const response = await fetch('http://localhost:3050/usuarios/registrar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, password, picture }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              localStorage.setItem('jwtToken', data.token);
+              alert("Verifica tu correo electronico para iniciar sesion");
+            } else {
+              alert(data.error || 'Error en el registro');
+            }
+          } catch (error) {
+            console.error('Error en la solicitud de registro:', error);
+            alert('Error en la solicitud de registro');
+          }
+        });
+      </script>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+   <!-- Script para mostrar/ocultar contraseña -->
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleIcons = document.querySelectorAll(".toggle-password");
+
+      toggleIcons.forEach(icon => {
+        icon.addEventListener("click", function () {
+          const input = this.previousElementSibling;
+          const isPassword = input.type === "password";
+
+          input.type = isPassword ? "text" : "password";
+          this.classList.toggle("fa-eye-slash");
+          this.classList.toggle("fa-eye");
+        });
+      });
+    });
+  </script>
+  
+  <script>
+    function handleCredentialResponse(response) {
+      const token = response.credential;
+
+      fetch('http://localhost:3050/usuarios/register/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Usuario:', data.user);
+        localStorage.setItem('jwtToken', data.token);
+        alert(`Bienvenido ${data.user.name}`);
+        window.location.href = "index.html";
+      })
+      .catch(err => {
+        console.error('Error al iniciar sesión:', err);
+      });
+    }
+  </script>
+
 </body>
 </html>
