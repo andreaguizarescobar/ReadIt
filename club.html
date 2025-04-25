@@ -53,6 +53,16 @@
              document.getElementById(tabId).classList.add('active-tab');
          }
 
+        function showSection2(sectionId, tabId) {
+            document.getElementById('libro-curso').style.display = 'none';
+            document.getElementById('proxima-lectura').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-libro-curso').classList.remove('active-tab');
+            document.getElementById('tab-proxima-lectura').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
         function toggleEvento() {
             let tipoEvento = document.getElementById("tipoEvento").value;
             let campoVirtual = document.getElementById("campoVirtual");
@@ -185,6 +195,7 @@
                 <p>Miembros: <strong id="memberCount"></strong></p>
         </section>
     </section>
+    
     <section id="lecturas" style="display: none;">
         <nav class="bg-white shadow-sm">
             <ul class="nav justify-content-right p-3">
@@ -283,6 +294,7 @@
     </div>
              
     </section>
+    
 </main>
 
 <!-- Modal Actualizar Club -->
