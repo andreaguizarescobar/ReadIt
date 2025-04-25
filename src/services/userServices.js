@@ -118,3 +118,19 @@ export const login = async (email, password) => {
   }
   return user;
 };
+
+export const getUserById = async (id) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  return user;
+};
+
+export const updateUser = async (id, data) => {
+  const user = await User.findByIdAndUpdate(id, data, { new: true });
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  return user;
+};

@@ -8,4 +8,7 @@ router.post("/registrar", userController.register);
 router.get("/verify-email", userController.verifyEmail);
 router.post("/login", userController.login);
 
+router.get("/:id", userController.getUserById);
+router.put("/:id", userController.updateUser);
+
 export default router;
