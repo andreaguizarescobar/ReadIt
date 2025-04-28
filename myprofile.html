@@ -10,6 +10,14 @@
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
+        function showModal(id) {
+        document.getElementById(id).style.display = "block";
+        }
+
+        function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+        }
+
         function showSection(sectionId, tabId) {
             document.getElementById('mis-clubes').style.display = 'none';
             document.getElementById('mis-insignias').style.display = 'none';
@@ -52,6 +60,12 @@
         function goToClubPage() {
             window.location.href = 'club.html';
         }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
     </script>
 </head>
 <body class="bg-light">
@@ -85,33 +99,33 @@
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
                 <a href="#">Configuración</a>
-                <a href="#">Cerrar sesión</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
     </div>
 </header>
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 
-<div class="bg-cover bg-center" style="background-image: url('images/portadausuario2.jpg'); height: 300px;"></div>
- 
-<section id="datosusuario" class="mt-5" >
+<div class="bg-cover bg-center profile-banner" style="background-image: url('images/portadausuario2.jpg'); height: 300px;"></div>
+<section id="datosusuario" class="mt-5">
     <div class="d-flex align-items-center ml-4 justify-content-between">
-        <div>
-            <img src="images/fotoperfil.jpg" alt="Foto de perfil" 
-             class="rounded-circle position-absolute profile-pic">
-             
-            <div class="profile-username">
-                <h2 class="font-weight-bold mb-0 mr-4 ">andyvianney</h2>
-                <p class="mb-1">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</p>
-                <p class="mb-1">Ubicación: Ciudad de México</p>
-                <p class="mb-1">Fecha de registro: Enero 2022</p>
-            </div>
-        
+      <div>
+        <img id="fotoPerfil" src="" alt="Foto de perfil"
+          class="rounded-circle position-absolute profile-pic">
+  
+        <div class="profile-username">
+          <h2 id="NombreUsuario class="font-weight-bold mb-0 mr-4"></h2>
+          <p id="descripcion" class="mb-1"></p>
+          <p id="ubicacion" class="mb-1"></p>
+          <p id="fechaRegistro" class="mb-1"></p>
         </div>
-
-        <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">Editar mi perfil</button>
+      </div>
+  
+      <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">
+        Editar mi perfil
+      </button>
     </div>
-</section>
+  </section>
 
 <nav class="bg-white shadow-sm">
     <ul class="nav justify-content-right p-3">
@@ -200,71 +214,200 @@
       </section>
           
 </main>
-
-<!-- Modal Editar Perfil -->
-<div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display: none; background: rgba(0,0,0,0.6); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto;">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content p-4">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Perfil</h5>
-          <button type="button" class="close" onclick="hideModal('modalEditarPerfil')">
-            <span>&times;</span>
-          </button>
-        </div>
+<!-- Modal de Editar Perfil -->
+<div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display:none;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="formEditarPerfil">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Perfil</h5>
+            <button type="button" class="close" onclick="hidemodal('modalEditarPerfil')" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
   
-        <div class="modal-body">
-          <form>
-            <!-- Foto de portada -->
+          <div class="modal-body">
             <div class="form-group">
-              <label for="fotoPortada">Foto de portada</label>
-              <input type="file" class="form-control-file" id="fotoPortada">
+              <label for="nombre">Nombre de usuario</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" value="">
             </div>
-  
-            <!-- Foto de perfil -->
             <div class="form-group">
-              <label for="fotoPerfil">Foto de perfil</label>
-              <input type="file" class="form-control-file" id="fotoPerfil">
+              <label for="descripcion">Descripción</label>
+              <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
             </div>
-  
-            <!-- Nombre de usuario -->
             <div class="form-group">
-              <label for="nombreUsuario">Nombre de usuario</label>
-              <input type="text" class="form-control" id="nombreUsuario" value="andyvianney">
+                <label for="portadaUsuario">Portada</label>
+                <input type="file" class="form-control-file" id="portadaUsuario">
             </div>
-  
-            <!-- Descripción -->
             <div class="form-group">
-              <label for="descripcionPerfil">Descripción</label>
-              <textarea class="form-control" id="descripcionPerfil" rows="3">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</textarea>
+                <label for="fotoPerfil">Foto de perfil</label>
+                <input type="file" class="form-control-file" id="fotoPerfil">
             </div>
+          </div>
   
-            <!-- Ubicación -->
-            <div class="form-group">
-              <label for="ubicacionUsuario">Ubicación</label>
-              <input type="text" class="form-control" id="ubicacionUsuario" value="Ciudad de México">
-            </div>
-  
-            <!-- Fecha de registro (no editable) -->
-            <div class="form-group">
-              <label for="fechaRegistro">Fecha de registro</label>
-              <input type="text" class="form-control" id="fechaRegistro" value="Enero 2022" readonly>
-            </div>
-          </form>
-        </div>
-  
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="hideModal('modalEditarPerfil')">Cancelar</button>
-          <button type="submit" class="btn btn-success">Guardar cambios</button>
-        </div>
+        </form>
+        
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="hidemodal('modalEditarPerfil')">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="actualizarUsuario()">Editar perfil</button>
+          </div>
       </div>
     </div>
-  </div>
-  
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
+<script>
+    let nombreUsuario = "";
+    let usuarioActual = {}; // Guarda la información actual del usuario
+
+    function fetchAndDisplayClub() {
+        const params = new URLSearchParams(window.location.search);
+        nombreUsuario = params.get("usuario") || sessionStorage.getItem('selectedUsuario');
+
+        if (nombreUsuario) {
+            fetch(`http://localhost:3050/usuarios/${encodeURIComponent(nombreUsuario)}`)
+                .then(response => response.json())
+                .then(usuario => {
+                    usuarioActual = usuario;
+
+                    // Actualizar elementos de la página
+                    document.getElementById("NombreUsuario").textContent = usuario.NombreUsuario;
+                    document.querySelector(".profile-banner").src = usuario.Portada;
+                    document.getElementById("descripcion").textContent = usuario.Descripcion;
+                    document.getElementById("ubicacion").textContent = "Ubicación: " + usuario.ubicacion;
+                    document.getElementById("fecharegistro").textContent = "Fecha de registro: " + new Date(usuario.createdAt).toLocaleDateString();
+                    document.querySelector(".profile-img").src = usuario.fotoperfil;
+
+                    // Actualizar los campos en el modal de edición
+                    document.getElementById("nombre").value = usuario.NombreUsuario || "";
+                    document.getElementById("descripcion").value = usuario.Descripcion || "";
+                    document.getElementById("portadaUsuario").value = ""; // Aquí deberías manejar la carga de archivos
+                    document.getElementById("fotoPerfil").value = ""; // Aquí deberías manejar la carga de archivos
+
+                    cargarLecturas(usuario.Clubes);
+                    cargarEventos(usuario.Insignias);
+                })
+                .catch(error => console.error("Error al obtener los detalles del usuario:", error));
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchAndDisplayClub);
+
+    function mostrarModalEditar() {
+        document.getElementById("modalEditarPerfil").style.display = "block";
+    }
+
+    function cerrarModalEditar() {
+        document.getElementById("modalEditarPerfil").style.display = "none";
+    }
+
+    function actualizarUsuario() {
+        const nombre = document.getElementById("nombre").value;
+        const descripcion = document.getElementById("descripcion").value;
+        const portadaInput = document.getElementById("portadaUsuario");
+        const fotoPerfilInput = document.getElementById("fotoPerfil");
+
+        let portadaBase64 = usuarioActual.Portada;
+        let fotoPerfilBase64 = usuarioActual.fotoperfil;
+
+        // Si se seleccionaron nuevos archivos de imagen, leerlos y convertirlos a Base64
+        if (portadaInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(portadaInput.files[0]);
+            reader.onload = function () {
+                portadaBase64 = reader.result;
+                enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
+            };
+        }
+
+        if (fotoPerfilInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(fotoPerfilInput.files[0]);
+            reader.onload = function () {
+                fotoPerfilBase64 = reader.result;
+                enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
+            };
+        }
+
+        // Si no hay nuevos archivos, se usa la información actual
+        if (portadaInput.files.length === 0 && fotoPerfilInput.files.length === 0) {
+            enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
+        }
+    }
+
+    function enviarActualizacion(nombre, descripcion, portada, fotoPerfil) {
+        const usuarioActualizado = {
+            "NombreUsuario": nombre,
+            "Descripcion": descripcion,
+            "Portada": portada,
+            "FotoPerfil": fotoPerfil
+        };
+
+        fetch(`http://localhost:3050/usuarios/${encodeURIComponent(nombreUsuario)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(usuarioActualizado)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Perfil actualizado exitosamente");
+            cerrarModalEditar();
+            location.reload(); // Recargar la página para ver los cambios
+        })
+        .catch(error => {
+            console.error("Error al actualizar el perfil:", error);
+            alert("Hubo un error al actualizar el perfil");
+        });
+    }
+
+    function cargarClubes() {
+        const clubesContainer = document.getElementById("clubesContainer");
+        clubesContainer.innerHTML = ""; // Limpiar cualquier contenido previo
+
+        clubes.forEach(club => {
+            const clubCard = `
+                <div class="col-md-6 mb-4">
+                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                        <div class="card-header bg-warning text-white text-center font-weight-bold">${club.nombre}</div>
+                        <img alt="Club ${club.nombre}" class="card-img-top club-banner" src="${club.portada}"/>
+                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                        <div class="club-footer">
+                            <span>${club.genero}</span>
+                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-${club.nombre}')"></i>
+                            <div class="options-menu" id="options-menu-${club.nombre}">
+                                <a href="#">Opción 1</a>
+                                <a href="#">Opción 2</a>
+                                <a href="#">Opción 3</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            clubesContainer.innerHTML += clubCard;
+        });
+    }
+
+    function cargarInsignias() {
+        const insigniasContainer = document.getElementById("insigniasContainer");
+        insigniasContainer.innerHTML = ""; // Limpiar cualquier contenido previo
+
+        insignias.forEach(insignia => {
+            const insigniaCard = `
+                <div class="badge-box">
+                    <img src="${insignia.imagen}" alt="${insignia.nombre}" class="img-fluid badge-img">
+                    <span class="tooltip">${insignia.descripcion}</span>
+                    <p>${insignia.nombre}</p>
+                </div>
+            `;
+            insigniasContainer.innerHTML += insigniaCard;
+        });
+    }
+</script>
 
 <script>
 let notificationCount = 3; // Número inicial de notificaciones
@@ -296,6 +439,5 @@ let notificationCount = 3; // Número inicial de notificaciones
 
     // Llamar a la función para asegurarse de que se muestre correctamente al cargar
     updateNotificationBadge();
-
     
 </script>

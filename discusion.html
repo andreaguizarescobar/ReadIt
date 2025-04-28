@@ -128,10 +128,9 @@
     <div class="row min-vh-100">
       
       <!-- Sección Izquierda -->
-    <div class="col-md-6 d-flex flex-column bg-light overflow-auto">
-        <h2 class="text-center mt-4">Nombre del libro PDF</h2>
-        <div class="p-3">
-        <div style="height: 80vh; overflow: hidden;">
+    <div class="col-md-6 d-flex flex-column bg-light overflow-auto ">
+        <div class="p-1">
+        <div style="height: 100vh; width: 100vh; overflow: hidden; background-color: #ffe0b2; ">
             <iframe
             src="DOCUMENTOS/Alcance del Software - ReadIt.pdf"
             width="100%"
@@ -143,9 +142,9 @@
         </div>
     </div>
 <!-- Sección Derecha -->
-<div class="col-md-6 d-flex flex-column bg-warning overflow-auto">
-    <h2 class="text-center mt-4">Comentarios</h2>
-    <div class="p-3">
+<div class="col-md-6 d-flex flex-column overflow-auto" style="background-color: #ffffff;">
+    <h4 class="text-center mt-4">Comentarios</h4>
+    <div class="p-1">
       <!-- Área para agregar nuevo comentario -->
       <div class="mb-3">
         <input type="text" id="newComment" class="form-control" placeholder="Escribe un comentario..." />
@@ -178,7 +177,7 @@
       // Avatar de usuario simulado
       const avatarHTML = `
         <img src="https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}"
-             class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
+             class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px; " alt="avatar;">
       `;
   
       const contentHTML = `
