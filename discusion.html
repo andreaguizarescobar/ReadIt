@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -12,40 +13,153 @@
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 
     <script>
-        function showSection(sectionId, tabId) {
-            document.getElementById('informacion').style.display = 'none';
-            document.getElementById('lecturas').style.display = 'none';
-            document.getElementById('eventos').style.display = 'none';
-            document.getElementById(sectionId).style.display = 'block';
-
-            document.getElementById('tab-informacion').classList.remove('active-tab');
-            document.getElementById('tab-lecturas').classList.remove('active-tab');
-            document.getElementById('tab-eventos').classList.remove('active-tab');
-            document.getElementById(tabId).classList.add('active-tab');
-        }
-
-        function showSection2(sectionId, tabId) {
-            document.getElementById('libro-curso').style.display = 'none';
-            document.getElementById('proxima-lectura').style.display = 'none';
-            document.getElementById(sectionId).style.display = 'block';
-
-            document.getElementById('tab-libro-curso').classList.remove('active-tab');
-            document.getElementById('tab-proxima-lectura').classList.remove('active-tab');
-            document.getElementById(tabId).classList.add('active-tab');
-        }
-
-        function toggleEvento() {
-            let tipoEvento = document.getElementById("tipoEvento").value;
-            let campoVirtual = document.getElementById("campoVirtual");
-            let campoPresencial = document.getElementById("campoPresencial");
-
-            if (tipoEvento === "virtual") {
-                campoVirtual.classList.remove("d-none");
-                campoPresencial.classList.add("d-none");
-            } else {
-                campoVirtual.classList.add("d-none");
-                campoPresencial.classList.remove("d-none");
+        // New script to get libroId from localStorage and load libro file dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const libroId = localStorage.getItem('selectedLibroId');
+            if (!libroId) {
+                alert('No se proporcionó el ID del libro.');
+                return;
             }
+
+            fetch(`http://localhost:3050/libros/${encodeURIComponent(libroId)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los datos del libro');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update the page title with libro name
+                    const nombreClubElem = document.getElementById('NombreClub');
+                    if (nombreClubElem) {
+                        nombreClubElem.textContent = data.Libro || 'Libro';
+                    }
+
+                    // Update iframe src to libro file URL or portada
+                    const iframe = document.querySelector('iframe');
+                    if (iframe) {
+                        // Use libro file URL if available, else portada
+                        const fileUrl = data.url || data.Portada || '';
+                        if (fileUrl) {
+                            iframe.src = fileUrl;
+                        } else {
+                            iframe.src = '';
+                            alert('No se encontró archivo para este libro.');
+                        }
+                    }
+
+                    // Fetch and display comments for the libro
+                    fetchComments(libroId);
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        });
+
+        async function fetchComments(libroId) {
+            try {
+                const response = await fetch(`http://localhost:3050/comentarios/libro/${encodeURIComponent(libroId)}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener los comentarios');
+                }
+                const comentarios = await response.json();
+                renderComments(comentarios);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function timeAgo(dateString) {
+            const now = new Date();
+            const date = new Date(dateString);
+            const seconds = Math.floor((now - date) / 1000);
+
+            let interval = Math.floor(seconds / 31536000);
+            if (interval >= 1) return interval + " año" + (interval > 1 ? "s" : "") + " atrás";
+
+            interval = Math.floor(seconds / 2592000);
+            if (interval >= 1) return interval + " mes" + (interval > 1 ? "es" : "") + " atrás";
+
+            interval = Math.floor(seconds / 86400);
+            if (interval >= 1) return interval + " día" + (interval > 1 ? "s" : "") + " atrás";
+
+            interval = Math.floor(seconds / 3600);
+            if (interval >= 1) return interval + " hora" + (interval > 1 ? "s" : "") + " atrás";
+
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) return interval + " minuto" + (interval > 1 ? "s" : "") + " atrás";
+
+            return "Justo ahora";
+        }
+
+        function renderComments(comentarios) {
+            const commentSection = document.getElementById('commentSection');
+            commentSection.innerHTML = ''; // Clear existing comments
+
+            comentarios.comentarios.forEach(comentario => {
+                console.log(comentario);
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('d-flex', 'mb-3');
+
+                // Avatar de usuario simulado
+                const avatarURL = (comentario.User && comentario.User.length > 0 && comentario.User[0].picture) ? comentario.User[0].picture : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
+                const avatarHTML = `
+                    <img src="${avatarURL}"
+                         class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
+                `;
+
+                const userName = (comentario.User && comentario.User.length > 0 && comentario.User[0].name) ? comentario.User[0].name : 'Usuario';
+                const commentTimeAgo = timeAgo(comentario.fecha);
+                const likesCount = comentario.likes || 0;
+                const repliesHTML = renderReplies(comentario.respuestas);
+
+                const contentHTML = `
+                    <div class="flex-grow-1">
+                        <div class="bg-light px-3 py-2 rounded-3">
+                            <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
+                            <p class="mb-1">${comentario.comentario}</p>
+                        </div>
+                        <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
+                            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount}</span></span>
+                            <span class="me-3" onclick="toggleReplyInput(this)" class="responder">Responder</span>
+                            <span>${commentTimeAgo}</span>
+                        </div>
+                        <!-- Input de respuesta inicialmente oculto -->
+                        <input type="text" class="form-control form-control-sm mt-2 mb-1 reply-input" placeholder="Responder..." style="display: none;" />
+                        <button class="btn btn-sm btn-outline-secondary" onclick="replyToComment(this)" style="display: none;">Responder</button>
+                        <div class="replies mt-2 ps-3 border-start">${repliesHTML}</div>
+                    </div>
+                `;
+
+                commentDiv.innerHTML = avatarHTML + contentHTML;
+                commentSection.appendChild(commentDiv);
+            });
+        }
+
+        function renderReplies(replies) {
+            if (!replies || replies.length === 0) return '';
+
+            return replies.map(reply => {
+                // User is an array, get first user's name or fallback
+                const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
+                const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
+                const replyTimeAgo = timeAgo(reply.fecha);
+                const replyLikes = reply.likes || 0;
+                return `
+                    <div class="d-flex mb-2 ps-3 border-start">
+                        <img src="${replyAvatarURL}"
+                             class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
+                        <div class="flex-grow-1 bg-body-secondary p-2 rounded">
+                            <p class="mb-1 fw-bold text-primary">${replyUserName}</p>
+                            <p class="mb-1">${reply.comentario}</p>
+                            <div class="text-muted small">
+                                <span class="me-3">Me gusta ${replyLikes}</span>
+                                <span>${replyTimeAgo}</span>
+                            </div>
+                        </div>
+                     </div>
+                `;
+            }).join('');
         }
 
         function toggleProfileMenu() {
@@ -90,7 +204,7 @@
     <div class="d-flex align-items-center">
         <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
         <button class="btn btn-dark rounded-right" >
-            <i class="fas fa-search"></i>
+            <i clasxs="fas fa-search"></i>
         </button>
     </div>
 
@@ -121,19 +235,18 @@
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
 <div class="d-flex align-items-center bg-primary" style="height: 50px;">
-  <h1 class="text-dark font-weight-bold ml-2" id="NombreClub"></h1>
+  <h1 class="text-white font-weight-bold ml-2" style="margin-top: 5px; margin-bottom: 5px ;" id="NombreClub"></h1>
 </div>
 
 <div class="container-fluid px-4">
     <div class="row min-vh-100">
       
       <!-- Sección Izquierda -->
-    <div class="col-md-6 d-flex flex-column bg-light overflow-auto">
-        <h2 class="text-center mt-4">Nombre del libro PDF</h2>
-        <div class="p-3">
-        <div style="height: 80vh; overflow: hidden;">
+      <div class="col-md-6 d-flex flex-column bg-light overflow-auto ">
+        <div class="p-1">
+        <div style="height: 100vh; width: 100vh; overflow: hidden; background-color: #ffe0b2; ">
             <iframe
-            src="DOCUMENTOS/Alcance del Software - ReadIt.pdf"
+            src=""
             width="100%"
             height="100%"
             style="border: none;"
@@ -143,9 +256,9 @@
         </div>
     </div>
 <!-- Sección Derecha -->
-<div class="col-md-6 d-flex flex-column bg-warning overflow-auto">
-    <h2 class="text-center mt-4">Comentarios</h2>
-    <div class="p-3">
+<div class="col-md-6 d-flex flex-column overflow-auto" style="background-color: #ffffff;">
+    <h4 class="text-center mt-4">Comentarios</h4>
+    <div class="p-1">
       <!-- Área para agregar nuevo comentario -->
       <div class="mb-3">
         <input type="text" id="newComment" class="form-control" placeholder="Escribe un comentario..." />
@@ -160,64 +273,123 @@
   </div>
   
   <script>
-    // Almacenar los usuarios que han dado "Me gusta" a cada comentario
     const likedUsers = new Map();
   
-    function addComment() {
-      const commentText = document.getElementById("newComment").value.trim();
-      if (commentText === "") return;
-  
-      const commentSection = document.getElementById("commentSection");
-  
-      const commentDiv = document.createElement("div");
-      commentDiv.classList.add("d-flex", "mb-3");
-  
-      // Nombre de usuario fijo por ahora (puedes hacerlo dinámico)
-      const userName = "Usuario";
-  
-      // Avatar de usuario simulado
-      const avatarHTML = `
-        <img src="https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}"
-             class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
-      `;
-  
-      const contentHTML = `
-        <div class="flex-grow-1">
-          <div class="bg-light px-3 py-2 rounded-3">
-            <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
-            <p class="mb-1">${commentText}</p>
-          </div>
-          <div class="text-muted small mt-1 ms-1">
-            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">0</span></span>
-            <span class="me-3" onclick="toggleReplyInput(this)" class="responder">Responder</span>
-            <span>1 min</span>
-          </div>
-          <!-- Input de respuesta inicialmente oculto -->
-          <input type="text" class="form-control form-control-sm mt-2 mb-1 reply-input" placeholder="Responder..." style="display: none;" />
-          <button class="btn btn-sm btn-outline-secondary" onclick="replyToComment(this)" style="display: none;">Responder</button>
-          <div class="replies mt-2 ps-3 border-start"></div>
-        </div>
-      `;
-  
-      commentDiv.innerHTML = avatarHTML + contentHTML;
-      commentSection.appendChild(commentDiv);
-      document.getElementById("newComment").value = "";
-    }
+        async function addComment() {
+            const commentText = document.getElementById("newComment").value.trim();
+            if (commentText === "") return;
+
+            const commentSection = document.getElementById("commentSection");
+
+            // Get user info from token or session (assuming userName is available)
+            const token = localStorage.getItem('jwtToken');
+            let userId = null;
+            if (token) {
+                try {
+                    const payloadBase64 = token.split('.')[1];
+                    const payloadJson = atob(payloadBase64);
+                    const user = JSON.parse(payloadJson);
+                    userId = user.id;
+                } catch (e) {
+                    console.error('Error decoding token:', e);
+                }
+            }
+
+            // Prepare comment data to send to API
+            const libroId = localStorage.getItem('selectedLibroId');
+            if (!libroId) {
+                alert('No se proporcionó el ID del libro para el comentario.');
+                return;
+            }
+
+            const commentData = {
+                User: userId ? [userId] : [],
+                comentario: commentText,
+                fecha: new Date(),
+            };
+            console.log(commentData);
+            try {
+                const response = await fetch(`http://localhost:3050/comentarios/${encodeURIComponent(libroId)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(commentData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al guardar el comentario');
+                }
+
+                // Clear input and refresh comments
+                document.getElementById("newComment").value = "";
+                fetchComments(libroId);
+
+            } catch (error) {
+                alert(error.message);
+            }
+        }
   
     // Función para activar o desactivar el "Me gusta"
-    function toggleLike(span) {
+    async function toggleLike(span) {
       const likeCount = span.querySelector(".like-count");
       const userName = "Usuario";  // Aquí podrías capturar el usuario real
-  
-      // Verificar si el usuario ya ha dado "Me gusta"
-      if (likedUsers.has(userName)) {
-        // El usuario ya ha dado "Me gusta", lo quitamos
-        likedUsers.delete(userName);
-        likeCount.textContent = parseInt(likeCount.textContent) - 1;
-      } else {
-        // El usuario no ha dado "Me gusta", lo añadimos
-        likedUsers.set(userName, true);
-        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+
+      // Determine if this is a comment or a reply by checking closest comment div
+      const commentDiv = span.closest('.d-flex.mb-3');
+      const replyDiv = span.closest('.d-flex.mb-2.ps-3.border-start');
+      let comentarioId = null;
+      let respuestaId = null;
+
+      if (commentDiv) {
+        // Get comentarioId from data attribute or from comentarios object if available
+        comentarioId = commentDiv.getAttribute('data-comentario-id');
+      }
+      if (replyDiv) {
+        // Get comentarioId and respuestaId from data attributes
+        comentarioId = replyDiv.getAttribute('data-comentario-id');
+        respuestaId = replyDiv.getAttribute('data-respuesta-id');
+      }
+
+      // If no IDs found, fallback to visual toggle only
+      if (!comentarioId) {
+        alert('No se pudo identificar el comentario para dar like.');
+        return;
+      }
+
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        alert('Debe iniciar sesión para dar like.');
+        return;
+      }
+
+      try {
+        let response;
+        if (respuestaId) {
+          // Like on a reply
+          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/like`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        } else {
+          // Like on a comment
+          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/like`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error('Error al actualizar el like');
+        }
+
+        // Update like count visually
+        const currentLikes = parseInt(likeCount.textContent);
+        likeCount.textContent = currentLikes + 1;
+
+      } catch (error) {
+        alert(error.message);
       }
     }
   
@@ -231,7 +403,7 @@
       replyButton.style.display = isHidden ? "block" : "none";
     }
   
-    function replyToComment(button) {
+    async function replyToComment(button) {
       const input = button.previousElementSibling;
       const replyText = input.value.trim();
       if (replyText === "") return;
@@ -240,25 +412,65 @@
       const commentContainer = button.closest(".flex-grow-1");
       const authorName = commentContainer.querySelector(".comment-author").textContent;
   
-      // Avatar de usuario para la respuesta
-      const replyAvatarHTML = `
-        <img src="https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}"
-             class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
-      `;
+      // Get comentarioId from closest comment div
+      const commentDiv = button.closest('.d-flex.mb-3');
+      const comentarioId = commentDiv ? commentDiv.getAttribute('data-comentario-id') : null;
+      if (!comentarioId) {
+        alert('No se pudo identificar el comentario para responder.');
+        return;
+      }
   
-      const replyDiv = document.createElement("div");
-      replyDiv.classList.add("bg-body-secondary", "p-2", "rounded", "mb-2", "d-flex");
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        alert('Debe iniciar sesión para responder.');
+        return;
+      }
   
-      replyDiv.innerHTML = `
-        ${replyAvatarHTML}
-        <div>
-          <p class="mb-0"><strong>${authorName}:</strong> ${replyText}</p>
-        </div>
-      `;
+      // Prepare reply data
+      const replyData = {
+        User: [], // User ID could be added here if available
+        comentario: replyText,
+        fecha: new Date(),
+      };
   
-      const repliesContainer = button.nextElementSibling;
-      repliesContainer.appendChild(replyDiv);
-      input.value = "";
+      try {
+        const response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(replyData)
+        });
+  
+        if (!response.ok) {
+          throw new Error('Error al guardar la respuesta');
+        }
+  
+        // Append reply to UI
+        const replyAvatarURL = (button.closest(".flex-grow-1").querySelector(".replies img")) ? button.closest(".flex-grow-1").querySelector(".replies img").src : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
+        const replyAvatarHTML = `
+          <img src="${replyAvatarURL}"
+                class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px; " alt="avatar;">
+        `;
+  
+        const replyDiv = document.createElement("div");
+        replyDiv.classList.add("bg-body-secondary", "p-2", "rounded", "mb-2", "d-flex");
+  
+        replyDiv.innerHTML = `
+          ${replyAvatarHTML}
+          <div>
+            <p class="mb-0"><strong>${authorName}:</strong> ${replyText}</p>
+          </div>
+        `;
+  
+        const repliesContainer = button.nextElementSibling;
+        repliesContainer.appendChild(replyDiv);
+        input.value = "";
+  
+      } catch (error) {
+        alert(error.message);
+      }
     }
   </script>
 

@@ -10,6 +10,14 @@
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
+                function showModal(id) {
+         document.getElementById(id).style.display = "block";
+         }
+ 
+         function closeModal(id) {
+         document.getElementById(id).style.display = "none";
+         }
+ 
         function showSection(sectionId, tabId) {
             document.getElementById('mis-clubes').style.display = 'none';
             document.getElementById('mis-insignias').style.display = 'none';
@@ -92,24 +100,26 @@
 </header>
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 
-<div class="bg-cover bg-center" style="background-image: url('images/portadausuario2.jpg'); height: 300px;"></div>
- 
-<section id="datosusuario" class="mt-5" >
+<div class="bg-cover bg-center profile-banner" style="background-color: rgb(253, 236, 216); height: 300px;" >
+    <img src="" alt="" id="portada" class="card-img-top club-banner" style="height: 100%;">
+</div>
+ <section id="datosusuario" class="mt-5">
     <div class="d-flex align-items-center ml-4 justify-content-between">
         <div>
-            <img src="images/fotoperfil.jpg" alt="Foto de perfil" 
-             class="rounded-circle position-absolute profile-pic">
-             
+            <img id="fotoPerfil" src="" alt="Foto de perfil"
+              class="rounded-circle position-absolute profile-pic">
+      
             <div class="profile-username">
-                <h2 class="font-weight-bold mb-0 mr-4 ">andyvianney</h2>
-                <p class="mb-1">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</p>
-                <p class="mb-1">Ubicación: Ciudad de México</p>
-                <p class="mb-1">Fecha de registro: Enero 2022</p>
+              <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-4"></h2>
+              <p id="descripcion" class="mb-1" style="margin-top: 10px;"></p>
+              <p id="fechaRegistro" class="mb-1"></p>
             </div>
         
         </div>
-
-        <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">Editar mi perfil</button>
+   
+    <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">
+      Editar mi perfil
+    </button>
     </div>
 </section>
 
@@ -126,7 +136,7 @@
 
 <main class="p-4">
     <section id="mis-clubes">
-        <h2 class="font-weight-bold mb-3">Clubes de andyvianney</h2>
+        <h2 class="font-weight-bold mb-3">Clubes de <i class="titulos"></i></h2>
         <div class="row">
             <div class="col-md-6 mb-4">
                 <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
@@ -165,100 +175,218 @@
     </section>
 
     <section id="mis-insignias" style="display: none;">
-        <h2 class="font-weight-bold mb-4">Insignias de andivianney</h2>
-            <div class="badge-box">
-                <img src="images/insignias/insignialectorinicial.png" alt="Insignia Lector Inicial" class="img-fluid badge-img">
-                <span class="tooltip">¡Felicidades! Has comenzado tu camino lector.</span>
-                <p>Lector Inicial</p>
-            </div>
-          <div class="badge-box">
-            <img src="images/insignias/insignia5libros.png" alt="Insignia 5 libros" class="img-fluid badge-img">
-            <span class="tooltip">¡Buen empiezo lector! Sigue leyendo...</span>
-            <p>5 Libros Leídos</p>
-          </div>
-          <div class="badge-box">
-            <img src="images/insignias/insigniacreadorclub.png" alt="Insignia Recomendador" class="img-fluid badge-img">
-            <span class="tooltip">Fundador de un club literario</span>
-            <p>Creador de Clubes</p>
-          </div>
-          <div class="badge-box">
-            <img src="images/insignias/insignialectorcritico.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
-            <span class="tooltip">Por escribir 10 reseñas, ¡sigue compartiendo tus reflexiones!</span>
-            <p>Lector Crítico</p>
-          </div>
-          <div class="badge-box">
-            <img src="images/insignias/insigniacoleccionistadeclubes.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
-            <span class="tooltip">¡Eres miembro de 5 clubes!</span>
-            <p>Coleccionista de Clubes</p>
-          </div>
-          <div class="badge-box">
-            <img src="images/insignias/insigniaprimercomentario.png" alt="Insignia Lector Constante" class="img-fluid badge-img">
-            <span class="tooltip">¡Tu voz importa! Has comentado por primera vez.</span>
-            <p>Primer comentario</p>
-          </div>
+        <h2 class="font-weight-bold mb-4">Insignias de <i class="titulos"></i></h2>
+        <div id="insignias-container" class="d-flex flex-wrap">
+            <!-- Badges will be dynamically inserted here -->
         </div>
-      </section>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwtToken');
+            if (!token) return;
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const tokenData = JSON.parse(payloadJson);
+            fetchUserInsignias(tokenData.id);
+            fetchUserProfile(tokenData.id);
+        });
+
+        function fetchUserProfile(userId) {
+            fetch(`http://localhost:3050/usuarios/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los datos del usuario');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    displayUserProfile(user);
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                });
+        }
+
+        function displayUserProfile(user) {
+            const fotoPerfil = document.getElementById('fotoPerfil');
+            const nombreUsuario = document.getElementById('NombreUsuario');
+            const desc = document.getElementById('descripcion');
+            const titulos = document.getElementsByClassName('titulos');
+            const portada = document.getElementById('portada');
+
+            if (fotoPerfil && user.picture) {
+                fotoPerfil.src = user.picture;
+            }
+            if (portada && user.portada) {
+                portada.src = user.portada;
+            if (nombreUsuario && user.name) {
+                nombreUsuario.textContent = user.name;
+                titulos.item(0).textContent = user.name;
+                titulos.item(1).textContent = user.name;
+            }
+            if (descripcion && user.descripcion) {
+                desc.textContent = user.descripcion;
+                descripcion.textContent = user.descripcion;
+            }
+            if (fechaRegistro && user.createdAt) {
+                const date = new Date(user.createdAt);
+                fechaRegistro.textContent = `Miembro desde: ${date.toLocaleDateString()}`;
+            }
+
+            // Set modal input values for editing
+            const modalNombre = document.getElementById('nombre');
+            const modalDescripcion = document.getElementById('descripcionModal');
+            if (modalNombre && user.name) {
+                modalNombre.value = user.name;
+            }
+            if (modalDescripcion && user.descripcion) {
+                modalDescripcion.value = user.descripcion;
+            }
+        }
+    }
+
+        function fetchUserInsignias(userId) {
+            console.log(userId);
+            fetch(`http://localhost:3050/insignias/user/${userId}`)
+                .then(response => response.json())
+                .then(insignias => {
+                    console.log(insignias);
+                    displayInsignias(insignias);
+                })
+                .catch(error => {
+                    console.error('Error fetching user insignias:', error);
+                });
+        }
+
+        function displayInsignias(insignias) {
+            const container = document.getElementById('insignias-container');
+            container.innerHTML = '';
+            insignias.forEach(insignia => {
+                const badgeBox = document.createElement('div');
+                badgeBox.className = 'badge-box m-2 text-center';
+
+                const img = document.createElement('img');
+                img.src = insignia.img || 'images/insignias/default.png';
+                img.alt = insignia.nombre;
+                img.className = 'img-fluid badge-img';
+
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = insignia.descripcion || '';
+
+                const p = document.createElement('p');
+                p.textContent = insignia.nombre;
+
+                badgeBox.appendChild(img);
+                badgeBox.appendChild(tooltip);
+                badgeBox.appendChild(p);
+
+                container.appendChild(badgeBox);
+            });
+        }
+    </script>
           
 </main>
 
-<!-- Modal Editar Perfil -->
-<div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display: none; background: rgba(0,0,0,0.6); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto;">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content p-4">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Perfil</h5>
-          <button type="button" class="close" onclick="hideModal('modalEditarPerfil')">
-            <span>&times;</span>
-          </button>
-        </div>
-  
-        <div class="modal-body">
-          <form>
-            <!-- Foto de portada -->
-            <div class="form-group">
-              <label for="fotoPortada">Foto de portada</label>
-              <input type="file" class="form-control-file" id="fotoPortada">
-            </div>
-  
-            <!-- Foto de perfil -->
-            <div class="form-group">
-              <label for="fotoPerfil">Foto de perfil</label>
-              <input type="file" class="form-control-file" id="fotoPerfil">
-            </div>
+<!-- Modal de Editar Perfil -->
+<div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display:none;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="formEditarPerfil">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Perfil</h5>
+            <button type="button" class="close" onclick="hideModal('modalEditarPerfil')" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
   
             <!-- Nombre de usuario -->
+            <div class="modal-body">
             <div class="form-group">
-              <label for="nombreUsuario">Nombre de usuario</label>
-              <input type="text" class="form-control" id="nombreUsuario" value="andyvianney">
+                <label for="nombre">Nombre de usuario</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="">
             </div>
   
             <!-- Descripción -->
             <div class="form-group">
-              <label for="descripcionPerfil">Descripción</label>
-              <textarea class="form-control" id="descripcionPerfil" rows="3">Apasionada por la lectura y el aprendizaje constante. Me encanta compartir mis lecturas con amigos y otros lectores.</textarea>
+                <label for="descripcionModal">Descripción</label>
+                <textarea class="form-control" id="descripcionModal" name="descripcionModal"></textarea>
             </div>
   
             <!-- Ubicación -->
             <div class="form-group">
-              <label for="ubicacionUsuario">Ubicación</label>
-              <input type="text" class="form-control" id="ubicacionUsuario" value="Ciudad de México">
+                <label for="portadaUsuario">Portada</label>
+                <input type="file" class="form-control-file" id="portadaUsuario">
             </div>
   
             <!-- Fecha de registro (no editable) -->
             <div class="form-group">
-              <label for="fechaRegistro">Fecha de registro</label>
-              <input type="text" class="form-control" id="fechaRegistro" value="Enero 2022" readonly>
+                <label for="fotoPerfilM">Foto de perfil</label>
+                <input type="file" class="form-control-file" id="fotoPerfilM">
             </div>
+        </div>
           </form>
-        </div>
   
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="hideModal('modalEditarPerfil')">Cancelar</button>
-          <button type="submit" class="btn btn-success">Guardar cambios</button>
-        </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="hideModal('modalEditarPerfil')">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="actualizarUsuario()">Editar perfil</button>
+          </div>
       </div>
     </div>
   </div>
+
+<script>
+  async function actualizarUsuario() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      alert('Debe iniciar sesión para editar el perfil.');
+      return;
+    }
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64);
+    const tokenData = JSON.parse(payloadJson);
+    const userId = tokenData.id;
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const descripcion = document.getElementById('descripcionModal').value.trim();
+    const fotoPerfilInput = document.getElementById('fotoPerfilM').files[0];
+    const portadaUsuarioInput = document.getElementById('portadaUsuario').files[0];
+
+    const formData = new FormData();
+    formData.append('name', nombre);
+    formData.append('descripcion', descripcion);
+    if (fotoPerfilInput) {
+      formData.append('fotoPerfil', fotoPerfilInput);
+    }
+    if (portadaUsuarioInput) {
+      formData.append('portadaUsuario', portadaUsuarioInput);
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3050/usuarios/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el perfil');
+      }
+
+      const updatedUser = await response.json();
+      alert('Perfil actualizado correctamente');
+      // Optionally update the profile display with new data
+      displayUserProfile(updatedUser);
+      hideModal('modalEditarPerfil')
+
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+</script>
   
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

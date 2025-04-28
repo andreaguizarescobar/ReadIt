@@ -23,12 +23,28 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('jwtToken');
-        if (!token || isTokenExpired(token)) {
-            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-            window.location.href = 'signing.html';
+        function decodeToken(token) {
+            if (!token) return null;
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                return JSON.parse(payloadJson);
+            } catch (e) {
+                console.error('Error decoding token:', e);
+                return null;
+            }
         }
+
+        let tokenData;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwtToken');
+            if (!token || isTokenExpired(token)) {
+                alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+                window.location.href = 'signing.html';
+                return;
+            }
+            tokenData = decodeToken(token);
         });
     </script>
     <script>
@@ -74,6 +90,124 @@
 
         function goToClubPage() {
             window.location.href = 'club.html';
+        }
+
+        // Fetch clubs where user is admin and member
+        function fetchUserClubs() {
+            fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayUserClubs(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user clubs:', error);
+                });
+        }
+
+        // Display clubs in mis-clubes section
+        function displayUserClubs(data) {
+            const misClubesSection = document.getElementById('mis-clubes');
+            const container = misClubesSection.querySelector('.row');
+            container.innerHTML = '';
+
+            // Admin clubs
+            if (data.adminClubs && data.adminClubs.length > 0) {
+                const adminHeader = document.createElement('h3');
+                adminHeader.textContent = 'Clubes donde eres administrador';
+                adminHeader.classList.add('w-100', 'mb-3');
+                container.appendChild(adminHeader);
+
+                data.adminClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+
+            // Member clubs
+            if (data.memberClubs && data.memberClubs.length > 0) {
+                const memberHeader = document.createElement('h3');
+                memberHeader.textContent = 'Clubes donde eres miembro';
+                memberHeader.classList.add('w-100', 'mt-4', 'mb-3');
+                container.appendChild(memberHeader);
+
+                data.memberClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+        }
+
+        // Create club card element
+        function createClubCard(club) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6 mb-4';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card club-banner-container';
+            cardDiv.style.cursor = 'pointer';
+            cardDiv.onclick = () => goToClubPage(club._id);
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'card-header bg-warning text-white text-center font-weight-bold';
+            headerDiv.textContent = club.NombreClub;
+
+            const img = document.createElement('img');
+            img.className = 'card-img-top club-banner';
+            img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
+            img.alt = club.NombreClub;
+
+            const favoriteIcon = document.createElement('i');
+            favoriteIcon.className = 'far fa-heart favorite-icon';
+            favoriteIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleFavorite(favoriteIcon);
+            };
+
+            const footerDiv = document.createElement('div');
+            footerDiv.className = 'club-footer';
+
+            const genreSpan = document.createElement('span');
+            genreSpan.textContent = club.Genero || '';
+
+            const optionsIcon = document.createElement('i');
+            optionsIcon.className = 'fas fa-ellipsis-v';
+            optionsIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleOptionsMenu(`options-menu-${club._id}`);
+            };
+
+            const optionsMenu = document.createElement('div');
+            optionsMenu.className = 'options-menu';
+            optionsMenu.id = `options-menu-${club._id}`;
+
+            const option1 = document.createElement('a');
+            option1.href = '#';
+            option1.textContent = 'Opción 1';
+
+            const option2 = document.createElement('a');
+            option2.href = '#';
+            option2.textContent = 'Opción 2';
+
+            const option3 = document.createElement('a');
+            option3.href = '#';
+            option3.textContent = 'Opción 3';
+
+            optionsMenu.appendChild(option1);
+            optionsMenu.appendChild(option2);
+            optionsMenu.appendChild(option3);
+
+            footerDiv.appendChild(genreSpan);
+            footerDiv.appendChild(optionsIcon);
+            footerDiv.appendChild(optionsMenu);
+
+            cardDiv.appendChild(headerDiv);
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(favoriteIcon);
+            cardDiv.appendChild(footerDiv);
+
+            colDiv.appendChild(cardDiv);
+
+            return colDiv;
         }
     </script>
 </head>
@@ -211,7 +345,7 @@
             <div class="col-12 mb-4">
                 <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                    <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                    <img class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
                     <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
                     <div class="club-footer">
                         <span>Género del club / Ficción</span>
@@ -324,11 +458,10 @@
         reader.readAsDataURL(portadaInput.files[0]);
         reader.onload = function () {
             const imagenBase64 = reader.result; // Imagen convertida a Base64
-    
             const clubData = {
                 "NombreClub": nombre,
                 "Descripcion": descripcion,
-                "Administrador": "Administrador1",  
+                "Administrador": tokenData.name,  
                 "Genero": genero,
                 "Miembros": 1,
                 "Portada": imagenBase64,  // Guardamos la imagen en Base64
@@ -336,13 +469,16 @@
                 "Eventos": []
             };
     
-            fetch("http://localhost:5000/ReadIt/clubNuevo", {
+            fetch("http://localhost:3050/clubes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(clubData)
             })
             .then(response => response.json())
             .then(data => {
+                fetch(`http://localhost:3050/usuarios/${tokenData.id}/club/${data._id}/add-admin`, {method: "POST"})
+                .then(response2 => response2.json())
+                .then(data => {alert(data)});
                 alert("Club creado exitosamente");
                 hideModal("modalCrearClub");
                 location.reload();
@@ -401,7 +537,7 @@ let notificationCount = 3; // Número inicial de notificaciones
             data.forEach(club => {
                 let clubCard = `
                     <div class="col-md-6 mb-4">
-                        <div class="card club-banner-container" onclick="goToClubPage('${club.NombreClub}')">
+                        <div class="card club-banner-container" onclick="goToClubPage('${club._id}')">
                             <div class="card-header bg-warning text-white text-center font-weight-bold">${club.NombreClub}</div>
                             <img class="card-img-top club-banner" src="${club.Portada}" alt="${club.NombreClub}"/>
                             <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
@@ -415,6 +551,7 @@ let notificationCount = 3; // Número inicial de notificaciones
             });
         })
         .catch(error => console.error("Error al obtener los clubes:", error));
+        fetchUserClubs();
     });
 
     function goToClubPage(NombreClub) {
@@ -427,4 +564,3 @@ let notificationCount = 3; // Número inicial de notificaciones
         element.classList.toggle("favorited");
     }
 </script>
-

@@ -6,22 +6,22 @@ export const getAllLibros = async () => {
 };
 
 export const getLibroById = async (id) => {
-  return await Libro.findById(id).populate('comentarios');
+  return await Libro.findById(id);
 };
 
-export const createLibro = async (data) => {
+import Club from "../models/clubModel.js";
+
+export const createLibro = async (data, clubId) => {
 
   const nuevoLibro = new Libro(data);
   const savedLibro = await nuevoLibro.save();
 
-  const votacion = await Votacion.findOne({
-    F_Inicio: { $lte: data.F_Inicio },
-    F_Fin: { $gte: data.F_Fin }
-  });
-
-  if (votacion) {
-    votacion.Libro.push(savedLibro._id);
-    await votacion.save();
+  if (clubId) {
+    const club = await Club.findById(clubId);
+    if (club) {
+      club.Lecturas_curso.push(savedLibro._id);
+      await club.save();
+    }
   }
 
   return savedLibro;

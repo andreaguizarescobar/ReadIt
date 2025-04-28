@@ -11,7 +11,7 @@ export const getClubs = async (req, res) => {
 
 export const getClub = async (req, res) => {
   try {
-    const club = await clubService.getClub(req.params.NombreClub);
+    const club = await clubService.getClub(req.params.id);
     if (!club) return res.status(404).json({ message: "Club no encontrado" });
     res.status(200).json(club);
   } catch (error) {
@@ -30,7 +30,7 @@ export const createClub = async (req, res) => {
 
 export const updateClub = async (req, res) => {
   try {
-    const clubActualizado = await clubService.updateClub(req.params.nombreClub, req.body);
+    const clubActualizado = await clubService.updateClub(req.params.id, req.body);
     if (!clubActualizado) return res.status(404).json({ message: "Club no encontrado" });
     res.status(200).json(clubActualizado);
   } catch (error) {
@@ -50,9 +50,30 @@ export const deleteClub = async (req, res) => {
 
 export const incrementMembers = async (req, res) => {
   try {
-    const clubActualizado = await clubService.incrementMembers(req.params.nombreClub);
+    const clubActualizado = await clubService.incrementMembers(req.params.id);
     if (!clubActualizado) return res.status(404).json({ message: "Club no encontrado" });
     res.status(200).json(clubActualizado);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const decrementMembers = async (req, res) => {
+  try {
+    const clubActualizado = await clubService.decrementMembers(req.params.id);
+    if (!clubActualizado) return res.status(404).json({ message: "Club no encontrado" });
+    res.status(200).json(clubActualizado);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// New controller function to get clubs by user
+export const getClubsByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const clubs = await clubService.getClubsByUser(userId);
+    res.status(200).json(clubs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

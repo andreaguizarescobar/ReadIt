@@ -33,10 +33,10 @@ const userSchema = new mongoose.Schema({
   ubicacion: {
     type: String,
   },
-  insignias: {
+  insignias: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Insignias',
-  },
+  }],
   club_admin: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Clubes',

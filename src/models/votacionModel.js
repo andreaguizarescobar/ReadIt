@@ -2,11 +2,17 @@ import mongoose from "mongoose";
 
 const votSchema = new mongoose.Schema({
       Libro: [
-        {type: mongoose.Schema.Types.ObjectId,
-        ref: 'Libros',
+      {
+        name: String,
         votos: {type: Number, default: 0}, 
       },
     ],
+      participantes: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Users',
+        }
+      ],
       F_Inicio: String,
       F_Fin: String,
 });

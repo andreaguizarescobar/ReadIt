@@ -5,7 +5,6 @@ export const registerUser = async (req, res) => {
   try {
     const { token } = req.body;
     const user = await userService.registerUser(token);
-    // Include all user info in the token payload
     const jwtToken = generateToken({ 
       id: user._id, 
       email: user.email, 
@@ -73,8 +72,67 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const updatedUser = await userService.updateUser(req.params.id, req.body);
+    const updateData = req.body;
+
+    if (req.files) {
+      if (req.files.fotoPerfil && req.files.fotoPerfil.length > 0) {
+        let picPath = req.files.fotoPerfil[0].path;
+        updateData.picture = picPath;
+      }
+      if (req.files.portadaUsuario && req.files.portadaUsuario.length > 0) {
+        let coverPath = req.files.portadaUsuario[0].path;
+        updateData.portada = coverPath;
+      }
+    }
+
+    const updatedUser = await userService.updateUser(req.params.id, updateData);
     res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+import * as clubController from "./clubController.js";
+
+// Add club as member to user
+export const addClubMember = async (req, res) => {
+  try {
+    const updatedUser = await userService.addClubMember(req.params.userId, req.params.clubId);
+    // Increment club member count
+    await clubController.incrementMembers({ params: { id: req.params.clubId } }, { status: () => ({ json: () => {} }) });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// Remove club member from user
+export const removeClubMember = async (req, res) => {
+  try {
+    const updatedUser = await userService.removeClubMember(req.params.userId, req.params.clubId);
+    // Decrement club member count
+    await clubController.decrementMembers({ params: { id: req.params.clubId } }, { status: () => ({ json: () => {} }) });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// Add club as admin to user
+export const addClubAdmin = async (req, res) => {
+  try {
+    const updatedUser = await userService.addClubAdmin(req.params.userId, req.params.clubId);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+// Get user's role in a club
+export const getUserClubRole = async (req, res) => {
+  try {
+    const role = await userService.getUserClubRole(req.params.userId, req.params.clubId);
+    res.status(200).json({ role });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

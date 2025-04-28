@@ -6,7 +6,7 @@ const comentSchema = new mongoose.Schema({
         ref: 'User',}
     ],
       comentario: String,
-      likes: Number,
+      likes: {type: Number, default: 0},
       fecha: String,
       respuestas: [
         {

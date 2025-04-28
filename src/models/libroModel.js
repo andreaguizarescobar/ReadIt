@@ -10,7 +10,7 @@ const libroSchema = new mongoose.Schema({
       url: String,
       comentarios: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comentario',
+        ref: 'Comentarios',
       }]
 });
 

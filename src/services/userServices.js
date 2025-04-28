@@ -22,8 +22,14 @@ async function verifyGoogleToken(idToken) {
     };
   
     // Guardar o actualizar usuario en la base de datos
-    let user = await User.findOne({ googleId: userData.googleId });
-    if (!user) {
+    let user = await User.findOne({ sub: userData.sub });
+    if (user) {
+      // Update existing user info
+      user.name = userData.name;
+      user.email = userData.email;
+      user.picture = userData.picture;
+      await user.save();
+    } else {
       user = await User.create(userData);
     }
   
@@ -128,9 +134,63 @@ export const getUserById = async (id) => {
 };
 
 export const updateUser = async (id, data) => {
-  const user = await User.findByIdAndUpdate(id, data, { new: true });
+  const user = await User.findById(id);
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
+
+  // Update fields from data
+  if (data.name !== undefined) user.name = data.name;
+  if (data.descripcion !== undefined) user.descripcion = data.descripcion;
+  if (data.picture !== undefined) user.picture = data.picture;
+  if (data.portada !== undefined) user.portada = data.portada;
+
+  // Add other fields as needed
+
+  await user.save();
+  return user;
+};
+
+// Add club as member to user
+export const addClubMember = async (userId, clubId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (!user.club_miembro.includes(clubId)) {
+    user.club_miembro.push(clubId);
+    await user.save();
+  }
+  return user;
+};
+
+// Add club as admin to user
+export const addClubAdmin = async (userId, clubId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (!user.club_admin.includes(clubId)) {
+    user.club_admin.push(clubId);
+    await user.save();
+  }
+  return user;
+};
+
+// Get user's role in a club: "admin", "member", or "none"
+export const getUserClubRole = async (userId, clubId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (user.club_admin.includes(clubId)) return "admin";
+  if (user.club_miembro.includes(clubId)) return "member";
+  return "none";
+};
+
+// Remove club member from user
+export const removeClubMember = async (userId, clubId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  user.club_miembro = user.club_miembro.filter(id => id.toString() !== clubId);
+  await user.save();
   return user;
 };

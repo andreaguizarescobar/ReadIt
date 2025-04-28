@@ -23,12 +23,27 @@
             }
         }
 
+        function decodeToken(token) {
+            if (!token) return null;
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                return JSON.parse(payloadJson);
+            } catch (e) {
+                console.error('Error decoding token:', e);
+                return null;
+            }
+        }
+
+        let tokenData;
+        let rol;
         document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('jwtToken');
         if (!token || isTokenExpired(token)) {
             alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
             window.location.href = 'signing.html';
         }
+        tokenData = decodeToken(token);
         });
     </script>
     <script>
@@ -108,6 +123,11 @@
         function goToClubPage() {
             window.location.href = 'club.html';
         }
+
+        function goToDiscussion(libroId) {
+            localStorage.setItem('selectedLibroId', libroId);
+            window.location.href = 'discusion.html';
+        }
     </script>
 </head>
 <body class="bg-light">
@@ -161,8 +181,67 @@
 
     <!-- Botón y Me gusta alineados a la derecha con margen superior -->
     <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
-      <!-- Botón de Unirse -->
-      <button class="btn btn-primary join-btn" onclick="mostrarModalEditar()">Editar Club</button>
+        <button class="btn btn-primary join-btn" onclick="toggleMembership(this)" id="Miembro" style="display: none;">Unirse al Club</button>
+        <button class="btn btn-primary join-btn" onclick="mostrarModalEditar()" id="btn-admin" style="display: none;">Editar Club</button>
+      <script>
+        const token = localStorage.getItem('jwtToken');
+        tokenData = decodeToken(token);
+        const params = new URLSearchParams(window.location.search);
+        club = params.get("_id") || sessionStorage.getItem('selectedClub');
+        fetch(`http://localhost:3050/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/rol`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const rol = data.role;
+                if (rol === 'none') {
+                    const miembroElem = document.getElementById("Miembro");
+                    miembroElem.style.display = "block";
+                    miembroElem.classList.remove("btn-primary");
+                    miembroElem.classList.add("btn-success");
+                    miembroElem.textContent = "Unirse al Club";
+                    miembroElem.onclick = () => {
+                        fetch(`http://localhost:3050/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/add-miembro`, {
+                            method: 'POST',
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Te has unido al club');
+                                location.reload();
+                            } else {
+                                alert('Error al unirse al club');
+                            }
+                        })
+                        .catch(() => alert('Error al unirse al club'));
+                    };
+                } else if (rol === 'member') {
+                    const miembroElem = document.getElementById("Miembro");
+                    miembroElem.style.display = "block";
+                    miembroElem.classList.add("btn-primary");
+                    miembroElem.classList.remove("btn-success");
+                    miembroElem.textContent = "Salir del club";
+                    miembroElem.onclick = () => {
+                        fetch(`http://localhost:3050/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/remove-miembro`, {
+                            method: 'DELETE',
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Has salido del club');
+                                location.reload();
+                            } else {
+                                alert('Error al salir del club');
+                            }
+                        })
+                        .catch(() => alert('Error al salir del club'));
+                    };
+                } else if (rol === 'admin') {
+                    const adminElem = document.getElementById("btn-admin");
+                    adminElem.style.display = "block";
+                    adminElem.onclick = () => {
+                        mostrarModalEditar();
+                    };
+                }
+            });
+      </script>
 
       <!-- Me gusta -->
       <span class="like-btn ml-3 text-danger"><i class="far fa-heart"></i> 120</span>
@@ -216,7 +295,7 @@
             </button>
         </div>
   
-      <div class="container mt-4">
+      <div class="container mt-4" id="libros">
           <div class="row align-items-center book-card">
               <div class="col-md-4">
                   <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
@@ -256,7 +335,7 @@
   <section id="proxima-lectura" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="font-weight-bold">Votaciones del club en curso</h3>
-      <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+      <button class="btn btn-success" onclick="showModal('modalCrearVotacion')">
         <i class="fas fa-plus"></i> Crear votación
       </button>
     </div>
@@ -279,6 +358,118 @@
 </section>
 
 </section>
+
+<!-- Modal Crear Votacion -->
+<div class="modal" id="modalCrearVotacion" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Crear votación</h5>
+              <button type="button" class="close" onclick="hideModal('modalCrearVotacion')" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+              <form id="formCrearVotacion">
+                  <div class="form-group">
+                      <label for="diasVotacion">Dias de votacion</label>
+                      <input type="text" class="form-control" id="diasVotacion" placeholder="Ingrese el número de dias de votación" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="titulo1">Título 1</label>
+                      <input type="text" class="form-control" id="titulo1" placeholder="Ingrese el primer título" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="titulo2">Título 2</label>
+                      <input type="text" class="form-control" id="titulo2" placeholder="Ingrese el segundo título" required>
+                  </div>
+                  <div id="titulosAdicionales"></div>
+                  <button type="button" class="btn btn-link" id="btnAgregarTitulo">Agregar otro título</button>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearVotacion')">Cancelar</button>
+              <button type="button" class="btn btn-primary" id="btnCrearVotacion">Crear votación</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+  <script>
+  document.getElementById('btnAgregarTitulo').addEventListener('click', () => {
+    const titulosContainer = document.getElementById('titulosAdicionales');
+    const count = titulosContainer.children.length + 3;
+    const div = document.createElement('div');
+    div.className = 'form-group';
+    div.innerHTML = `
+      <label for="titulo${count}">Título ${count}</label>
+      <input type="text" class="form-control" id="titulo${count}" placeholder="Ingrese el título ${count}">
+    `;
+    titulosContainer.appendChild(div);
+  });
+
+  document.getElementById('btnCrearVotacion').addEventListener('click', async () => {
+    const diasVotacion = document.getElementById('diasVotacion').value.trim();
+    if (!diasVotacion) {
+      alert('Por favor, ingrese el número de días de votación.');
+      return;
+    }
+
+    const titulos = [];
+    const titulo1 = document.getElementById('titulo1').value.trim();
+    const titulo2 = document.getElementById('titulo2').value.trim();
+
+    if (!titulo1 || !titulo2) {
+      alert('Por favor, ingrese al menos dos títulos.');
+      return;
+    }
+
+    titulos.push(titulo1, titulo2);
+
+    const titulosAdicionales = document.getElementById('titulosAdicionales').children;
+    for (let i = 0; i < titulosAdicionales.length; i++) {
+      const input = titulosAdicionales[i].querySelector('input');
+      if (input && input.value.trim()) {
+        titulos.push(input.value.trim());
+      }
+    }
+
+    // Calculate start and end dates based on current date and diasVotacion
+    const fechaInicio = new Date();
+    const fechaFin = new Date();
+    fechaFin.setDate(fechaInicio.getDate() + parseInt(diasVotacion));
+    console.log(club);
+    const votacionData = {
+      Libro: titulos.map(titulo => ({ name: titulo, votos: 0 })),
+      F_Inicio: fechaInicio.toISOString().split('T')[0],
+      F_Fin: fechaFin.toISOString().split('T')[0],
+      clubId: club 
+    };
+
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const response = await fetch('http://localhost:3050/votaciones', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(votacionData)
+      });
+
+      if (response.ok) {
+        alert('Votación creada exitosamente');
+        hideModal('modalCrearVotacion');
+        location.reload();
+      } else {
+        const errorData = await response.json();
+        alert('Error al crear la votación: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      alert('Error al crear la votación: ' + error.message);
+    }
+  });
+</script>
 
 
 
@@ -379,7 +570,7 @@
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
-              <button type="button" class="btn btn-primary">Subir libro</button>
+              <button type="button" class="btn btn-primary" id="btnSubirLibro">Subir libro</button>
           </div>
       </div>
   </div>
@@ -414,6 +605,11 @@
                       <input type="date" class="form-control" id="fechaEvento">
                   </div>
 
+                  <div class="form-group">
+                      <label for="horaEvento">Hora del evento</label>
+                      <input type="time" class="form-control" id="horaEvento">
+                  </div>
+
                   <!-- Tipo de evento -->
                   <div class="form-group">
                       <label>Tipo de evento</label>
@@ -442,7 +638,7 @@
           <!-- Fijar el footer para que siempre se vea -->
           <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10;">
               <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearEvento')">Cancelar</button>
-              <button type="button" class="btn btn-primary">Crear evento</button>
+              <button type="button" class="btn btn-primary" id="btnCrearEvento">Crear evento</button>
           </div>
       </div>
   </div>
@@ -450,7 +646,153 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</script>
+
+<script>
+document.getElementById('btnSubirLibro').addEventListener('click', async () => {
+  const titulo = document.getElementById('tituloLibro').value;
+  const autor = document.getElementById('autorLibro').value;
+  const descripcion = document.getElementById('descripcionLibro').value;
+  const fechaInicio = document.getElementById('fechaInicioLibro').value;
+  const fechaFin = document.getElementById('fechaFinLibro').value;
+  const portadaFile = document.getElementById('portadaLibro').files[0];
+  const archivoFile = document.getElementById('archivoLibro').files[0];
+
+  if (!titulo || !autor || !descripcion || !fechaInicio || !fechaFin) {
+    alert('Por favor, complete todos los campos obligatorios.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('Libro', titulo);
+  formData.append('Autor', autor);
+  formData.append('descripcion', descripcion);
+  formData.append('F_Inicio', fechaInicio);
+  formData.append('F_Fin', fechaFin);
+  if (portadaFile) {
+    formData.append('portadaLibro', portadaFile);
+  }
+  if (archivoFile) {
+    formData.append('archivoLibro', archivoFile);
+  }
+  // Append clubId to formData
+  formData.append('clubId', club);
+
+  try {
+    const token = localStorage.getItem('jwtToken');
+    const response = await fetch('http://localhost:3050/libros', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (response.ok) {
+      alert('Libro subido exitosamente');
+      location.reload();
+    } else {
+      const errorData = await response.json();
+      alert('Error al subir el libro: ' + (errorData.error || 'Error desconocido'));
+    }
+  } catch (error) {
+    alert('Error al subir el libro: ' + error.message);
+  }
+});
+</script>
+<script>
+document.getElementById('btnCrearEvento').addEventListener('click', () => {
+  const nombreEvento = document.getElementById('nombreEvento').value.trim();
+  const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
+  const fechaEvento = document.getElementById('fechaEvento').value;
+  const horaEvento = document.getElementById('horaEvento').value;
+  const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
+  const lugarEvento = document.getElementById('lugarEvento').value.trim();
+  const portadaEventoFile = document.getElementById('portadaEvento').files[0];
+
+  if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento) {
+    alert('Por favor, complete todos los campos obligatorios.');
+    return;
+  }
+
+  if (portadaEventoFile) {
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+      const portadaBase64 = event.target.result;
+
+      const eventoData = {
+        Evento: nombreEvento,
+        Descripcion: descripcionEvento,
+        Fecha: fechaEvento,
+        Hora: horaEvento,
+        Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
+        Lugar: lugarEvento,
+        Portada: portadaBase64,
+        clubId: club
+      };
+
+      try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch('http://localhost:3050/eventos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(eventoData)
+        });
+
+        if (response.ok) {
+          alert('Evento creado exitosamente');
+          hideModal('modalCrearEvento');
+          location.reload();
+        } else {
+          const errorData = await response.json();
+          alert('Error al crear el evento: ' + (errorData.error || 'Error desconocido'));
+        }
+      } catch (error) {
+        alert('Error al crear el evento: ' + error.message);
+      }
+    };
+    reader.readAsDataURL(portadaEventoFile);
+  } else {
+    const eventoData = {
+      Evento: nombreEvento,
+      Descripcion: descripcionEvento,
+      Fecha: fechaEvento,
+      Hora: horaEvento,
+      Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
+      Lugar: lugarEvento,
+      clubId: club
+    };
+
+    (async () => {
+      try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch('http://localhost:3050/eventos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(eventoData)
+        });
+
+        if (response.ok) {
+          alert('Evento creado exitosamente');
+          hideModal('modalCrearEvento');
+          location.reload();
+        } else {
+          const errorData = await response.json();
+          alert('Error al crear el evento: ' + (errorData.error || 'Error desconocido'));
+        }
+      } catch (error) {
+        alert('Error al crear el evento: ' + error.message);
+      }
+    })();
+  }
+});
+</script>
 </body>
 </html>
 
@@ -501,7 +843,6 @@ let notificationCount = 3; // Número inicial de notificaciones
       }
   }
 </script>
-<!--
 <script>
   function toggleMembership(button) {
       let memberCountElement = document.getElementById("memberCount");
@@ -520,78 +861,18 @@ let notificationCount = 3; // Número inicial de notificaciones
       }
   }
 </script>
--->
-
-<!-- VOTACIONES DE Lecturas -->
-<script>
-    const opciones = ['Cien Años de Soledad', '1984', 'Don Quijote', 'El Principito'];
-    const votos = opciones.reduce((acc, titulo) => ({ ...acc, [titulo]: 0 }), {});
-    const barContainer = document.getElementById('barContainer');
-    const voteButtons = document.getElementById('voteButtons');
-    const mensajeVoto = document.getElementById('mensajeVoto');
-  
-    const almacenados = localStorage.getItem('votosTotales');
-    if (almacenados) {
-      Object.assign(votos, JSON.parse(almacenados));
-    }
-  
-    function renderChart() {
-      barContainer.innerHTML = '';
-      const totalVotos = Object.values(votos).reduce((a, b) => a + b, 0) || 1;
-  
-      opciones.forEach(titulo => {
-        const porcentaje = (votos[titulo] / totalVotos) * 100;
-  
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-  
-        const barFill = document.createElement('div');
-        barFill.className = 'bar-fill';
-        barFill.style.width = porcentaje + '%';
-        barFill.textContent = `${titulo} — ${votos[titulo]} voto(s)`;
-  
-        bar.appendChild(barFill);
-        barContainer.appendChild(bar);
-      });
-    }
-  
-    function renderButtons() {
-      voteButtons.innerHTML = '';
-  
-      if (localStorage.getItem('votoRealizado')) {
-        mensajeVoto.textContent = 'Ya has votado. Gracias por participar.';
-        return;
-      }
-  
-      opciones.forEach(titulo => {
-        const btn = document.createElement('button');
-        btn.textContent = `Votar por "${titulo}"`;
-        btn.onclick = () => {
-          votos[titulo]++;
-          localStorage.setItem('votoRealizado', 'true');
-          localStorage.setItem('votosTotales', JSON.stringify(votos));
-          mensajeVoto.textContent = `Gracias por votar por "${titulo}"`;
-          renderChart();
-          renderButtons();
-        };
-        voteButtons.appendChild(btn);
-      });
-    }
-  
-    renderButtons();
-    renderChart();
-  </script>
     
 <script>
-    let nombreClub = "";
+    let club = "";
     let clubActual = {}; // Guarda la información actual del club
 
     function fetchAndDisplayClub() {
         const params = new URLSearchParams(window.location.search);
-        nombreClub = params.get("club") || sessionStorage.getItem('selectedClub');
+        club = params.get("_id") || sessionStorage.getItem('selectedClub');
 
-        if (nombreClub) {
-            fetch(`http://localhost:3050/clubes/${encodeURIComponent(nombreClub)}`)
+        if (club) {
+
+            fetch(`http://localhost:3050/clubes/${encodeURIComponent(club)}`)
                 .then(response => response.json())
                 .then(club => {
                     clubActual = club;
@@ -609,7 +890,7 @@ let notificationCount = 3; // Número inicial de notificaciones
                     document.getElementById("descripcionClub").value = club.Descripcion || "";
                     document.getElementById("generoClub").value = club.Genero || "";
 
-                    cargarLecturas(club.Lecturas);
+                    cargarLecturas(club.Lecturas_curso);
                     cargarEventos(club.Eventos);
                 })
                 .catch(error => console.error("Error al obtener los detalles del club:", error));
@@ -652,7 +933,7 @@ let notificationCount = 3; // Número inicial de notificaciones
             "Portada": portada // Imagen en Base64 o la URL actual
         };
 
-        fetch(`http://localhost:3050/clubes/${encodeURIComponent(nombreClub)}`, {
+        fetch(`http://localhost:3050/clubes/${encodeURIComponent(club)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(clubActualizado)
@@ -670,29 +951,32 @@ let notificationCount = 3; // Número inicial de notificaciones
     }
 
     function cargarLecturas(lecturas) {
-        let lecturasContainer = document.getElementById("libro-curso");
+        let lecturasContainer = document.getElementById("libros");
         lecturasContainer.innerHTML = "";
 
         lecturas.forEach(libro => {
+            fetch(`http://localhost:3050/libros/${libro}`)
+            .then(response => response.json())
+            .then(data => {
             let libroCard = `
                 <div class="container mt-4">
                     <div class="row align-items-center book-card">
                         <div class="col-md-4">
-                            <img class="img-fluid book-cover" src="${libro.Portada}" alt="${libro.Libro}">
+                            <img class="img-fluid book-cover" src="${data.Portada}" alt="${data.Libro}">
                         </div>
                         <div class="col-md-8">
-                            <h5>${libro.Libro}</h5>
-                            <p><strong>Autor:</strong> ${libro.Autor}</p>
-                            <p class="book-description">${libro.descripcion}</p>
-                            <p><strong>Inicio:</strong> ${libro.F_Inicio}</p>
-                            <p><strong>Fin:</strong> ${libro.F_Fin}</p>
-                            <a href="discusion.html" class="btn btn-primary btn-sm">
+                            <h5>${data.Libro}</h5>
+                            <p><strong>Autor:</strong> ${data.Autor}</p>
+                            <p class="book-description">${data.descripcion}</p>
+                            <p><strong>Inicio:</strong> ${data.F_Inicio}</p>
+                            <p><strong>Fin:</strong> ${data.F_Fin}</p>
+                            <button class="btn btn-primary btn-sm" onclick="goToDiscussion('${data._id}')">
                                 <i class="fas fa-comments"></i> Ir a la discusión
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>`;
-            lecturasContainer.innerHTML += libroCard;
+            lecturasContainer.innerHTML += libroCard; });
         });
     }
 
@@ -701,12 +985,14 @@ let notificationCount = 3; // Número inicial de notificaciones
         eventosContainer.innerHTML = "";
 
         eventos.forEach(evento => {
+          fetch(`http://localhost:3050/eventos/${evento}`)
+            .then(response => response.json())
+            .then(evento => {
             let eventoCard = `
                 <div class="container mt-4">
                     <div class="row align-items-center event-card">
                         <div class="col-md-4">
-                            <img class="img-fluid" src="data:image/jpeg;base64,${ club.Portada }" alt="Portada del Club">
-
+                            <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
                         </div>
                         <div class="col-md-8">
                             <h5>${evento.Evento}</h5>
@@ -717,6 +1003,125 @@ let notificationCount = 3; // Número inicial de notificaciones
                     </div>
                 </div>`;
             eventosContainer.innerHTML += eventoCard;
+            });
         });
     }
 </script>
+
+<!-- VOTACIONES DE Lecturas -->
+<script>
+    const barContainer = document.getElementById('barContainer');
+    const voteButtons = document.getElementById('voteButtons');
+    const mensajeVoto = document.getElementById('mensajeVoto');
+  
+    let currentVotacion = null;
+    let userHasVoted = false;
+  
+    // Check if user has voted stored in localStorage by votacion ID
+    function checkUserVoted(votacionId) {
+      const voted = localStorage.getItem(`votoRealizado_${votacionId}`);
+      return voted === 'true';
+    }
+  
+    // Save user vote in localStorage
+    function setUserVoted(votacionId) {
+      localStorage.setItem(`votoRealizado_${votacionId}`, 'true');
+    }
+  
+    // Render the votacion chart bars
+    function renderChart() {
+      barContainer.innerHTML = '';
+      const totalVotos = currentVotacion.Libro.reduce((sum, libro) => sum + libro.votos, 0) || 1;
+  
+      currentVotacion.Libro.forEach(libro => {
+        const porcentaje = (libro.votos / totalVotos) * 100;
+  
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+  
+        const barFill = document.createElement('div');
+        barFill.className = 'bar-fill';
+        barFill.style.width = porcentaje + '%';
+        barFill.textContent = `${libro.name} — ${libro.votos} voto(s)`;
+  
+        bar.appendChild(barFill);
+        barContainer.appendChild(bar);
+      });
+    }
+    function renderButtons() {
+      voteButtons.innerHTML = '';
+  
+      if (userHasVoted) {
+        mensajeVoto.textContent = 'Ya has votado. Gracias por participar.';
+        return;
+      }
+  
+      currentVotacion.Libro.forEach(libro => {
+        const btn = document.createElement('button');
+        btn.textContent = `Votar por "${libro.name}"`;
+        btn.onclick = async () => {
+          try {
+            const token = localStorage.getItem('jwtToken');
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const user = JSON.parse(payloadJson);
+            const userId = user.id;
+
+            const response = await fetch(`http://localhost:3050/votaciones/${currentVotacion._id}/vote`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ tituloVotado: libro.name, id: userId })
+            });
+  
+            if (response.ok) {
+              const updatedVotacion = await response.json();
+              currentVotacion = updatedVotacion;
+              userHasVoted = true;
+              setUserVoted(currentVotacion._id);
+              mensajeVoto.textContent = `Gracias por votar por "${libro.name}"`;
+              renderChart();
+              renderButtons();
+            } else {
+              const errorData = await response.json();
+              alert('Error al guardar el voto: ' + (errorData.error || 'Error desconocido'));
+            }
+          } catch (error) {
+            alert('Error al guardar el voto: ' + error.message);
+          }
+        };
+        voteButtons.appendChild(btn);
+      });
+    }
+  
+    // Fetch current votacion for the club and initialize UI
+    async function fetchCurrentVotacion() {
+      try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch(`http://localhost:3050/votaciones/club/${club}/current`);
+  
+        if (response.ok) {
+          currentVotacion = await response.json();
+          userHasVoted = checkUserVoted(currentVotacion._id);
+          renderChart();
+          renderButtons();
+        } else if (response.status === 404) {
+          mensajeVoto.textContent = 'No hay votación activa en este momento.';
+          barContainer.innerHTML = '';
+          voteButtons.innerHTML = '';
+        } else {
+          const errorData = await response.json();
+          alert('Error al obtener la votación: ' + (errorData.error || 'Error desconocido'));
+        }
+      } catch (error) {
+        alert('Error al obtener la votación: ' + error.message);
+      }
+    }
+  
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchCurrentVotacion();
+    });
+  </script>

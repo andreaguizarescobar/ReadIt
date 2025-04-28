@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.post("/:libroId", comentController.createComentario);
 router.post("/:comentarioId/respuestas", comentController.addRespuestaToComentario);
+router.post("/:comentarioId/like", comentController.incrementLikeComentario);
+router.post("/:comentarioId/respuestas/:respuestaId/like", comentController.incrementLikeRespuesta);
 router.get("/libro/:libroId", comentController.getComentariosByLibroId);
 
 export default router;
