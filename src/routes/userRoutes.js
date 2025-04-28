@@ -1,6 +1,11 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
+<<<<<<< HEAD
 import multer from "multer";
+=======
+import { verifyTokenMiddleware } from "../middlewares/authMiddleware.js"; 
+
+>>>>>>> cdfe9ab7ba673ba45db2ec1cc8f59616868d623e
 
 const router = express.Router();
 

@@ -92,6 +92,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 import * as clubController from "./clubController.js";
 
 // Add club as member to user
@@ -137,3 +138,23 @@ export const getUserClubRole = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+=======
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id); // El ID lo sacamos del token
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({
+      name: user.name,
+      descripcion: user.descripcion,
+      ubicacion: user.ubicacion,
+      fechaRegistro: user.createdAt, // Si quieres mostrarlo (asegúrate que tu esquema tenga timestamps)
+      picture: user.picture,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+>>>>>>> cdfe9ab7ba673ba45db2ec1cc8f59616868d623e

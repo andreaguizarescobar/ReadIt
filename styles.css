@@ -296,3 +296,13 @@ header {
     cursor: pointer;
     color: #007bff;
   }
+
+  #colores-fondocomentarios
+
+  .fondo-izquierda {
+    background-color: #e0f7fa; /* color que quieras */
+  }
+
+  .fondo-derecha {
+    background-color: #ffe0b2; /* otro color */
+  }
