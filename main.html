@@ -1,0 +1,554 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt</title>
+    <link rel="icon" href="images/logo.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function isTokenExpired(token) {
+            if (!token) return true;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp;
+                if (!exp) return true;
+                const now = Math.floor(Date.now() / 1000);
+                return now >= exp;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function decodeToken(token) {
+            if (!token) return null;
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                return JSON.parse(payloadJson);
+            } catch (e) {
+                console.error('Error decoding token:', e);
+                return null;
+            }
+        }
+
+        let tokenData;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwtToken');
+            if (!token || isTokenExpired(token)) {
+                alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+                window.location.href = 'signing.html';
+                return;
+            }
+            tokenData = decodeToken(token);
+        });
+    </script>
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('mis-libros').style.display = 'none';
+            document.getElementById('mis-clubes').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-inicio').classList.remove('active-tab');
+            document.getElementById('tab-mis-libros').classList.remove('active-tab');
+            document.getElementById('tab-mis-clubes').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleNotificationMenu() {
+            let menu = document.getElementById('notification-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
+
+        // Fetch clubs where user is admin and member
+        function fetchUserClubs() {
+            fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayUserClubs(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user clubs:', error);
+                });
+        }
+
+        // Display clubs in mis-clubes section
+        function displayUserClubs(data) {
+            const misClubesSection = document.getElementById('mis-clubes');
+            const container = misClubesSection.querySelector('.row');
+            container.innerHTML = '';
+
+            // Admin clubs
+            if (data.adminClubs && data.adminClubs.length > 0) {
+                const adminHeader = document.createElement('h3');
+                adminHeader.textContent = 'Clubes donde eres administrador';
+                adminHeader.classList.add('w-100', 'mb-3');
+                container.appendChild(adminHeader);
+
+                data.adminClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+
+            // Member clubs
+            if (data.memberClubs && data.memberClubs.length > 0) {
+                const memberHeader = document.createElement('h3');
+                memberHeader.textContent = 'Clubes donde eres miembro';
+                memberHeader.classList.add('w-100', 'mt-4', 'mb-3');
+                container.appendChild(memberHeader);
+
+                data.memberClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
+
+        // Create club card element
+        function createClubCard(club) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6 mb-4';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card club-banner-container';
+            cardDiv.style.cursor = 'pointer';
+            cardDiv.onclick = () => goToClubPage(club._id);
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'card-header bg-warning text-white text-center font-weight-bold';
+            headerDiv.textContent = club.NombreClub;
+
+            const img = document.createElement('img');
+            img.className = 'card-img-top club-banner';
+            img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
+            img.alt = club.NombreClub;
+
+            const favoriteIcon = document.createElement('i');
+            favoriteIcon.className = 'far fa-heart favorite-icon';
+            favoriteIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleFavorite(favoriteIcon);
+            };
+
+            const footerDiv = document.createElement('div');
+            footerDiv.className = 'club-footer';
+
+            const genreSpan = document.createElement('span');
+            genreSpan.textContent = club.Genero || '';
+
+            const optionsIcon = document.createElement('i');
+            optionsIcon.className = 'fas fa-ellipsis-v';
+            optionsIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleOptionsMenu(`options-menu-${club._id}`);
+            };
+
+            const optionsMenu = document.createElement('div');
+            optionsMenu.className = 'options-menu';
+            optionsMenu.id = `options-menu-${club._id}`;
+
+            const option1 = document.createElement('a');
+            option1.href = '#';
+            option1.textContent = 'Opción 1';
+
+            const option2 = document.createElement('a');
+            option2.href = '#';
+            option2.textContent = 'Opción 2';
+
+            const option3 = document.createElement('a');
+            option3.href = '#';
+            option3.textContent = 'Opción 3';
+
+            optionsMenu.appendChild(option1);
+            optionsMenu.appendChild(option2);
+            optionsMenu.appendChild(option3);
+
+            footerDiv.appendChild(genreSpan);
+            footerDiv.appendChild(optionsIcon);
+            footerDiv.appendChild(optionsMenu);
+
+            cardDiv.appendChild(headerDiv);
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(favoriteIcon);
+            cardDiv.appendChild(footerDiv);
+
+            colDiv.appendChild(cardDiv);
+
+            return colDiv;
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+        <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
+    </div>
+    <div class="d-flex align-items-center">
+        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
+        <button class="btn btn-dark rounded-right" >
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
+            <i class="fas fa-bell text-dark mr-3" style="font-size: 1.5rem;"></i>
+            <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -5px; right: 5px; display: none;">3</span>
+            
+            <div id="notification-menu" class="notification-menu">
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
+            </div>
+        </div>        
+    
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="myprofile.html">Mi perfil</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+<div class="cover-image">
+<div class="bg-cover bg-center" style="background-image: url('images/portada.png'); height: 200px;"></div>
+</div>
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3">
+        <li class="nav-item">
+            <a id="tab-inicio" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('inicio', 'tab-inicio')">Inicio</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-libros" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-libros', 'tab-mis-libros')">Mis libros</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-clubes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Mis clubes</a>
+        </li>
+    </ul>
+</nav>
+<main class="p-4">
+    <section id="inicio">
+        <h2 class="font-weight-bold mb-3">Libros recomendados</h2>
+        <div class="d-flex overflow-auto">
+            <img alt="Libro 1" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+            <img alt="Libro 2" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+            <img alt="Libro 3" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/3TEvXRt734nnqvXkREi3-S9xW401APmoaJaX5Yqwgd0.jpg"/>
+            <img alt="Libro 4" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/X5UCwXSBm-goP17foN-UsU3sRdzzphjIVH8XD4PsqsE.jpg"/>
+            <img alt="Libro 5" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/wKD-I-Tv-d6Wfri52zms1DSQOcGI1f62QXxdnzvcdFc.jpg"/>
+            <img alt="Libro 6" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/1931NbGur3HgPBlgLXZkHOuNifRY8d56sJGNNH6Mo-U.jpg"/>
+            <img alt="Libro 7" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/0tayYbgWm1QoCyAcqSsVBbKlCTvIUWKZkBSayzTBTxc.jpg"/>
+            <img alt="Libro 8" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/pALbT1W2aC95_XdNxxXQifsvcljsItAs5oWICxrk-Lg.jpg"/>
+        </div>
+        <section class="mt-5">
+            <h2 class="font-weight-bold mb-3">Clubes recomendados</h2>
+            <div class="row" id="clubes-container"></div>
+        </section>
+    </section>
+    <section id="mis-libros" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="font-weight-bold">Mis libros</h2>
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+                <i class="fas fa-plus"></i> Subir libro
+            </button>
+        </div>   
+
+        <div class="row">
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 3" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/3TEvXRt734nnqvXkREi3-S9xW401APmoaJaX5Yqwgd0.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 4" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/X5UCwXSBm-goP17foN-UsU3sRdzzphjIVH8XD4PsqsE.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 5" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/wKD-I-Tv-d6Wfri52zms1DSQOcGI1f62QXxdnzvcdFc.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 6" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/1931NbGur3HgPBlgLXZkHOuNifRY8d56sJGNNH6Mo-U.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 7" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/0tayYbgWm1QoCyAcqSsVBbKlCTvIUWKZkBSayzTBTxc.jpg"/>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <img alt="Libro 8" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/pALbT1W2aC95_XdNxxXQifsvcljsItAs5oWICxrk-Lg.jpg"/>
+            </div>
+        </div>
+    </section>
+    <section id="mis-clubes" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="font-weight-bold">Mis clubes</h2>
+            <button class="btn btn-success" onclick="showModal('modalCrearClub')">
+                <i class="fas fa-plus"></i> Crear club
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Género del club / Ficción</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-4')"></i>
+                        <div class="options-menu" id="options-menu-4">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal Subir Libro -->
+<div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir libro</h5>
+                <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="tituloLibro">Título del libro</label>
+                        <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="autorLibro">Autor</label>
+                        <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaLibro">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaLibro">
+                    </div>
+                    <div class="form-group">
+                        <label for="archivoLibro">Archivo Libro</label>
+                        <input type="file" class="form-control-file" id="archivoLibro">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
+                <button type="button" class="btn btn-primary">Subir libro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Club -->
+<div class="modal" id="modalCrearClub" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear club</h5>
+                <button type="button" class="close" onclick="hideModal('modalCrearClub')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="nombreClub">Nombre del club</label>
+                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="generoClub">Género del club</label>
+                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcionClub">Descripción</label>
+                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="portadaClub">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaClub" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="crearClub()">Crear club</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function crearClub() {
+        const nombre = document.getElementById("nombreClub").value;
+        const genero = document.getElementById("generoClub").value;
+        const descripcion = document.getElementById("descripcionClub").value;
+        const portadaInput = document.getElementById("portadaClub");
+    
+        if (portadaInput.files.length === 0) {
+            alert("Por favor selecciona una imagen.");
+            return;
+        }
+    
+        const reader = new FileReader();
+        reader.readAsDataURL(portadaInput.files[0]);
+        reader.onload = function () {
+            const imagenBase64 = reader.result; // Imagen convertida a Base64
+            const clubData = {
+                "NombreClub": nombre,
+                "Descripcion": descripcion,
+                "Administrador": tokenData.name,  
+                "Genero": genero,
+                "Miembros": 1,
+                "Portada": imagenBase64,  // Guardamos la imagen en Base64
+                "Lecturas": [],
+                "Eventos": []
+            };
+    
+            fetch("http://localhost:3050/clubes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(clubData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetch(`http://localhost:3050/usuarios/${tokenData.id}/club/${data._id}/add-admin`, {method: "POST"})
+                .then(response2 => response2.json())
+                .then(data => {alert(data)});
+                alert("Club creado exitosamente");
+                hideModal("modalCrearClub");
+                location.reload();
+            })
+            .catch(error => {
+                console.error("Error al crear el club:", error);
+                alert("Hubo un error al crear el club");
+            });
+        };
+    }
+    </script>    
+    
+</body>
+</html>
+
+<script>
+let notificationCount = 3; // Número inicial de notificaciones
+
+    function updateNotificationBadge() {
+        let badge = document.getElementById('notification-badge');
+        if (notificationCount > 0) {
+            badge.textContent = notificationCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function markAsRead(event, element) {
+        event.stopPropagation(); // Evita que el clic cierre el menú
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.style.background = 'white'; // Quita el resaltado
+            notificationCount--;
+            updateNotificationBadge();
+        }
+    }
+
+    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
+    updateNotificationBadge();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:3050/clubes")
+        .then(response => response.json())
+        .then(data => {
+            let clubesContainer = document.getElementById("clubes-container"); 
+            clubesContainer.innerHTML = ""; // Limpiar contenido previo
+            console.log(data);
+            data.forEach(club => {
+                let clubCard = `
+                    <div class="col-md-6 mb-4">
+                        <div class="card club-banner-container" onclick="goToClubPage('${club._id}')">
+                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.NombreClub}</div>
+                            <img class="card-img-top club-banner" src="${club.Portada}" alt="${club.NombreClub}"/>
+                            <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
+                            <div class="club-footer">
+                                <span>${club.Genero}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                clubesContainer.innerHTML += clubCard;
+            });
+        })
+        .catch(error => console.error("Error al obtener los clubes:", error));
+        fetchUserClubs();
+    });
+
+    function goToClubPage(NombreClub) {
+        sessionStorage.setItem('selectedClub', NombreClub);
+        window.location.href = 'club.html';
+    }
+
+    function toggleFavorite(event, element) {
+        event.stopPropagation();
+        element.classList.toggle("favorited");
+    }
+</script>

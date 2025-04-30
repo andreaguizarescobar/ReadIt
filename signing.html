@@ -61,7 +61,7 @@
             localStorage.setItem('jwtToken', data.token);
             console.log(data.user._id);
             alert(`Bienvenido ${data.user.name}`);
-            window.location.href = "index.html";
+            window.location.href = "main.html";
           } else {
             alert(data.message || 'Error en el inicio de sesión');
           }
@@ -135,6 +135,15 @@
           <i class="fas fa-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
           <input class="form-control ps-5 password-input" id="registerConfirmPassword" placeholder="Confirmar contraseña" type="password" required/>
           <i class="fas fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" style="cursor: pointer;"></i>
+        </div>
+        <!-- Nuevo campo de ubicación oculto -->
+        <div id="locationField" style="display: none;">
+          <label for="associationLocation" class="form-label">Ubicación de la asociación</label>
+          <input type="text" class="form-control" id="associationLocation" placeholder="Ingresa la ubicación" />
+        </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="isAssociation">
+          <label class="form-check-label" for="isAssociation">¿Eres una asociación cultural?</label>
         </div>
         <div style="margin-bottom: 10px;">
           <button class="btn btn-primary w-100" type="submit">Registrarse</button>
@@ -230,7 +239,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         });
-        window.location.href = "index.html";
+        window.location.href = "main.html";
       })
       .catch(err => {
         console.error('Error al iniciar sesión:', err);
@@ -238,5 +247,22 @@
     }
   </script>
 
+  <!-- USUARIO O ASOCIACION-->
+  <script>
+    document.getElementById('isAssociation').addEventListener('change', function() {
+      const nameInput = document.getElementById('registerName');
+      const locationField = document.getElementById('locationField');
+  
+      if (this.checked) {
+        nameInput.placeholder = 'Nombre de la asociación cultural';
+        locationField.style.display = 'block';
+      } else {
+        nameInput.placeholder = 'Nombre de usuario';
+        locationField.style.display = 'none';
+      }
+    });
+  </script>
+  
+  
 </body>
 </html>
