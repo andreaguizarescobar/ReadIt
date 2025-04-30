@@ -160,8 +160,7 @@
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
-                <a href="#">Configuración</a>
-                <a href="#">Cerrar sesión</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
     </div>
@@ -195,6 +194,8 @@
                 const rol = data.role;
                 if (rol === 'none') {
                     const miembroElem = document.getElementById("Miembro");
+                    const votacion = document.getElementById("voteButtons");
+                    votacion.style.display = "none";
                     miembroElem.style.display = "block";
                     miembroElem.classList.remove("btn-primary");
                     miembroElem.classList.add("btn-success");
@@ -235,12 +236,24 @@
                     };
                 } else if (rol === 'admin') {
                     const adminElem = document.getElementById("btn-admin");
+                    const libro = document.getElementById("subirLibro");
+                    const evento = document.getElementById("crearEvento");
+                    const votacion = document.getElementById("crearVotacion");
                     adminElem.style.display = "block";
+                    libro.style.display = "block";
+                    evento.style.display = "block";
+                    votacion.style.display = "block";
                     adminElem.onclick = () => {
                         mostrarModalEditar();
                     };
                 }
             });
+
+            function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
       </script>
 
       <!-- Me gusta -->
@@ -290,7 +303,7 @@
     <section id="libro-curso" >
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="font-weight-bold">Lecturas del club en curso</h3>
-            <button class="btn btn-success" onclick="showModal('modalSubirLibro')">
+            <button class="btn btn-success" onclick="showModal('modalSubirLibro')" id="subirLibro" style="display: none;">
                 <i class="fas fa-plus"></i> Subir libro
             </button>
         </div>
@@ -312,30 +325,12 @@
               </div>
           </div>
       </div>    
-  
-      <div class="container mt-4">
-          <div class="row align-items-center book-card">
-              <div class="col-md-4">
-                  <img alt="Libro 2" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
-              </div>
-              <div class="col-md-8">
-                  <h5>Cien años de soledad</h5>
-                  <p><strong>Autor:</strong> Gabriel García Márquez</p>
-                  <p class="book-description">Historia de la familia Buendía y la ciudad de Macondo.</p>
-                  <p><strong>Inicio:</strong> 15/02/2024</p>
-                  <p><strong>Fin:</strong> 30/04/2024</p>
-                  <a href="discusion.html" class="btn btn-primary btn-sm">
-                    <i class="fas fa-comments"></i> Ir a la discusión
-                  </a>
-              </div>
-          </div>
-      </div> 
   </section>  
 
   <section id="proxima-lectura" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="font-weight-bold">Votaciones del club en curso</h3>
-      <button class="btn btn-success" onclick="showModal('modalCrearVotacion')">
+      <button class="btn btn-success" onclick="showModal('modalCrearVotacion')" id="crearVotacion" style="display: none;">
         <i class="fas fa-plus"></i> Crear votación
       </button>
     </div>
@@ -476,7 +471,7 @@
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="font-weight-bold">Próximos Eventos</h3>
-        <button class="btn btn-success" onclick="showModal('modalCrearEvento')">
+        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
             <i class="fas fa-plus"></i> Crear Evento
         </button>
     </div>
@@ -1058,6 +1053,7 @@ let notificationCount = 3; // Número inicial de notificaciones
   
       currentVotacion.Libro.forEach(libro => {
         const btn = document.createElement('button');
+        btn.classList.add("votaciones");
         btn.textContent = `Votar por "${libro.name}"`;
         btn.onclick = async () => {
           try {
@@ -1104,7 +1100,21 @@ let notificationCount = 3; // Número inicial de notificaciones
   
         if (response.ok) {
           currentVotacion = await response.json();
-          userHasVoted = checkUserVoted(currentVotacion._id);
+
+          // Check if user has voted by calling the new API endpoint
+          const userId = tokenData ? tokenData.id : null;
+          if (userId && currentVotacion && currentVotacion._id) {
+            const voteCheckResponse = await fetch(`http://localhost:3050/votaciones/${currentVotacion._id}/user/${userId}`);
+            if (voteCheckResponse.ok) {
+              const voteCheckData = await voteCheckResponse.json();
+              userHasVoted = voteCheckData.hasVoted;
+            } else {
+              userHasVoted = false;
+            }
+          } else {
+            userHasVoted = false;
+          }
+
           renderChart();
           renderButtons();
         } else if (response.status === 404) {

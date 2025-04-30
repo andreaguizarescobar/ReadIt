@@ -194,3 +194,14 @@ export const removeClubMember = async (userId, clubId) => {
   await user.save();
   return user;
 };
+
+export const addInsigniaToUser = async (userId, insigniaId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (!user.insignias.includes(insigniaId)) {
+    user.insignias.push(insigniaId);
+    await user.save();
+  }
+  return user;
+};

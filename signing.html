@@ -59,6 +59,7 @@
 
           if (response.ok) {
             localStorage.setItem('jwtToken', data.token);
+            console.log(data.user._id);
             alert(`Bienvenido ${data.user.name}`);
             window.location.href = "index.html";
           } else {
@@ -169,10 +170,14 @@
             });
 
             const data = await response.json();
-
+            console.log(data);
             if (response.ok) {
               localStorage.setItem('jwtToken', data.token);
               alert("Verifica tu correo electronico para iniciar sesion");
+              fetch(`http://localhost:3050/usuarios/${data.user._id}/insignia/680e4de94d4e9715973c6ac4/add`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              });
             } else {
               alert(data.error || 'Error en el registro');
             }
@@ -221,6 +226,10 @@
         console.log('Usuario:', data.user);
         localStorage.setItem('jwtToken', data.token);
         alert(`Bienvenido ${data.user.name}`);
+        fetch(`http://localhost:3050/usuarios/${data.user.id}/insignia/680e4de94d4e9715973c6ac4/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        });
         window.location.href = "index.html";
       })
       .catch(err => {

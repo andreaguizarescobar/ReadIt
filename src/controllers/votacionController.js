@@ -45,3 +45,13 @@ export const saveUserVote = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const hasUserVoted = async (req, res) => {
+  try {
+    const { votacionId, userId } = req.params;
+    const voted = await votacionService.hasUserVoted(votacionId, userId);
+    res.status(200).json({ hasVoted: voted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

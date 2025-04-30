@@ -12,4 +12,6 @@ router.get("/club/:clubId/current", votacionController.getCurrentVotacionByClubI
 // New route to save a user's vote
 router.post("/:votacionId/vote", votacionController.saveUserVote);
 
+router.get("/:votacionId/user/:userId", votacionController.hasUserVoted);
+
 export default router;

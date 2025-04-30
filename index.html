@@ -137,6 +137,11 @@
             }
         }
 
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
+
         // Create club card element
         function createClubCard(club) {
             const colDiv = document.createElement('div');
@@ -241,8 +246,7 @@
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
-                <a href="#">Configuración</a>
-                <a href="#">Cerrar sesión</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
     </div>
@@ -326,22 +330,6 @@
         </div>
 
         <div class="row">
-            <div class="col-12 mb-4">
-                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                    <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                    <div class="club-footer">
-                        <span>Género del club / Romántica</span>
-                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-3')"></i>
-                        <div class="options-menu" id="options-menu-3">
-                            <a href="#">Opción 1</a>
-                            <a href="#">Opción 2</a>
-                            <a href="#">Opción 3</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="col-12 mb-4">
                 <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>

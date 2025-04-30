@@ -1,11 +1,6 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
-<<<<<<< HEAD
 import multer from "multer";
-=======
-import { verifyTokenMiddleware } from "../middlewares/authMiddleware.js"; 
-
->>>>>>> cdfe9ab7ba673ba45db2ec1cc8f59616868d623e
 
 const router = express.Router();
 
@@ -39,5 +34,7 @@ router.post("/:userId/club/:clubId/add-admin", userController.addClubAdmin);
 router.get("/:userId/club/:clubId/rol", userController.getUserClubRole);
 
 router.delete("/:userId/club/:clubId/remove-miembro", userController.removeClubMember);
+
+router.post("/:userId/insignia/:insigniaId/add", userController.addInsigniaToUser);
 
 export default router;

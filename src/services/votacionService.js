@@ -51,3 +51,10 @@ export const saveUserVote = async (votacionId, userId, tituloVotado) => {
   await votacion.save();
   return votacion;
 };
+
+export const hasUserVoted = async (votacionId, userId) => {
+  const votacion = await Votacion.findById(votacionId);
+  if (!votacion) throw new Error("Votacion no encontrada");
+
+  return votacion.participantes.some(participanteId => participanteId.toString() === userId);
+};

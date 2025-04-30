@@ -10,7 +10,34 @@
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
-                function showModal(id) {
+        function isTokenExpired(token) {
+            if (!token) return true;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp;
+                if (!exp) return true;
+                const now = Math.floor(Date.now() / 1000);
+                return now >= exp;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function decodeToken(token) {
+            if (!token) return null;
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                return JSON.parse(payloadJson);
+            } catch (e) {
+                console.error('Error decoding token:', e);
+                return null;
+            }
+        }
+
+        let tokenData;
+
+        function showModal(id) {
          document.getElementById(id).style.display = "block";
          }
  
@@ -98,7 +125,6 @@
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
-                <a href="#">Configuración</a>
                 <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
@@ -193,9 +219,10 @@
             if (!token) return;
             const payloadBase64 = token.split('.')[1];
             const payloadJson = atob(payloadBase64);
-            const tokenData = JSON.parse(payloadJson);
+            tokenData = JSON.parse(payloadJson);
             fetchUserInsignias(tokenData.id);
             fetchUserProfile(tokenData.id);
+            fetchUserClubs();
         });
 
         function fetchUserProfile(userId) {
@@ -207,6 +234,7 @@
                     return response.json();
                 })
                 .then(user => {
+                    console.log(user);
                     displayUserProfile(user);
                 })
                 .catch(error => {
@@ -222,10 +250,12 @@
             const portada = document.getElementById('portada');
 
             if (fotoPerfil && user.picture) {
+                console.log(user.picture);
                 fotoPerfil.src = user.picture;
             }
             if (portada && user.portada) {
                 portada.src = user.portada;
+            }
             if (nombreUsuario && user.name) {
                 nombreUsuario.textContent = user.name;
                 titulos.item(0).textContent = user.name;
@@ -250,14 +280,11 @@
                 modalDescripcion.value = user.descripcion;
             }
         }
-    }
 
         function fetchUserInsignias(userId) {
-            console.log(userId);
             fetch(`http://localhost:3050/insignias/user/${userId}`)
                 .then(response => response.json())
                 .then(insignias => {
-                    console.log(insignias);
                     displayInsignias(insignias);
                 })
                 .catch(error => {
@@ -529,6 +556,78 @@
         });
     }
 
+    function createClubCard(club) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6 mb-4';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card club-banner-container';
+            cardDiv.style.cursor = 'pointer';
+            cardDiv.onclick = () => goToClubPage(club._id);
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'card-header bg-warning text-white text-center font-weight-bold';
+            headerDiv.textContent = club.NombreClub;
+
+            const img = document.createElement('img');
+            img.className = 'card-img-top club-banner';
+            img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
+            img.alt = club.NombreClub;
+
+            const favoriteIcon = document.createElement('i');
+            favoriteIcon.className = 'far fa-heart favorite-icon';
+            favoriteIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleFavorite(favoriteIcon);
+            };
+
+            const footerDiv = document.createElement('div');
+            footerDiv.className = 'club-footer';
+
+            const genreSpan = document.createElement('span');
+            genreSpan.textContent = club.Genero || '';
+
+            const optionsIcon = document.createElement('i');
+            optionsIcon.className = 'fas fa-ellipsis-v';
+            optionsIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleOptionsMenu(`options-menu-${club._id}`);
+            };
+
+            const optionsMenu = document.createElement('div');
+            optionsMenu.className = 'options-menu';
+            optionsMenu.id = `options-menu-${club._id}`;
+
+            const option1 = document.createElement('a');
+            option1.href = '#';
+            option1.textContent = 'Opción 1';
+
+            const option2 = document.createElement('a');
+            option2.href = '#';
+            option2.textContent = 'Opción 2';
+
+            const option3 = document.createElement('a');
+            option3.href = '#';
+            option3.textContent = 'Opción 3';
+
+            optionsMenu.appendChild(option1);
+            optionsMenu.appendChild(option2);
+            optionsMenu.appendChild(option3);
+
+            footerDiv.appendChild(genreSpan);
+            footerDiv.appendChild(optionsIcon);
+            footerDiv.appendChild(optionsMenu);
+
+            cardDiv.appendChild(headerDiv);
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(favoriteIcon);
+            cardDiv.appendChild(footerDiv);
+
+            colDiv.appendChild(cardDiv);
+
+            return colDiv;
+        }
+
     function cargarInsignias() {
         const insigniasContainer = document.getElementById("insigniasContainer");
         insigniasContainer.innerHTML = ""; // Limpiar cualquier contenido previo
@@ -577,4 +676,47 @@ let notificationCount = 3; // Número inicial de notificaciones
     // Llamar a la función para asegurarse de que se muestre correctamente al cargar
     updateNotificationBadge();
     
+    function fetchUserClubs() {
+            fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayUserClubs(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user clubs:', error);
+                });
+        }
+
+    function displayUserClubs(data) {
+            const misClubesSection = document.getElementById('mis-clubes');
+            const container = misClubesSection.querySelector('.row');
+            container.innerHTML = '';
+
+            // Admin clubs
+            if (data.adminClubs && data.adminClubs.length > 0) {
+                const adminHeader = document.createElement('h3');
+                adminHeader.textContent = 'Clubes donde eres administrador';
+                adminHeader.classList.add('w-100', 'mb-3');
+                container.appendChild(adminHeader);
+
+                data.adminClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+
+            // Member clubs
+            if (data.memberClubs && data.memberClubs.length > 0) {
+                const memberHeader = document.createElement('h3');
+                memberHeader.textContent = 'Clubes donde eres miembro';
+                memberHeader.classList.add('w-100', 'mt-4', 'mb-3');
+                container.appendChild(memberHeader);
+
+                data.memberClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+        }
+
 </script>
