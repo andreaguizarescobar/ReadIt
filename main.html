@@ -52,11 +52,13 @@
             document.getElementById('inicio').style.display = 'none';
             document.getElementById('mis-libros').style.display = 'none';
             document.getElementById('mis-clubes').style.display = 'none';
+            document.getElementById('seccionEventos').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
 
             document.getElementById('tab-inicio').classList.remove('active-tab');
             document.getElementById('tab-mis-libros').classList.remove('active-tab');
             document.getElementById('tab-mis-clubes').classList.remove('active-tab');
+            document.getElementById('tab-eventos').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
         }
 
@@ -217,11 +219,13 @@
     </script>
 </head>
 <body class="bg-light">
-<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
-        <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
-    </div>
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 80px;">
+    <a href="main.html">
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+            <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
+        </div>
+    </a>  
     <div class="d-flex align-items-center">
         <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
         <button class="btn btn-dark rounded-right" >
@@ -265,6 +269,9 @@
         </li>
         <li class="nav-item">
             <a id="tab-mis-clubes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Mis clubes</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos</a>
         </li>
     </ul>
 </nav>
@@ -348,6 +355,23 @@
             </div>
         </div>
     </section>
+
+    
+
+
+  <section id="seccionEventos" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="font-weight-bold">Eventos por asociaciones culturales</h3>
+        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
+            <i class="fas fa-plus"></i> Crear Evento
+        </button>
+    </div>
+    <div id="eventos">
+
+    </div>
+             
+    </section>
+
 </main>
 
 <!-- Modal Subir Libro -->
@@ -426,6 +450,75 @@
     </div>
 </div>
 
+
+<!-- Modal Crear Evento -->
+<div class="modal" id="modalCrearEvento" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear evento</h5>
+                <button type="button" class="close" onclick="hideModal('modalCrearEvento')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <form>
+                    <div class="form-group">
+                        <label for="nombreEvento">Nombre del evento</label>
+                        <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento">
+                    </div>
+                    <!-- Descripción del evento -->
+                    <div class="form-group">
+                      <label for="descripcionEvento">Descripción del evento</label>
+                      <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaEvento">Fecha del evento</label>
+                        <input type="date" class="form-control" id="fechaEvento">
+                    </div>
+  
+                    <div class="form-group">
+                        <label for="horaEvento">Hora del evento</label>
+                        <input type="time" class="form-control" id="horaEvento">
+                    </div>
+  
+                    <!-- Tipo de evento -->
+                    <div class="form-group">
+                        <label>Tipo de evento</label>
+                        <div>
+                            <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()">
+                            <label for="virtual">Virtual</label>
+                            
+                            <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()">
+                            <label for="presencial">Presencial</label>
+                        </div>
+                    </div>
+  
+                    <!-- Campo dinámico: Lugar o Link -->
+                    <div class="form-group">
+                        <label id="labelLugar">Link a videollamada</label>
+                        <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada">
+                    </div>
+  
+                    <div class="form-group">
+                        <label for="portadaEvento">Portada</label>
+                        <input type="file" class="form-control-file" id="portadaEvento">
+                    </div>
+                </form>
+            </div>
+  
+            <!-- Fijar el footer para que siempre se vea -->
+            <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10;">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearEvento')">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnCrearEvento">Crear evento</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+  
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
