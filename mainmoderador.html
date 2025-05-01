@@ -1,0 +1,510 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt - Administrador</title>
+    <link rel="icon" href="images/logo.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('reportes').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-inicio').classList.remove('active-tab');
+            document.getElementById('tab-reportes').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleNotificationMenu() {
+            let menu = document.getElementById('notification-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
+
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
+        <h1 class="text-dark font-weight-bold ml-2">Read-It - Administrador</h1>
+    </div>
+    <div class="d-flex align-items-center">
+        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
+        <button class="btn btn-dark rounded-right" >
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
+            <i class="fas fa-bell text-dark mr-3" style="font-size: 1.5rem;"></i>
+            <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -5px; right: 5px; display: none;">3</span>
+            
+            <div id="notification-menu" class="notification-menu">
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
+                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
+            </div>
+        </div>        
+    
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="myprofile.html">Mi perfil</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+<div class="cover-image">
+<div class="bg-cover bg-center" style="background-image: url('images/portada.png'); height: 200px;"></div>
+</div>
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3">
+        <li class="nav-item">
+            <a id="tab-inicio" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('inicio', 'tab-inicio')">Inicio</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-reportes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('reportes', 'tab-reportes')">Reportes</a>
+        </li>
+    </ul>
+</nav>
+<main class="p-4">
+    <h2 class="font-weight-bold mb-3">¡Bienvenido Administrador!</h2>
+    <section id="inicio">
+
+        <!-- Tabla de usuarios -->
+        <div class="mb-4">
+            <h4 class="font-weight-bold">Usuarios registrados en la plataforma</h4>
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre de usuario</th>
+                        <th>Correo electrónico</th>
+                        <th>Tipo de Usuario</th>
+                        <th>Administrador</tr>
+                    </tr>
+                </thead>
+                <tbody id="usuarios-table-body">
+                    <tr data-original-role="Lector">
+                        <td>Juan Pérez</td>
+                        <td>juan@example.com</td>
+                        <td><span class="badge badge-lector">Lector</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="asignarAdministrador(this)">Dar derechos de Administrador</button>
+                        </td>
+                    </tr>
+                    <tr data-original-role="Asociación">
+                        <td>Club Lectura XYZ</td>
+                        <td>clubxyz@example.com</td>
+                        <td><span class="badge badge-asociacion">Asociación</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="asignarAdministrador(this)">Dar derechos de Administrador</button>
+                        </td>
+                    </tr>
+                    <tr data-original-role="Administrador">
+                        <td>María López</td>
+                        <td>maria@example.com</td>
+                        <td><span class="badge badge-administrador">Administrador</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="quitarAdministrador(this)">Quitar derechos de Administrador</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+    <script>
+        function asignarAdministrador(button) {
+            const row = button.closest('tr');
+            const tipoCell = row.cells[2];
+            tipoCell.innerHTML = '<span class="badge badge-administrador">Administrador</span>';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-danger');
+            button.innerText = 'Quitar derechos de administrador';
+            button.onclick = () => quitarAdministrador(button);
+        }
+    
+        function quitarAdministrador(button) {
+            const row = button.closest('tr');
+            const tipoCell = row.cells[2];
+            const originalRole = row.getAttribute('data-original-role');
+    
+            // Establecer el texto y clase del badge original
+            if (originalRole === "Lector") {
+                tipoCell.innerHTML = '<span class="badge badge-lector">Lector</span>';
+            } else if (originalRole === "Asociación") {
+                tipoCell.innerHTML = '<span class="badge badge-asociacion">Asociación</span>';
+            } else {
+                tipoCell.innerHTML = '<span class="badge badge-lector">Lector</span>';
+            }
+    
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-primary');
+            button.innerText = 'Dar derechos de administrador';
+            button.onclick = () => asignarAdministrador(button);
+        }
+    </script>
+    
+    </section>
+<!-- Sección de Reportes -->
+<section id="reportes" style="display: none;">
+    <h4 class="font-weight-bold mb-3">Listado de reportes</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Usuario reportado</th>
+                    <th>Motivo</th>
+                    <th>Comentario realizado</th> <!-- NUEVA COLUMNA -->
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Sanción aplicada</th>
+                    <th>Acción</th>
+                    <th>Quitar sanción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-usuario="juan123">
+                    <td>juan123</td>
+                    <td>Lenguaje ofensivo en comentarios</td>
+                    <td>"Eres un inútil, nadie te pidió tu opinión"</td> <!-- Ejemplo -->
+                    <td>2025-04-28</td>
+                    <td class="estado"><span class="badge badge-warning">Pendiente</span></td>
+                    <td class="sancion">Sin aplicar</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="abrirModalSancion('juan123')">Resolver</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="quitarSancion('juan123')" disabled>Quitar sanción</button>
+                    </td>
+                </tr>
+                <tr data-usuario="maria_love_books">
+                    <td>maria_love_books</td>
+                    <td>Spam en foro</td>
+                    <td>"Visita mi página para ganar dinero fácil: spamlink.com"</td> <!-- Ejemplo -->
+                    <td>2025-04-30</td>
+                    <td class="estado"><span class="badge badge-warning">Pendiente</span></td>
+                    <td class="sancion">Sin aplicar</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="abrirModalSancion('maria_love_books')">Resolver</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="quitarSancion('maria_love_books')" disabled>Quitar sanción</button>
+                    </td>
+                </tr>
+                <tr data-usuario="club_libros_mex">
+                    <td>club_libros_mex</td>
+                    <td>Contenido inapropiado</td>
+                    <td>"Miren esta imagen fuera de lugar que subí al grupo"</td> <!-- Ejemplo -->
+                    <td>2025-04-27</td>
+                    <td class="estado"><span class="badge badge-warning">Pendiente</span></td>
+                    <td class="sancion">Sin aplicar</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="abrirModalSancion('club_libros_mex')">Resolver</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="quitarSancion('club_libros_mex')" disabled>Quitar sanción</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Modal tipo pestaña lateral -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="modalSancion" aria-labelledby="modalSancionLabel">
+    <div class="offcanvas-header">
+        <h5 id="modalSancionLabel">Aplicar sanción a <span id="usuarioReportado"></span></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Seleccionar sanción</label>
+                <select class="form-select" id="tipoSancion">
+                    <option value="">-- Elegir una opción --</option>
+                    <option value="5">Suspensión de 5 días</option>
+                    <option value="10">Suspensión de 10 días</option>
+                    <option value="ban">Baneo definitivo</option>
+                    <option value="unban">Quitar sanción</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-success" onclick="aplicarSancion()">Aplicar</button>
+        </form>
+    </div>
+</div>
+<!-- Script para manejar sanciones -->
+<script>
+    let usuarioSeleccionado = '';
+
+    function abrirModalSancion(usuario) {
+        usuarioSeleccionado = usuario;
+        document.getElementById('usuarioReportado').innerText = usuario;
+
+        const fila = document.querySelector(`tr[data-usuario="${usuario}"]`);
+        const sancionActual = fila?.querySelector('.sancion')?.innerText.trim();
+
+        const select = document.getElementById('tipoSancion');
+        select.innerHTML = `
+            <option value="">-- Elegir una opción --</option>
+            <option value="5">Suspensión de 5 días</option>
+            <option value="10">Suspensión de 10 días</option>
+            <option value="ban">Baneo definitivo</option>
+        `;
+
+        if (sancionActual === 'Baneo definitivo' || sancionActual.includes('Suspensión')) {
+            const optionUnban = document.createElement('option');
+            optionUnban.value = 'unban';
+            optionUnban.text = 'Quitar sanción';
+            select.appendChild(optionUnban);
+        }
+
+        const modal = new bootstrap.Offcanvas(document.getElementById('modalSancion'));
+        modal.show();
+    }
+
+    function aplicarSancion() {
+        const sancion = document.getElementById('tipoSancion').value;
+        if (!sancion) {
+            alert('Selecciona una sanción válida.');
+            return;
+        }
+
+        let textoSancion = '';
+        switch (sancion) {
+            case '5':
+                textoSancion = 'Suspensión de 5 días';
+                break;
+            case '10':
+                textoSancion = 'Suspensión de 10 días';
+                break;
+            case 'ban':
+                textoSancion = 'Baneo definitivo';
+                break;
+            case 'unban':
+                textoSancion = 'Resuelto';
+                break;
+        }
+
+        const fila = document.querySelector(`tr[data-usuario="${usuarioSeleccionado}"]`);
+        if (fila) {
+            fila.querySelector('.sancion').innerText = textoSancion;
+
+            if (sancion === 'unban') {
+                fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+                fila.querySelector('button.btn-danger').disabled = true;
+            } else {
+                fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+                const btnQuitar = fila.querySelector('button.btn-danger');
+                btnQuitar.disabled = false;
+            }
+        }
+
+        alert(`Sanción aplicada a ${usuarioSeleccionado}: ${textoSancion}`);
+
+        const modal = bootstrap.Offcanvas.getInstance(document.getElementById('modalSancion'));
+        modal.hide();
+    }
+
+    function quitarSancion(usuario) {
+        const fila = document.querySelector(`tr[data-usuario="${usuario}"]`);
+        if (!fila) return;
+
+        fila.querySelector('.sancion').innerText = 'Resuelto';
+        fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+
+        const btn = fila.querySelector('button.btn-danger');
+        btn.disabled = true;
+
+        alert(`Sanción quitada para ${usuario}`);
+    }
+</script>
+
+</main>
+
+ 
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+    <p class="mb-1">
+        📚 contactoreadit@gmail.com | 
+        <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
+        © 2025 Read-it
+        </p>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div id="modal">
+    <div id="modal-content">
+    <h2>Sobre el Equipo</h2>
+    <img src="images/logo.png" style="height: 90px;">
+    <p>Somos Read-it, un equipo apasionado por compartir el amor por la lectura. 📚✨</p>
+    <div class="row my-5">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/andrea.png" class="rounded-circle mb-3" width="100" height="100" alt="Andrea Escobar">
+                    <h3 class="font-weight-bold">Andrea Escobar</h3>
+                    <p class="font-weight-bold mb-0">ProductOwner</p>
+                    <p class="text-muted">Desarrollo Frontend</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/erik.png" class="rounded-circle mb-3" width="100" height="100" alt="Erik Moreno">
+                    <h3 class="font-weight-bold">Erik Moreno</h3>
+                    <p class="font-weight-bold mb-0">ScrumMaster</p>
+                    <p class="text-muted">Desarrollo Backend.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="cerrar-modal">Cerrar</button>
+  </div>
+</div>
+
+<script>
+const modal = document.getElementById('modal');
+const acercaLink = document.getElementById('acerca-link');
+const cerrarModal = document.getElementById('cerrar-modal');
+
+acercaLink.addEventListener('click', function() {
+  modal.style.display = 'flex';
+});
+
+cerrarModal.addEventListener('click', function() {
+  modal.style.display = 'none';
+});
+
+// También cerrar si hacen clic fuera del contenido
+window.addEventListener('click', function(e) {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+
+<script>
+let notificationCount = 3; // Número inicial de notificaciones
+
+    function updateNotificationBadge() {
+        let badge = document.getElementById('notification-badge');
+        if (notificationCount > 0) {
+            badge.textContent = notificationCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function markAsRead(event, element) {
+        event.stopPropagation(); // Evita que el clic cierre el menú
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.style.background = 'white'; // Quita el resaltado
+            notificationCount--;
+            updateNotificationBadge();
+        }
+    }
+
+    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
+    updateNotificationBadge();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:3050/clubes")
+        .then(response => response.json())
+        .then(data => {
+            let clubesContainer = document.getElementById("clubes-container"); 
+            clubesContainer.innerHTML = ""; // Limpiar contenido previo
+            console.log(data);
+            data.forEach(club => {
+                let clubCard = `
+                    <div class="col-md-6 mb-4">
+                        <div class="card club-banner-container" onclick="goToClubPage('${club._id}')">
+                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.NombreClub}</div>
+                            <img class="card-img-top club-banner" src="${club.Portada}" alt="${club.NombreClub}"/>
+                            <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
+                            <div class="club-footer">
+                                <span>${club.Genero}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                clubesContainer.innerHTML += clubCard;
+            });
+        })
+        .catch(error => console.error("Error al obtener los clubes:", error));
+        fetchUserClubs();
+    });
+
+    function goToClubPage(NombreClub) {
+        sessionStorage.setItem('selectedClub', NombreClub);
+        window.location.href = 'club.html';
+    }
+
+    function toggleFavorite(event, element) {
+        event.stopPropagation();
+        element.classList.toggle("favorited");
+    }
+</script>

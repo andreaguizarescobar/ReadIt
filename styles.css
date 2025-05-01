@@ -1,6 +1,8 @@
 body {
     font-family: 'Roboto', sans-serif;
+    
 }
+
 
 header {
     position: fixed;
@@ -297,7 +299,7 @@ header {
     color: #007bff;
   }
 
-  #colores-fondocomentarios
+  /*colores-fondocomentarios*/
 
   .fondo-izquierda {
     background-color: #e0f7fa; /* color que quieras */
@@ -306,3 +308,62 @@ header {
   .fondo-derecha {
     background-color: #ffe0b2; /* otro color */
   }
+
+  /* Estilos del modal */
+  #modal{
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    position: fixed; /* no absolute */
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 300px;
+    z-index: 1050;
+  }
+  
+
+#modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 100vh;
+  max-height: 80vh; /* 🔥 Limitamos altura del contenido */
+  overflow-y: auto; /* 🔥 Scroll vertical si se pasa */
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón dentro del modal */
+#modal button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #4FC3F7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+/*Tipo de usuario*/
+.badge {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+  border: 2px solid;
+}
+.badge-lector {
+  background-color: #e8f4fd;
+  color: #007bff;
+  border-color: #007bff;
+}
+.badge-asociacion {
+  background-color: #fff8e1;
+  color: #ff9800;
+  border-color: #ff9800;
+}
+.badge-administrador {
+  background-color: #e8f5e9;
+  color: #388e3c;
+  border-color: #388e3c;
+}
