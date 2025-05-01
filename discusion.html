@@ -120,8 +120,10 @@
                             <p class="mb-1">${comentario.comentario}</p>
                         </div>
                         <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
-                            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount}</span></span>
-                            <span class="me-3" onclick="toggleReplyInput(this)" class="responder">Responder</span>
+                            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount} .</span></span>
+                            <span class="me-3" onclick="toggleReplyInput(this)" class="responder"> Responder .</span>
+                            <span class="me-3 text-danger" onclick="openReportModal('${comentario.id}')"> Reportar .</span>
+
                             <span>${commentTimeAgo}</span>
                         </div>
                         <!-- Input de respuesta inicialmente oculto -->
@@ -352,6 +354,7 @@
         // Get comentarioId and respuestaId from data attributes
         comentarioId = replyDiv.getAttribute('data-comentario-id');
         respuestaId = replyDiv.getAttribute('data-respuesta-id');
+        
       }
 
       // If no IDs found, fallback to visual toggle only
@@ -474,7 +477,76 @@
         alert(error.message);
       }
     }
+
+    function openReportModal(comentarioId) {
+    document.getElementById('comentarioAReportarId').value = comentarioId;
+    $('#reportModal').modal('show');
+}
+
+async function enviarReporte() {
+    const comentarioId = document.getElementById('comentarioAReportarId').value;
+    const motivo = document.getElementById('motivoReporte').value;
+
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        alert('Debes iniciar sesión para reportar comentarios.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/reportar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ motivo })
+        });
+
+        if (!response.ok) throw new Error('Error al enviar el reporte');
+
+        alert('Comentario reportado correctamente.');
+        $('#reportModal').modal('hide');
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
   </script>
+
+<!-- Modal de Reporte -->
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">Reportar Comentario</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Selecciona un motivo:</p>
+        <select id="motivoReporte" class="form-control">
+          <option value="spam">Spam o publicidad no solicitada</option>
+          <option value="ofensivo">Contenido ofensivo o abusivo</option>
+          <option value="acoso">Acoso o bullying</option>
+          <option value="acoso">Conteniddo explícito o inapropiado</option>
+          <option value="acoso">Violencia o incitación al odio</option>
+          <option value="acoso">Información falsa o engañosa</option>
+          <option value="acoso">Contenido ilegal</option>
+        </select>
+        <input type="hidden" id="comentarioAReportarId" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" onclick="enviarReporte()">Enviar Reporte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
