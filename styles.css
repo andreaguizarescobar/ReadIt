@@ -219,6 +219,34 @@ header {
     opacity: 1;
   }
   
+  .recomendados {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .recomendados .tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px;
+    position: relative;
+    z-index: 1;
+    bottom: 80%; /* encima de la imagen */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .recomendados:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+
 #Gráficodevotaciones
 .card {
     width: 500px;
@@ -366,4 +394,80 @@ header {
   background-color: #e8f5e9;
   color: #388e3c;
   border-color: #388e3c;
+}
+
+.book { 
+  cursor: pointer; 
+  margin: 10px; 
+  display: inline-block; 
+  text-align: center; 
+}
+
+.book img { 
+  height: 150px; 
+}
+
+.modalLibro {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background-color: rgba(0,0,0,0.6); 
+  justify-content: center; 
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-contentLibro {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90%;
+  max-height: 90%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  text-align: center;
+  position: relative;
+}
+.modal-contentLibro img { 
+  max-height: 200px;
+  margin: 10px 0; 
+}
+.btnLibro { margin: 10px; 
+  margin: 10px 5px;
+  padding: 10px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+#modalDesc {
+  margin-top: 10px;
+  overflow-y: auto;
+  max-height: 30%;
+}
+
+.btn-google {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.btn-google:hover {
+  background-color: #0c56c1;
+  color: white;
+}
+
+.btn-amazon {
+  background-color: #ff9900;
+  color: white;
+}
+
+.btn-amazon:hover {
+  background-color: #e68a00;
+  color: white;
 }

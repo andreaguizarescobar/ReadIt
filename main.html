@@ -44,6 +44,7 @@
                 window.location.href = 'signing.html';
                 return;
             }
+            obtenerBestsellers();
             tokenData = decodeToken(token);
         });
     </script>
@@ -271,15 +272,7 @@
 <main class="p-4">
     <section id="inicio">
         <h2 class="font-weight-bold mb-3">Libros recomendados</h2>
-        <div class="d-flex overflow-auto">
-            <img alt="Libro 1" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
-            <img alt="Libro 2" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/-MlJFze4J28zqKbytD-EtnobazKlUqxEXugpRUanaGo.jpg"/>
-            <img alt="Libro 3" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/3TEvXRt734nnqvXkREi3-S9xW401APmoaJaX5Yqwgd0.jpg"/>
-            <img alt="Libro 4" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/X5UCwXSBm-goP17foN-UsU3sRdzzphjIVH8XD4PsqsE.jpg"/>
-            <img alt="Libro 5" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/wKD-I-Tv-d6Wfri52zms1DSQOcGI1f62QXxdnzvcdFc.jpg"/>
-            <img alt="Libro 6" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/1931NbGur3HgPBlgLXZkHOuNifRY8d56sJGNNH6Mo-U.jpg"/>
-            <img alt="Libro 7" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/0tayYbgWm1QoCyAcqSsVBbKlCTvIUWKZkBSayzTBTxc.jpg"/>
-            <img alt="Libro 8" class="img-thumbnail mr-2 book-cover" src="https://storage.googleapis.com/a1aa/image/pALbT1W2aC95_XdNxxXQifsvcljsItAs5oWICxrk-Lg.jpg"/>
+        <div class="d-flex overflow-auto" id="librosR">
         </div>
         <section class="mt-5">
             <h2 class="font-weight-bold mb-3">Clubes recomendados</h2>
@@ -426,6 +419,17 @@
     </div>
 </div>
 
+<div id="modalLibro" class="modalLibro">
+    <div class="modal-contentLibro" id="modalContentLibro">
+      <h2 id="modalTitle"></h2>
+      <p id="modalAuthor"></p>
+      <img id="modalImage" src="" alt="">
+      <div id="modalButtons"></div>
+      <p id="modalDesc"></p>
+      <button onclick="hideModal('modalLibro')" class="btnLibro">Cerrar</button>
+    </div>
+  </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -551,4 +555,56 @@ let notificationCount = 3; // Número inicial de notificaciones
         event.stopPropagation();
         element.classList.toggle("favorited");
     }
+
+    const NYT_API_KEY = 'aHyelBXKWMvdQuunByPuHEgCe2K8qrU0'; // Reemplaza con tu API Key
+    const NYT_LIST = 'hardcover-fiction'; // Puedes cambiar la lista
+
+    async function obtenerBestsellers() {
+      const res = await fetch(`https://api.nytimes.com/svc/books/v3/lists/current/${NYT_LIST}.json?api-key=${NYT_API_KEY}`);
+      const data = await res.json();
+      const libros = data.results.books;
+      const contenedor = document.getElementById('librosR');
+
+      libros.forEach(libro => {
+        const div = document.createElement('div');
+        div.classList.add('book');
+        div.classList.add('recomendados');
+        div.innerHTML = `<img src="${libro.book_image}" alt="${libro.title}">
+        <span class="tooltip">${libro.title}</span>`;
+        div.onclick = () => mostrarDetalles(libro);
+        contenedor.appendChild(div);
+      });
+    }
+
+    async function mostrarDetalles(libroNYT) {
+      const modal = document.getElementById('modalLibro');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalAuthor = document.getElementById('modalAuthor');
+      const modalImage = document.getElementById('modalImage');
+      const modalDesc = document.getElementById('modalDesc');
+      const modalButtons = document.getElementById('modalButtons');
+
+      const query = `${libroNYT.title} ${libroNYT.author}`;
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(libroNYT.title)}+inauthor:${encodeURIComponent(libroNYT.author)}&maxResults=1`);
+      const data = await res.json();
+      const libroGoogle = data.items?.[0]?.volumeInfo;
+
+      modalTitle.textContent = libroNYT.title;
+      modalAuthor.textContent = libroNYT.author;
+      modalImage.src = libroGoogle?.imageLinks?.thumbnail || libroNYT.book_image;
+      modalDesc.textContent = libroGoogle?.description || 'Descripción no disponible';
+
+      modalButtons.innerHTML = `
+        ${libroGoogle?.previewLink ? `
+            <a href="${libroGoogle.previewLink}" target="_blank" class="btn btn-google">
+            Vista previa
+            </a>` : ''}
+        <a href="${libroNYT.amazon_product_url}" target="_blank" class="btn btn-amazon">
+            Comprar en Amazon
+        </a>
+        `;
+
+      modal.style.display = 'flex';
+    }
+
 </script>

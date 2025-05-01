@@ -64,7 +64,6 @@ export const register = async(data) =>{
 import { generateToken, verifyToken } from "../utils/jwtUtils.js";
 
 async function sendVerificationEmail(email, name, userId) {
-  // Create transporter using environment variables for SMTP
     let transporter = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
