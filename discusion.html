@@ -242,11 +242,7 @@
     <div class="row min-vh-100">
       
       <!-- Sección Izquierda -->
-<<<<<<< HEAD
       <div class="col-md-6 d-flex flex-column bg-light overflow-auto ">
-=======
-    <div class="col-md-6 d-flex flex-column bg-light overflow-auto ">
->>>>>>> cdfe9ab7ba673ba45db2ec1cc8f59616868d623e
         <div class="p-1">
         <div style="height: 100vh; width: 100vh; overflow: hidden; background-color: #ffe0b2; ">
             <iframe
@@ -279,7 +275,6 @@
   <script>
     const likedUsers = new Map();
   
-<<<<<<< HEAD
         async function addComment() {
             const commentText = document.getElementById("newComment").value.trim();
             if (commentText === "") return;
@@ -335,48 +330,6 @@
                 alert(error.message);
             }
         }
-=======
-    function addComment() {
-      const commentText = document.getElementById("newComment").value.trim();
-      if (commentText === "") return;
-  
-      const commentSection = document.getElementById("commentSection");
-  
-      const commentDiv = document.createElement("div");
-      commentDiv.classList.add("d-flex", "mb-3");
-  
-      // Nombre de usuario fijo por ahora (puedes hacerlo dinámico)
-      const userName = "Usuario";
-  
-      // Avatar de usuario simulado
-      const avatarHTML = `
-        <img src="https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}"
-             class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px; " alt="avatar;">
-      `;
-  
-      const contentHTML = `
-        <div class="flex-grow-1">
-          <div class="bg-light px-3 py-2 rounded-3">
-            <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
-            <p class="mb-1">${commentText}</p>
-          </div>
-          <div class="text-muted small mt-1 ms-1">
-            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">0</span></span>
-            <span class="me-3" onclick="toggleReplyInput(this)" class="responder">Responder</span>
-            <span>1 min</span>
-          </div>
-          <!-- Input de respuesta inicialmente oculto -->
-          <input type="text" class="form-control form-control-sm mt-2 mb-1 reply-input" placeholder="Responder..." style="display: none;" />
-          <button class="btn btn-sm btn-outline-secondary" onclick="replyToComment(this)" style="display: none;">Responder</button>
-          <div class="replies mt-2 ps-3 border-start"></div>
-        </div>
-      `;
-  
-      commentDiv.innerHTML = avatarHTML + contentHTML;
-      commentSection.appendChild(commentDiv);
-      document.getElementById("newComment").value = "";
-    }
->>>>>>> cdfe9ab7ba673ba45db2ec1cc8f59616868d623e
   
     // Función para activar o desactivar el "Me gusta"
     async function toggleLike(span) {

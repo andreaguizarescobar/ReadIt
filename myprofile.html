@@ -368,55 +368,55 @@
   </div>
 
 <script>
-  async function actualizarUsuario() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-      alert('Debe iniciar sesión para editar el perfil.');
-      return;
-    }
-    const payloadBase64 = token.split('.')[1];
-    const payloadJson = atob(payloadBase64);
-    const tokenData = JSON.parse(payloadJson);
-    const userId = tokenData.id;
-
-    const nombre = document.getElementById('nombre').value.trim();
-    const descripcion = document.getElementById('descripcionModal').value.trim();
-    const fotoPerfilInput = document.getElementById('fotoPerfilM').files[0];
-    const portadaUsuarioInput = document.getElementById('portadaUsuario').files[0];
-
-    const formData = new FormData();
-    formData.append('name', nombre);
-    formData.append('descripcion', descripcion);
-    if (fotoPerfilInput) {
-      formData.append('fotoPerfil', fotoPerfilInput);
-    }
-    if (portadaUsuarioInput) {
-      formData.append('portadaUsuario', portadaUsuarioInput);
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3050/usuarios/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar el perfil');
-      }
-
-      const updatedUser = await response.json();
-      alert('Perfil actualizado correctamente');
-      // Optionally update the profile display with new data
-      displayUserProfile(updatedUser);
-      hideModal('modalEditarPerfil')
-
-    } catch (error) {
-      alert(error.message);
-    }
-  }
+ async function actualizarUsuario() {
+     const token = localStorage.getItem('jwtToken');
+     if (!token) {
+       alert('Debe iniciar sesión para editar el perfil.');
+       return;
+     }
+     const payloadBase64 = token.split('.')[1];
+     const payloadJson = atob(payloadBase64);
+     const tokenData = JSON.parse(payloadJson);
+     const userId = tokenData.id;
+ 
+     const nombre = document.getElementById('nombre').value.trim();
+     const descripcion = document.getElementById('descripcionModal').value.trim();
+     const fotoPerfilInput = document.getElementById('fotoPerfilM').files[0];
+     const portadaUsuarioInput = document.getElementById('portadaUsuario').files[0];
+ 
+     const formData = new FormData();
+     formData.append('name', nombre);
+     formData.append('descripcion', descripcion);
+     if (fotoPerfilInput) {
+       formData.append('fotoPerfil', fotoPerfilInput);
+     }
+     if (portadaUsuarioInput) {
+       formData.append('portadaUsuario', portadaUsuarioInput);
+     }
+ 
+     try {
+       const response = await fetch(`http://localhost:3050/usuarios/${userId}`, {
+         method: 'PUT',
+         headers: {
+           'Authorization': `Bearer ${token}`
+         },
+         body: formData
+       });
+ 
+       if (!response.ok) {
+         throw new Error('Error al actualizar el perfil');
+       }
+ 
+       const updatedUser = await response.json();
+       alert('Perfil actualizado correctamente');
+       // Optionally update the profile display with new data
+       displayUserProfile(updatedUser);
+       hideModal('modalEditarPerfil')
+ 
+     } catch (error) {
+       alert(error.message);
+     }
+   }
 </script>
   
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -470,64 +470,6 @@
         document.getElementById("modalEditarPerfil").style.display = "none";
     }
 
-    function actualizarUsuario() {
-        const nombre = document.getElementById("nombre").value;
-        const descripcion = document.getElementById("descripcion").value;
-        const portadaInput = document.getElementById("portadaUsuario");
-        const fotoPerfilInput = document.getElementById("fotoPerfil");
-
-        let portadaBase64 = usuarioActual.Portada;
-        let fotoPerfilBase64 = usuarioActual.fotoperfil;
-
-        // Si se seleccionaron nuevos archivos de imagen, leerlos y convertirlos a Base64
-        if (portadaInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.readAsDataURL(portadaInput.files[0]);
-            reader.onload = function () {
-                portadaBase64 = reader.result;
-                enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
-            };
-        }
-
-        if (fotoPerfilInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.readAsDataURL(fotoPerfilInput.files[0]);
-            reader.onload = function () {
-                fotoPerfilBase64 = reader.result;
-                enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
-            };
-        }
-
-        // Si no hay nuevos archivos, se usa la información actual
-        if (portadaInput.files.length === 0 && fotoPerfilInput.files.length === 0) {
-            enviarActualizacion(nombre, descripcion, portadaBase64, fotoPerfilBase64);
-        }
-    }
-
-    function enviarActualizacion(nombre, descripcion, portada, fotoPerfil) {
-        const usuarioActualizado = {
-            "NombreUsuario": nombre,
-            "Descripcion": descripcion,
-            "Portada": portada,
-            "FotoPerfil": fotoPerfil
-        };
-
-        fetch(`http://localhost:3050/usuarios/${encodeURIComponent(nombreUsuario)}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(usuarioActualizado)
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert("Perfil actualizado exitosamente");
-            cerrarModalEditar();
-            location.reload(); // Recargar la página para ver los cambios
-        })
-        .catch(error => {
-            console.error("Error al actualizar el perfil:", error);
-            alert("Hubo un error al actualizar el perfil");
-        });
-    }
 
     function cargarClubes() {
         const clubesContainer = document.getElementById("clubesContainer");
