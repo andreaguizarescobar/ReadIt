@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
   picture: {
     type: String,
   },
+  tipo: String,
   descripcion: {
     type: String,
     default: "Hola!, Me gusta leer",

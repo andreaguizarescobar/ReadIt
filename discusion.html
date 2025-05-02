@@ -92,51 +92,78 @@
             return "Justo ahora";
         }
 
-        function renderComments(comentarios) {
-            const commentSection = document.getElementById('commentSection');
-            commentSection.innerHTML = ''; // Clear existing comments
+function renderComments(comentarios) {
+    const commentSection = document.getElementById('commentSection');
+    commentSection.innerHTML = ''; // Clear existing comments
 
-            comentarios.comentarios.forEach(comentario => {
-                console.log(comentario);
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('d-flex', 'mb-3');
+    comentarios.comentarios.forEach(comentario => {
+        console.log(comentario);
+        const commentDiv = document.createElement('div');
+        commentDiv.classList.add('d-flex', 'mb-3');
+        commentDiv.setAttribute('data-comentario-id', comentario._id || comentario.id);
 
-                // Avatar de usuario simulado
-                const avatarURL = (comentario.User && comentario.User.length > 0 && comentario.User[0].picture) ? comentario.User[0].picture : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
-                const avatarHTML = `
-                    <img src="${avatarURL}"
-                         class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
-                `;
+        // Avatar de usuario simulado
+        const avatarURL = (comentario.User && comentario.User.length > 0 && comentario.User[0].picture) ? comentario.User[0].picture : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
+        const avatarHTML = `
+            <img src="${avatarURL}"
+                 class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
+        `;
 
-                const userName = (comentario.User && comentario.User.length > 0 && comentario.User[0].name) ? comentario.User[0].name : 'Usuario';
-                const commentTimeAgo = timeAgo(comentario.fecha);
-                const likesCount = comentario.likes || 0;
-                const repliesHTML = renderReplies(comentario.respuestas);
+        const userName = (comentario.User && comentario.User.length > 0 && comentario.User[0].name) ? comentario.User[0].name : 'Usuario';
+        const commentTimeAgo = timeAgo(comentario.fecha);
+        const likesCount = comentario.likes || 0;
+        const repliesHTML = renderReplies(comentario.respuestas, comentario._id || comentario.id);
 
-                const contentHTML = `
-                    <div class="flex-grow-1">
-                        <div class="bg-light px-3 py-2 rounded-3">
-                            <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
-                            <p class="mb-1">${comentario.comentario}</p>
-                        </div>
-                        <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
-                            <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount} .</span></span>
-                            <span class="me-3" onclick="toggleReplyInput(this)" class="responder"> Responder .</span>
-                            <span class="me-3 text-danger" onclick="openReportModal('${comentario.id}')"> Reportar .</span>
+        const contentHTML = `
+            <div class="flex-grow-1">
+                <div class="bg-light px-3 py-2 rounded-3">
+                    <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
+                    <p class="mb-1">${comentario.comentario}</p>
+                </div>
+                <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
+                    <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount} .</span></span>
+                    <span class="me-3" onclick="toggleReplyInput(this)" class="responder"> Responder .</span>
+                    <span class="me-3 text-danger" onclick="openReportModal('${comentario.id}')"> Reportar .</span>
 
-                            <span>${commentTimeAgo}</span>
-                        </div>
-                        <!-- Input de respuesta inicialmente oculto -->
-                        <input type="text" class="form-control form-control-sm mt-2 mb-1 reply-input" placeholder="Responder..." style="display: none;" />
-                        <button class="btn btn-sm btn-outline-secondary" onclick="replyToComment(this)" style="display: none;">Responder</button>
-                        <div class="replies mt-2 ps-3 border-start">${repliesHTML}</div>
+                    <span>${commentTimeAgo}</span>
+                </div>
+                <!-- Input de respuesta inicialmente oculto -->
+                <input type="text" class="form-control form-control-sm mt-2 mb-1 reply-input" placeholder="Responder..." style="display: none;" />
+                <button class="btn btn-sm btn-outline-secondary" onclick="replyToComment(this)" style="display: none;">Responder</button>
+                <div class="replies mt-2 ps-3 border-start">${repliesHTML}</div>
+            </div>
+        `;
+
+        commentDiv.innerHTML = avatarHTML + contentHTML;
+        commentSection.appendChild(commentDiv);
+    });
+}
+
+function renderReplies(replies, comentarioId) {
+    if (!replies || replies.length === 0) return '';
+
+    return replies.map(reply => {
+        // User is an array, get first user's name or fallback
+        const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
+        const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
+        const replyTimeAgo = timeAgo(reply.fecha);
+        const replyLikes = reply.likes || 0;
+        return `
+            <div class="d-flex mb-2 ps-3 border-start" data-comentario-id="${comentarioId}" data-respuesta-id="${reply._id || reply.id}">
+                <img src="${replyAvatarURL}"
+                     class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
+                <div class="flex-grow-1 bg-body-secondary p-2 rounded">
+                    <p class="mb-1 fw-bold text-primary">${replyUserName}</p>
+                    <p class="mb-1">${reply.comentario}</p>
+                    <div class="text-muted small">
+                        <span class="me-3" onclick="toggleLike(this)">Me gusta ${replyLikes}</span>
+                        <span>${replyTimeAgo}</span>
                     </div>
-                `;
-
-                commentDiv.innerHTML = avatarHTML + contentHTML;
-                commentSection.appendChild(commentDiv);
-            });
-        }
+                </div>
+             </div>
+        `;
+    }).join('');
+}
 
         function renderReplies(replies) {
             if (!replies || replies.length === 0) return '';
@@ -354,10 +381,8 @@
         // Get comentarioId and respuestaId from data attributes
         comentarioId = replyDiv.getAttribute('data-comentario-id');
         respuestaId = replyDiv.getAttribute('data-respuesta-id');
-        
       }
 
-      // If no IDs found, fallback to visual toggle only
       if (!comentarioId) {
         alert('No se pudo identificar el comentario para dar like.');
         return;
@@ -369,29 +394,152 @@
         return;
       }
 
+      // Check if user already liked this comment or reply
+      const likeKey = respuestaId ? `${comentarioId}-${respuestaId}` : comentarioId;
+      const hasLiked = likedUsers.has(likeKey);
+
+      try {
+        let response;
+        if (hasLiked) {
+          // Unlike
+          if (respuestaId) {
+            response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/unlike`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          } else {
+            response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/unlike`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          }
+        } else {
+          // Like
+          if (respuestaId) {
+            response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/like`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          } else {
+            response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/like`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          }
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          // If error is user already liked, then call unlike to remove like
+          if (errorData.error && errorData.error.includes('ya ha dado like')) {
+            // Call unlike API to remove like
+            try {
+              let unlikeResponse;
+              // Always call unlike to remove like when already liked error received
+              if (respuestaId) {
+                unlikeResponse = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/unlike`, {
+                  method: 'POST',
+                  headers: { 'Authorization': `Bearer ${token}` }
+                });
+              } else {
+                unlikeResponse = await fetch(`http://localhost:3050/comentarios/${comentarioId}/unlike`, {
+                  method: 'POST',
+                  headers: { 'Authorization': `Bearer ${token}` }
+                });
+              }
+              if (!unlikeResponse.ok) {
+                const unlikeErrorData = await unlikeResponse.json();
+                alert(unlikeErrorData.error || 'Error al quitar el like');
+                return;
+              }
+              // Update like count visually after unlike
+              const currentLikes = parseInt(likeCount.textContent);
+              likeCount.textContent = currentLikes > 0 ? currentLikes - 1 : 0;
+              likedUsers.delete(likeKey);
+              return;
+            } catch (unlikeError) {
+              alert(unlikeError.message);
+              return;
+            }
+          } else {
+            alert(errorData.error || 'Error al actualizar el like/unlike');
+            return;
+          }
+        }
+
+        // Update like count visually
+        const currentLikes = parseInt(likeCount.textContent);
+        likeCount.textContent = hasLiked ? (currentLikes > 0 ? currentLikes - 1 : 0) : currentLikes + 1;
+
+        // Update likedUsers map
+        if (hasLiked) {
+          likedUsers.delete(likeKey);
+        } else {
+          likedUsers.set(likeKey, true);
+        }
+
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // New function to unlike a comment or reply
+    async function toggleUnlike(span) {
+      const likeCount = span.querySelector(".like-count");
+      const commentDiv = span.closest('.d-flex.mb-3');
+      const replyDiv = span.closest('.d-flex.mb-2.ps-3.border-start');
+      let comentarioId = null;
+      let respuestaId = null;
+
+      if (commentDiv) {
+        comentarioId = commentDiv.getAttribute('data-comentario-id');
+      }
+      if (replyDiv) {
+        comentarioId = replyDiv.getAttribute('data-comentario-id');
+        respuestaId = replyDiv.getAttribute('data-respuesta-id');
+      }
+
+      if (!comentarioId) {
+        alert('No se pudo identificar el comentario para quitar like.');
+        return;
+      }
+
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        alert('Debe iniciar sesión para quitar like.');
+        return;
+      }
+
+      // Check if user has liked this comment or reply
+      const likeKey = respuestaId ? `${comentarioId}-${respuestaId}` : comentarioId;
+      if (!likedUsers.has(likeKey)) {
+        alert('No has dado like a este comentario/respuesta.');
+        return;
+      }
+
       try {
         let response;
         if (respuestaId) {
-          // Like on a reply
-          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/like`, {
+          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/respuestas/${respuestaId}/unlike`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
           });
         } else {
-          // Like on a comment
-          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/like`, {
+          response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/unlike`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
           });
         }
 
         if (!response.ok) {
-          throw new Error('Error al actualizar el like');
+          throw new Error('Error al actualizar el unlike');
         }
 
-        // Update like count visually
         const currentLikes = parseInt(likeCount.textContent);
-        likeCount.textContent = currentLikes + 1;
+        likeCount.textContent = currentLikes > 0 ? currentLikes - 1 : 0;
+
+        // Remove from likedUsers
+        likedUsers.delete(likeKey);
 
       } catch (error) {
         alert(error.message);
@@ -430,10 +578,15 @@
         alert('Debe iniciar sesión para responder.');
         return;
       }
+
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      const user = JSON.parse(payloadJson);
+      let userId = user.id;
   
       // Prepare reply data
       const replyData = {
-        User: [], // User ID could be added here if available
+        User: userId ? [userId] : [],
         comentario: replyText,
         fecha: new Date(),
       };
@@ -453,19 +606,23 @@
         }
   
         // Append reply to UI
-        const replyAvatarURL = (button.closest(".flex-grow-1").querySelector(".replies img")) ? button.closest(".flex-grow-1").querySelector(".replies img").src : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
-        const replyAvatarHTML = `
-          <img src="${replyAvatarURL}"
-                class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px; " alt="avatar;">
-        `;
+        const replyAvatarURL = (button.closest(".flex-grow-1").querySelector(".replies img")) ? button.closest(".flex-grow-1").querySelector(".replies img").src : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
   
         const replyDiv = document.createElement("div");
-        replyDiv.classList.add("bg-body-secondary", "p-2", "rounded", "mb-2", "d-flex");
+        replyDiv.classList.add("d-flex", "mb-2", "ps-3", "border-start");
+        replyDiv.setAttribute("data-comentario-id", button.closest('.d-flex.mb-3').getAttribute('data-comentario-id'));
+        // No respuesta-id since it's a new reply and id is unknown until refreshed
   
         replyDiv.innerHTML = `
-          ${replyAvatarHTML}
-          <div>
-            <p class="mb-0"><strong>${authorName}:</strong> ${replyText}</p>
+          <img src="${replyAvatarURL}"
+               class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
+          <div class="flex-grow-1 bg-body-secondary p-2 rounded">
+            <p class="mb-1 fw-bold text-primary">${user.name}</p>
+            <p class="mb-1">${replyText}</p>
+            <div class="text-muted small">
+              <span class="me-3" onclick="toggleLike(this)">Me gusta 0</span>
+              <span>Justo ahora</span>
+            </div>
           </div>
         `;
   

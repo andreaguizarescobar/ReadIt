@@ -64,6 +64,15 @@ export const register = async(data) =>{
 import { generateToken, verifyToken } from "../utils/jwtUtils.js";
 
 async function sendVerificationEmail(email, name, userId) {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",  
+    auth: {
+      user: "connectReadit@gmail.com",
+      pass: "addalnjufqpnkwoi"
+    },
+});
+
+/*async function sendVerificationEmail(email, name, userId) {
     let transporter = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
@@ -72,7 +81,7 @@ async function sendVerificationEmail(email, name, userId) {
         pass: "1c64f8690d0223"
       },
   });
-
+*/
   // Generate verification token with user id and email
   const verificationToken = generateToken({ id: userId, email });
 

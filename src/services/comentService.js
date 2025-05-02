@@ -46,23 +46,70 @@ export const getComentariosByLibroId = async (libroId) => {
   return libro;
 };
 
-export const incrementLikeComentario = async (comentarioId) => {
+export const incrementLikeComentario = async (comentarioId, userId) => {
   const comentario = await Comentario.findById(comentarioId);
   if (!comentario) throw new Error("Comentario no encontrado");
 
+  // Check if user already liked
+  if (comentario.likedBy.includes(userId)) {
+    throw new Error("El usuario ya ha dado like a este comentario");
+  }
+
   comentario.likes = (comentario.likes || 0) + 1;
+  comentario.likedBy.push(userId);
   await comentario.save();
   return comentario;
 };
 
-export const incrementLikeRespuesta = async (comentarioId, respuestaId) => {
+export const incrementLikeRespuesta = async (comentarioId, respuestaId, userId) => {
   const comentario = await Comentario.findById(comentarioId);
   if (!comentario) throw new Error("Comentario no encontrado");
 
   const respuesta = comentario.respuestas.id(respuestaId);
   if (!respuesta) throw new Error("Respuesta no encontrada");
 
+  // Check if user already liked
+  if (respuesta.likedBy.includes(userId)) {
+    throw new Error("El usuario ya ha dado like a esta respuesta");
+  }
+
   respuesta.likes = (respuesta.likes || 0) + 1;
+  respuesta.likedBy.push(userId);
+  await comentario.save();
+  return comentario;
+};
+
+export const decrementLikeComentario = async (comentarioId, userId) => {
+  const comentario = await Comentario.findById(comentarioId);
+  if (!comentario) throw new Error("Comentario no encontrado");
+
+  // Check if user has liked
+  if (!comentario.likedBy.includes(userId)) {
+    throw new Error("El usuario no ha dado like a este comentario");
+  }
+
+  comentario.likes = (comentario.likes || 0) - 1;
+  if (comentario.likes < 0) comentario.likes = 0;
+  comentario.likedBy = comentario.likedBy.filter(id => id.toString() !== userId.toString());
+  await comentario.save();
+  return comentario;
+};
+
+export const decrementLikeRespuesta = async (comentarioId, respuestaId, userId) => {
+  const comentario = await Comentario.findById(comentarioId);
+  if (!comentario) throw new Error("Comentario no encontrado");
+
+  const respuesta = comentario.respuestas.id(respuestaId);
+  if (!respuesta) throw new Error("Respuesta no encontrada");
+
+  // Check if user has liked
+  if (!respuesta.likedBy.includes(userId)) {
+    throw new Error("El usuario no ha dado like a esta respuesta");
+  }
+
+  respuesta.likes = (respuesta.likes || 0) - 1;
+  if (respuesta.likes < 0) respuesta.likes = 0;
+  respuesta.likedBy = respuesta.likedBy.filter(id => id.toString() !== userId.toString());
   await comentario.save();
   return comentario;
 };

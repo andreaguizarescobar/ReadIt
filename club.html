@@ -59,16 +59,6 @@
             document.getElementById(tabId).classList.add('active-tab');
         }
         function showSection2(sectionId, tabId) {
-             document.getElementById('libro-curso').style.display = 'none';
-             document.getElementById('proxima-lectura').style.display = 'none';
-             document.getElementById(sectionId).style.display = 'block';
- 
-             document.getElementById('tab-libro-curso').classList.remove('active-tab');
-             document.getElementById('tab-proxima-lectura').classList.remove('active-tab');
-             document.getElementById(tabId).classList.add('active-tab');
-         }
-
-        function showSection2(sectionId, tabId) {
             document.getElementById('libro-curso').style.display = 'none';
             document.getElementById('proxima-lectura').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
@@ -304,29 +294,13 @@
 
     <section id="libro-curso" >
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="font-weight-bold">Lecturas del club en curso</h3>
+            <h3 class="font-weight-bold">Lecturas del club</h3>
             <button class="btn btn-success" onclick="showModal('modalSubirLibro')" id="subirLibro" style="display: none;">
                 <i class="fas fa-plus"></i> Subir libro
             </button>
         </div>
   
-      <div class="container mt-4" id="libros">
-          <div class="row align-items-center book-card">
-              <div class="col-md-4">
-                  <img alt="Libro 1" class="img-fluid book-cover" src="https://storage.googleapis.com/a1aa/image/xRl8JEhIS621ymMHWl6MJDhP_QYW_WrEIX363EfCly4.jpg"/>
-              </div>
-              <div class="col-md-8">
-                  <h5>El Arte de la Guerra</h5>
-                  <p><strong>Autor:</strong> Sun Tzu</p>
-                  <p class="book-description">Estrategias militares aplicadas a la vida y los negocios.</p>
-                  <p><strong>Inicio:</strong> 10/02/2024</p>
-                  <p><strong>Fin:</strong> 25/03/2024</p>
-                  <a href="discusion.html" class="btn btn-primary btn-sm">
-                    <i class="fas fa-comments"></i> Ir a la discusión
-                  </a>
-              </div>
-          </div>
-      </div>    
+      <div class="container mt-4" id="libros"></div>    
   </section>  
 
   <section id="proxima-lectura" style="display: none;">
@@ -723,7 +697,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
         Fecha: fechaEvento,
         Hora: horaEvento,
         Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
-        Lugar: lugarEvento,
+        info: lugarEvento,
         Portada: portadaBase64,
         clubId: club
       };
@@ -759,7 +733,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
       Fecha: fechaEvento,
       Hora: horaEvento,
       Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
-      Lugar: lugarEvento,
+      info: lugarEvento,
       clubId: club
     };
 
@@ -951,12 +925,20 @@ let notificationCount = 3; // Número inicial de notificaciones
         let lecturasContainer = document.getElementById("libros");
         lecturasContainer.innerHTML = "";
 
-        lecturas.forEach(libro => {
-            fetch(`http://localhost:3050/libros/${libro}`)
-            .then(response => response.json())
-            .then(data => {
-            let libroCard = `
-                <div class="container mt-4">
+        // Fetch all book details first
+        Promise.all(lecturas.map(libro =>
+            fetch(`http://localhost:3050/libros/${libro}`).then(response => response.json())
+        )).then(librosData => {
+            const now = new Date();
+
+            // Separate books into in-progress and finished
+            const inProgressBooks = librosData.filter(book => new Date(book.F_Fin) >= now);
+            const finishedBooks = librosData.filter(book => new Date(book.F_Fin) < now);
+
+            // Helper function to render books
+            function renderBooks(books) {
+                return books.map(data => `
+                <div class="container mt-4" style="margin-bottom: 20px;">
                     <div class="row align-items-center book-card">
                         <div class="col-md-4">
                             <img class="img-fluid book-cover" src="${data.Portada}" alt="${data.Libro}">
@@ -972,8 +954,23 @@ let notificationCount = 3; // Número inicial de notificaciones
                             </button>
                         </div>
                     </div>
-                </div>`;
-            lecturasContainer.innerHTML += libroCard; });
+                </div>`).join('');
+            }
+
+            // Render in-progress books section
+            let html = '';
+            if (inProgressBooks.length > 0) {
+                html += '<h4>Libros en curso</h4>';
+                html += renderBooks(inProgressBooks);
+            }
+
+            // Render finished books section
+            if (finishedBooks.length > 0) {
+                html += '<h4>Libros finalizados</h4>';
+                html += renderBooks(finishedBooks);
+            }
+
+            lecturasContainer.innerHTML = html;
         });
     }
 
@@ -996,6 +993,8 @@ let notificationCount = 3; // Número inicial de notificaciones
                             <p>${evento.Descripcion}</p>
                             <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
                             <p><i class="fas fa-${evento.Tipo === 'Virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                            ${evento.Tipo === 'Virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
+                            '<p>Direccion: '+evento.info+'</p>' }
                         </div>
                     </div>
                 </div>`;
