@@ -7,6 +7,7 @@ const comentSchema = new mongoose.Schema({
     ],
       comentario: String,
       likes: {type: Number, default: 0},
+      likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
       fecha: String,
       respuestas: [
         {
@@ -15,7 +16,8 @@ const comentSchema = new mongoose.Schema({
                 ref: 'User',}
             ],
             comentario: String,
-            likes: Number,
+            likes: { type: Number, default: 0 },
+            likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
             fecha: String,
         }
       ]
