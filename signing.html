@@ -8,6 +8,8 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <link href="styles.css" rel="stylesheet"> 
   <script>
     function toggleForm(formType) {
@@ -44,7 +46,11 @@
         const password = passwordInput.value;
 
         if (!email || !password) {
-          alert("Por favor, ingrese correo y contraseña.");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Campos requeridos',
+            text: 'Por favor, ingrese correo y contraseña.',
+          });
           return;
         }
 
@@ -60,14 +66,30 @@
           if (response.ok) {
             localStorage.setItem('jwtToken', data.token);
             console.log(data.user._id);
-            alert(`Bienvenido ${data.user.name}`);
+            Swal.fire({
+              icon: 'success',
+              title: `Bienvenido ${data.user.name}`,
+              timer: 3000,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = "main.html";
+            });
             window.location.href = "main.html";
           } else {
-            alert(data.message || 'Error en el inicio de sesión');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Contraseña incorrecta',
+            });
           }
         } catch (error) {
           console.error('Error en la solicitud de inicio de sesión:', error);
-          alert('Error en la solicitud de inicio de sesión');
+          Swal.fire({
+            icon: 'success',
+            title: 'Registro exitoso',
+            text: 'Verifica tu correo electrónico para iniciar sesión',
+          });
+
         }
       });
     });
@@ -167,7 +189,11 @@
           const reader = new FileReader();
           const picture = "images/fotoperfil.jpg";
           if (password !== confirmPassword) {
-            alert('Las contraseñas no coinciden');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Las contraseñas no coinciden',
+            });
             return;
           }
 
@@ -182,7 +208,12 @@
             console.log(data);
             if (response.ok) {
               localStorage.setItem('jwtToken', data.token);
-              alert("Verifica tu correo electronico para iniciar sesion");
+              Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso',
+                text: 'Verifica tu correo electrónico para iniciar sesión',
+              });
+
               fetch(`http://localhost:3050/usuarios/${data.user._id}/insignia/680e4de94d4e9715973c6ac4/add`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

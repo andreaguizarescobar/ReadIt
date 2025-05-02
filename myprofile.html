@@ -7,6 +7,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
@@ -324,6 +326,67 @@
           
 </main>
 
+
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+    <p class="mb-1">
+        📚 connectReadit@gmail.com | 
+        <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
+        © 2025 Read-it
+        </p>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div id="modal">
+    <div id="modal-content">
+    <h2>Sobre el Equipo</h2>
+    <img src="images/logo.png" style="height: 90px;">
+    <p>Somos Read-it, un equipo apasionado por compartir el amor por la lectura. 📚✨</p>
+    <div class="row my-5">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/andrea.png" class="rounded-circle mb-3" width="100" height="100" alt="Andrea Escobar">
+                    <h3 class="font-weight-bold">Andrea Escobar</h3>
+                    <p class="font-weight-bold mb-0">ProductOwner</p>
+                    <p class="text-muted">Desarrollo Frontend</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/erik.png" class="rounded-circle mb-3" width="100" height="100" alt="Erik Moreno">
+                    <h3 class="font-weight-bold">Erik Moreno</h3>
+                    <p class="font-weight-bold mb-0">ScrumMaster</p>
+                    <p class="text-muted">Desarrollo Backend.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="cerrar-modal">Cerrar</button>
+  </div>
+</div>
+
+<script>
+    document.getElementById('acerca-link').addEventListener('click', function() {
+      document.getElementById('modal').style.display = 'block';
+    });
+    
+    document.getElementById('cerrar-modal').addEventListener('click', function() {
+      document.getElementById('modal').style.display = 'none';
+    });
+    
+    // Opcional: cerrar modal al hacer clic fuera del contenido
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+    </script>
+
 <!-- Modal de Editar Perfil -->
 <div id="modalEditarPerfil" class="modal" tabindex="-1" role="dialog" style="display:none;">
     <div class="modal-dialog" role="document">
@@ -340,7 +403,7 @@
             <div class="modal-body">
             <div class="form-group">
                 <label for="nombre">Nombre de usuario</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="">
+                <input type="text" class="form-control" id="nombre" name="nombre" value="" required>
             </div>
             <div class="form-group">
                 <label for="descripcionModal">Descripción</label>
@@ -373,7 +436,12 @@
  async function actualizarUsuario() {
      const token = localStorage.getItem('jwtToken');
      if (!token) {
-       alert('Debe iniciar sesión para editar el perfil.');
+        Swal.fire({
+        icon: 'warning',
+        title: 'Sesión no iniciada',
+        text: 'Debe iniciar sesión para editar el perfil.',
+        confirmButtonText: 'Entendido'
+        });
        return;
      }
      const payloadBase64 = token.split('.')[1];
@@ -386,6 +454,16 @@
      const fotoPerfilInput = document.getElementById('fotoPerfilM').files[0];
      const portadaUsuarioInput = document.getElementById('portadaUsuario').files[0];
  
+     // Validación del nombre obligatorio
+    if (!nombre) {
+        Swal.fire({
+        icon: 'warning',
+        title: 'Campo obligatorio',
+        text: 'El nombre de usuario no puede estar vacío.',
+        confirmButtonText: 'Ok'
+        });
+        return;
+    }
      const formData = new FormData();
      formData.append('name', nombre);
      formData.append('descripcion', descripcion);
@@ -410,14 +488,25 @@
        }
  
        const updatedUser = await response.json();
-       alert('Perfil actualizado correctamente');
-       // Optionally update the profile display with new data
-       displayUserProfile(updatedUser);
-       hideModal('modalEditarPerfil')
- 
-     } catch (error) {
-       alert(error.message);
-     }
+       Swal.fire({
+        icon: 'success',
+        title: 'Perfil actualizado',
+        text: 'Los cambios se guardaron correctamente.',
+        timer: 4000,
+        willClose: () => {
+            hideModal('modalEditarPerfil');
+            displayUserProfile(updatedUser);
+        }
+        });
+
+    } catch (error) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonText: 'Intentar de nuevo'
+        });
+    }
    }
 </script>
   

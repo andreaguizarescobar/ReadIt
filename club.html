@@ -7,6 +7,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
@@ -485,6 +488,67 @@
     
 </main>
 
+
+<footer class="bg-dark text-white text-center py-3">
+  <div class="container">
+  <p class="mb-1">
+      📚 connectReadit@gmail.com | 
+      <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
+      © 2025 Read-it
+      </p>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modal-content">
+  <h2>Sobre el Equipo</h2>
+  <img src="images/logo.png" style="height: 90px;">
+  <p>Somos Read-it, un equipo apasionado por compartir el amor por la lectura. 📚✨</p>
+  <div class="row my-5">
+      <div class="col-md-6 mb-4">
+          <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                  <img src="images/equipo/andrea.png" class="rounded-circle mb-3" width="100" height="100" alt="Andrea Escobar">
+                  <h3 class="font-weight-bold">Andrea Escobar</h3>
+                  <p class="font-weight-bold mb-0">ProductOwner</p>
+                  <p class="text-muted">Desarrollo Frontend</p>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-6 mb-4">
+          <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                  <img src="images/equipo/erik.png" class="rounded-circle mb-3" width="100" height="100" alt="Erik Moreno">
+                  <h3 class="font-weight-bold">Erik Moreno</h3>
+                  <p class="font-weight-bold mb-0">ScrumMaster</p>
+                  <p class="text-muted">Desarrollo Backend.</p>
+              </div>
+          </div>
+      </div>
+  </div>
+  <button id="cerrar-modal">Cerrar</button>
+</div>
+</div>
+
+<script>
+  document.getElementById('acerca-link').addEventListener('click', function() {
+    document.getElementById('modal').style.display = 'block';
+  });
+  
+  document.getElementById('cerrar-modal').addEventListener('click', function() {
+    document.getElementById('modal').style.display = 'none';
+  });
+  
+  // Opcional: cerrar modal al hacer clic fuera del contenido
+  window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+  </script>
+
 <!-- Modal Actualizar Club -->
 <div class="modal" id="modalActualizarClub" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -496,24 +560,25 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="nombreClub">Nombre del club</label>
-                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label for="generoClub">Género del club</label>
-                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcionClub">Descripción</label>
-                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="portadaClub">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaClub">
-                    </div>
-                </form>
+                <form id="formActualizarClub">
+                  <div class="form-group">
+                      <label for="nombreClub">Nombre del club</label>
+                      <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
+                  </div>
+                  <div class="form-group">
+                      <label for="generoClub">Género del club</label>
+                      <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="descripcionClub">Descripción</label>
+                      <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club" required></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label for="portadaClub">Portada</label>
+                      <input type="file" class="form-control-file" id="portadaClub">
+                  </div>
+              </form>
+            
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="hideModal('modalActualizarClub')">Cancelar</button>
@@ -534,36 +599,41 @@
               </button>
           </div>
           <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-              <form>
-                  <div class="form-group">
-                      <label for="tituloLibro">Título del libro</label>
-                      <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
-                  </div>
-                  <div class="form-group">
-                      <label for="autorLibro">Autor</label>
-                      <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
-                  </div>
-                  <div class="form-group">
+            <form id="formSubirLibro">
+                <div class="form-group">
+                    <label for="tituloLibro">Título del libro</label>
+                    <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro" required>
+                </div>
+                <div class="form-group">
+                    <label for="autorLibro">Autor</label>
+                    <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro" required>
+                </div>
+                <div class="form-group">
                     <label for="descripcionLibro">Descripción</label>
-                    <textarea class="form-control" id="descripcionLibro" rows="3" placeholder="Breve descripción del libro"></textarea>
-                 </div>
-                  <div class="form-group">
-                      <label for="fechaInicioLibro">Fecha de inicio</label>
-                      <input type="date" class="form-control" id="fechaInicioLibro">
-                  </div>
-                  <div class="form-group">
-                      <label for="fechaFinLibro">Fecha de fin</label>
-                      <input type="date" class="form-control" id="fechaFinLibro">
-                  </div>
-                  <div class="form-group">
-                      <label for="portadaLibro">Portada</label>
-                      <input type="file" class="form-control-file" id="portadaLibro">
-                  </div>
-                  <div class="form-group">
-                      <label for="archivoLibro">Archivo del libro (Opcional)</label>
-                      <input type="file" class="form-control-file" id="archivoLibro">
-                  </div>
-              </form>
+                    <textarea class="form-control" id="descripcionLibro" rows="3" placeholder="Breve descripción del libro" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="fechaInicioLibro">Fecha de inicio</label>
+                    <input type="date" class="form-control" id="fechaInicioLibro" required>
+                </div>
+                <div class="form-group">
+                    <label for="fechaFinLibro">Fecha de fin</label>
+                    <input type="date" class="form-control" id="fechaFinLibro" required>
+                </div>
+                <div class="form-group">
+                    <label for="portadaLibro">Portada</label>
+                    <input type="file" class="form-control-file" id="portadaLibro" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                  <label for="archivoLibro">Archivo del libro (Opcional)</label>
+                  <input type="file" class="form-control-file" id="archivoLibro">
+                  <small class="form-text text-muted">
+                    * Readit no se hace responsable por la distribución ilegal de libros compartidos por los usuarios.
+                  </small>
+                </div>
+                
+            </form>
+          
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
@@ -587,49 +657,49 @@
           
           <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
           <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-              <form>
-                  <div class="form-group">
-                      <label for="nombreEvento">Nombre del evento</label>
-                      <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento">
-                  </div>
-                  <!-- Descripción del evento -->
-                  <div class="form-group">
+              <form id="formCrearEvento">
+                <div class="form-group">
+                    <label for="nombreEvento">Nombre del evento</label>
+                    <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento" required>
+                </div>
+            
+                <div class="form-group">
                     <label for="descripcionEvento">Descripción del evento</label>
-                    <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento"></textarea>
-                  </div>
-                  <div class="form-group">
-                      <label for="fechaEvento">Fecha del evento</label>
-                      <input type="date" class="form-control" id="fechaEvento">
-                  </div>
-
-                  <div class="form-group">
-                      <label for="horaEvento">Hora del evento</label>
-                      <input type="time" class="form-control" id="horaEvento">
-                  </div>
-
-                  <!-- Tipo de evento -->
-                  <div class="form-group">
-                      <label>Tipo de evento</label>
-                      <div>
-                          <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()">
-                          <label for="virtual">Virtual</label>
-                          
-                          <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()">
-                          <label for="presencial">Presencial</label>
-                      </div>
-                  </div>
-
-                  <!-- Campo dinámico: Lugar o Link -->
-                  <div class="form-group">
-                      <label id="labelLugar">Link a videollamada</label>
-                      <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada">
-                  </div>
-
-                  <div class="form-group">
-                      <label for="portadaEvento">Portada</label>
-                      <input type="file" class="form-control-file" id="portadaEvento">
-                  </div>
-              </form>
+                    <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento" required></textarea>
+                </div>
+            
+                <div class="form-group">
+                    <label for="fechaEvento">Fecha del evento</label>
+                    <input type="date" class="form-control" id="fechaEvento" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="horaEvento">Hora del evento</label>
+                    <input type="time" class="form-control" id="horaEvento" required>
+                </div>
+            
+                <div class="form-group">
+                    <label>Tipo de evento</label>
+                    <div>
+                        <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()" required>
+                        <label for="virtual">Virtual</label>
+            
+                        <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()" required>
+                        <label for="presencial">Presencial</label>
+                    </div>
+                </div>
+            
+                <div class="form-group">
+                    <label id="labelLugar">Link a videollamada</label>
+                    <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="portadaEvento">Portada</label>
+                    <input type="file" class="form-control-file" id="portadaEvento">
+                </div>
+            </form>
+          
           </div>
 
           <!-- Fijar el footer para que siempre se vea -->
@@ -647,6 +717,12 @@
 
 <script>
 document.getElementById('btnSubirLibro').addEventListener('click', async () => {
+  const form = document.getElementById('formSubirLibro');
+  if (!form.checkValidity()) {
+    form.reportValidity(); // Muestra los mensajes nativos del navegador
+    return;
+  }
+
   const titulo = document.getElementById('tituloLibro').value;
   const autor = document.getElementById('autorLibro').value;
   const descripcion = document.getElementById('descripcionLibro').value;
@@ -656,7 +732,12 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
   const archivoFile = document.getElementById('archivoLibro').files[0];
 
   if (!titulo || !autor || !descripcion || !fechaInicio || !fechaFin) {
-    alert('Por favor, complete todos los campos obligatorios.');
+    Swal.fire({
+      title: '¡Campos incompletos!',
+      text: 'Por favor, complete todos los campos obligatorios.',
+      icon: 'warning',
+      confirmButtonText: 'Cerrar'
+    });
     return;
   }
 
@@ -686,19 +767,39 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
     });
 
     if (response.ok) {
-      alert('Libro subido exitosamente');
-      location.reload();
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Libro subido exitosamente.',
+        icon: 'success',
+        timer: 5000,
+        willClose: () => location.reload()
+      });
     } else {
       const errorData = await response.json();
-      alert('Error al subir el libro: ' + (errorData.error || 'Error desconocido'));
+      Swal.fire({
+        title: '¡Error!',
+        text: 'Error al subir el libro: ' + (errorData.error || 'Error desconocido'),
+        icon: 'error',
+        confirmButtonText: 'Intentar de nuevo'
+      });
     }
   } catch (error) {
-    alert('Error al subir el libro: ' + error.message);
+    Swal.fire({
+      title: '¡Error!',
+      text: 'Error al subir el libro: ' + error.message,
+      icon: 'error',
+      confirmButtonText: 'Intentar de nuevo'
+    });
   }
 });
 </script>
 <script>
 document.getElementById('btnCrearEvento').addEventListener('click', () => {
+  const form = document.getElementById('formCrearEvento');
+  if (!form.checkValidity()) {
+    form.reportValidity(); // Muestra mensajes nativos de validación del navegador
+    return;
+  }
   const nombreEvento = document.getElementById('nombreEvento').value.trim();
   const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
   const fechaEvento = document.getElementById('fechaEvento').value;
@@ -708,7 +809,12 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
   const portadaEventoFile = document.getElementById('portadaEvento').files[0];
 
   if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento) {
-    alert('Por favor, complete todos los campos obligatorios.');
+    Swal.fire({
+      title: '¡Error!',
+      text: 'Por favor, complete todos los campos obligatorios.',
+      icon: 'error',
+      confirmButtonText: 'Cerrar'
+    });
     return;
   }
 
@@ -740,15 +846,32 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
         });
 
         if (response.ok) {
-          alert('Evento creado exitosamente');
-          hideModal('modalCrearEvento');
-          location.reload();
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Evento creado exitosamente',
+            icon: 'success',
+            timer: 5000,
+            willClose: () => {
+              hideModal('modalCrearEvento');
+              location.reload();
+            }
+          });
         } else {
           const errorData = await response.json();
-          alert('Error al crear el evento: ' + (errorData.error || 'Error desconocido'));
+          Swal.fire({
+            title: '¡Error!',
+            text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
+            icon: 'error',
+            confirmButtonText: 'Intentar de nuevo'
+          });
         }
       } catch (error) {
-        alert('Error al crear el evento: ' + error.message);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al crear el evento: ' + error.message,
+          icon: 'error',
+          confirmButtonText: 'Intentar de nuevo'
+        });
       }
     };
     reader.readAsDataURL(portadaEventoFile);
@@ -776,15 +899,32 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
         });
 
         if (response.ok) {
-          alert('Evento creado exitosamente');
-          hideModal('modalCrearEvento');
-          location.reload();
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Evento creado exitosamente',
+            icon: 'success',
+            timer: 5000,
+            willClose: () => {
+              hideModal('modalCrearEvento');
+              location.reload();
+            }
+          });
         } else {
           const errorData = await response.json();
-          alert('Error al crear el evento: ' + (errorData.error || 'Error desconocido'));
+          Swal.fire({
+            title: '¡Error!',
+            text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
+            icon: 'error',
+            confirmButtonText: 'Intentar de nuevo'
+          });
         }
       } catch (error) {
-        alert('Error al crear el evento: ' + error.message);
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Error al crear el evento: ' + error.message,
+          icon: 'error',
+          confirmButtonText: 'Intentar de nuevo'
+        });
       }
     })();
   }
@@ -905,7 +1045,12 @@ let notificationCount = 3; // Número inicial de notificaciones
     }
 
     function actualizarClub() {
-        const descripcion = document.getElementById("descripcionClub").value;
+      const form = document.getElementById('formActualizarClub');
+      if (!form.checkValidity()) {
+          form.reportValidity(); // Muestra los mensajes nativos de validación
+          return;
+      }  
+      const descripcion = document.getElementById("descripcionClub").value;
         const genero = document.getElementById("generoClub").value;
         const portadaInput = document.getElementById("portadaClub");
 
@@ -937,13 +1082,30 @@ let notificationCount = 3; // Número inicial de notificaciones
         })
         .then(response => response.json())
         .then(data => {
-            alert("Club actualizado exitosamente");
-            cerrarModalEditar();
-            location.reload(); // Recargar la página para ver los cambios
-        })
+            // Simulación de éxito de la solicitud
+            Swal.fire({
+                  title: 'Éxito!',
+                  text: 'Club actualizado exitosamente.',
+                  icon: 'success',
+                  timer: 4000, // Se cerrará automáticamente después de 10 segundos
+                  willClose: () => {  // Usamos 'willClose' para ejecutar código antes de que se cierre
+                      hideModal('modalActualizarClub');
+                      // Aquí puedes recargar la página o hacer otras acciones
+                      location.reload();
+                  }
+              });
+              cerrarModalEditar(); // Asegúrate de que esta función no recargue la página
+            })
         .catch(error => {
             console.error("Error al actualizar el club:", error);
-            alert("Hubo un error al actualizar el club");
+          // En caso de error
+          Swal.fire({
+            title: 'Error!',
+            text: 'Hubo un problema al actualizar el club.',
+            icon: 'error',
+            timer: 3000, // Se cerrará automáticamente después de 2 segundos
+            confirmButtonText: 'Intentar de nuevo'
+          });        
         });
     }
 
