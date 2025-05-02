@@ -408,6 +408,10 @@ function renderReplies(replies, comentarioId) {
                     },
                     body: JSON.stringify(commentData)
                 });
+                fetch(`http://localhost:3050/usuarios/${userId}/insignia/680e4ed44d4e9715973c6aca/add`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                });
 
                 if (!response.ok) {
                     throw new Error('Error al guardar el comentario');
