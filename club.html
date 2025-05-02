@@ -47,6 +47,10 @@
             window.location.href = 'signing.html';
         }
         tokenData = decodeToken(token);
+        let img = document.getElementById('imgperfil');
+        if(tokenData && tokenData.picture) {
+            img.src = tokenData.picture;
+        }
         });
     </script>
     <script>
@@ -151,7 +155,7 @@
         </div> 
     
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>

@@ -236,7 +236,7 @@ function renderReplies(replies, comentarioId) {
     <div class="d-flex align-items-center">
         <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
         <button class="btn btn-dark rounded-right" >
-            <i clasxs="fas fa-search"></i>
+            <i class="fas fa-search"></i>
         </button>
     </div>
 
@@ -253,16 +253,73 @@ function renderReplies(replies, comentarioId) {
         </div> 
     
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
-                <a href="#">Configuración</a>
-                <a href="#">Cerrar sesión</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
     </div>
 </header>
+
+<script>
+    function isTokenExpired(token) {
+        if (!token) return true;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const exp = payload.exp;
+            if (!exp) return true;
+            const now = Math.floor(Date.now() / 1000);
+            return now >= exp;
+        } catch (e) {
+            return true;
+        }
+    }
+
+    function decodeToken(token) {
+        if (!token) return null;
+        try {
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            return JSON.parse(payloadJson);
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return null;
+        }
+    }
+
+    let tokenData;
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('jwtToken');
+        if (!token || isTokenExpired(token)) {
+            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'signing.html';
+        }
+        tokenData = decodeToken(token);
+        let img = document.getElementById('imgperfil');
+        if(tokenData && tokenData.picture) {
+            img.src = tokenData.picture;
+        }
+    });
+
+    function toggleProfileMenu() {
+        let menu = document.getElementById('profile-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleNotificationMenu() {
+        let menu = document.getElementById('notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        localStorage.removeItem('jwtToken');
+        window.location.href = 'signing.html';
+    }
+</script>
 
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>

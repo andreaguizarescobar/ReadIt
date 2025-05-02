@@ -82,10 +82,8 @@ async function sendVerificationEmail(email, name, userId) {
       },
   });
 */
-  // Generate verification token with user id and email
   const verificationToken = generateToken({ id: userId, email });
 
-  // Verification URL (adjust domain as needed)
   const verificationUrl = `${CLIENT_URL}/verify-email?token=${verificationToken}`;
 
   // Email content

@@ -72,9 +72,14 @@
               timer: 3000,
               showConfirmButton: false
             }).then(() => {
-              window.location.href = "main.html";
+              if (data.user.tipo && data.user.tipo === "asociacion") {
+                window.location.href = "mainasociacion.html";
+              } else if(data.user.tipo && data.user.tipo === "admin"){
+                window.location.href = "mainmoderador.html";
+              } else {
+                window.location.href = "main.html";
+              }
             });
-            window.location.href = "main.html";
           } else {
             Swal.fire({
               icon: 'error',
@@ -198,10 +203,17 @@
           }
 
           try {
+            const isAssociation = document.getElementById('isAssociation').checked;
+            const ubicacion = isAssociation ? document.getElementById('associationLocation').value.trim() : null;
+            const bodyData = { name, email, password, picture };
+            if (isAssociation) {
+              bodyData.tipo = "asociacion";
+              bodyData.ubicacion = ubicacion;
+            }
             const response = await fetch('http://localhost:3050/usuarios/registrar', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name, email, password, picture }),
+              body: JSON.stringify(bodyData),
             });
 
             const data = await response.json();

@@ -236,7 +236,7 @@ header {
     padding: 8px;
     position: relative;
     z-index: 1;
-    bottom: 80%; /* encima de la imagen */
+    bottom: 70%; /* encima de la imagen */
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
