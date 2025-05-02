@@ -342,28 +342,30 @@ header {
   #modal {
     display: none; /* Oculto por defecto */
     position: fixed;
-    z-index: 1050; /* Por encima de otros elementos */
+    z-index: 1050;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5); /* Fondo oscuro semitransparente */
-    justify-content: center;
-    align-items: center;
-}
+    background-color: rgba(0,0,0,0.6);
+  }
   
-
-#modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 100vh;
-  max-height: 80vh; /* 🔥 Limitamos altura del contenido */
-  overflow-y: auto; /* 🔥 Scroll vertical si se pasa */
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+  #modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px 30px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 90vh;      /* Altura máxima: 90% de la ventana */
+    overflow-y: auto;      /* Habilita scroll vertical */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  
 
 /* Botón dentro del modal */
 #modal button {

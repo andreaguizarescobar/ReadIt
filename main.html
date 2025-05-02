@@ -7,6 +7,11 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
@@ -51,13 +56,11 @@
     <script>
         function showSection(sectionId, tabId) {
             document.getElementById('inicio').style.display = 'none';
-            document.getElementById('mis-libros').style.display = 'none';
             document.getElementById('mis-clubes').style.display = 'none';
             document.getElementById('seccionEventos').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
 
             document.getElementById('tab-inicio').classList.remove('active-tab');
-            document.getElementById('tab-mis-libros').classList.remove('active-tab');
             document.getElementById('tab-mis-clubes').classList.remove('active-tab');
             document.getElementById('tab-eventos').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
@@ -266,9 +269,6 @@
             <a id="tab-inicio" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('inicio', 'tab-inicio')">Inicio</a>
         </li>
         <li class="nav-item">
-            <a id="tab-mis-libros" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-libros', 'tab-mis-libros')">Mis libros</a>
-        </li>
-        <li class="nav-item">
             <a id="tab-mis-clubes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Mis clubes</a>
         </li>
         <li class="nav-item">
@@ -366,7 +366,67 @@
     </section>
 
 </main>
+    
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+    <p class="mb-1">
+        📚 connectReadit@gmail.com | 
+        <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
+        © 2025 Read-it
+        </p>
+    </div>
+</footer>
 
+<!-- Modal -->
+<div id="modal">
+    <div id="modal-content">
+    <h2>Sobre el Equipo</h2>
+    <img src="images/logo.png" style="height: 90px;">
+    <p>Somos Read-it, un equipo apasionado por compartir el amor por la lectura. 📚✨</p>
+    <div class="row my-5">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/andrea.png" class="rounded-circle mb-3" width="100" height="100" alt="Andrea Escobar">
+                    <h3 class="font-weight-bold">Andrea Escobar</h3>
+                    <p class="font-weight-bold mb-0">ProductOwner</p>
+                    <p class="text-muted">Desarrollo Frontend</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <img src="images/equipo/erik.png" class="rounded-circle mb-3" width="100" height="100" alt="Erik Moreno">
+                    <h3 class="font-weight-bold">Erik Moreno</h3>
+                    <p class="font-weight-bold mb-0">ScrumMaster</p>
+                    <p class="text-muted">Desarrollo Backend.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="cerrar-modal">Cerrar</button>
+  </div>
+</div>
+
+<script>
+    document.getElementById('acerca-link').addEventListener('click', function() {
+      document.getElementById('modal').style.display = 'block';
+    });
+    
+    document.getElementById('cerrar-modal').addEventListener('click', function() {
+      document.getElementById('modal').style.display = 'none';
+    });
+    
+    // Opcional: cerrar modal al hacer clic fuera del contenido
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+    </script>
+    
 <!-- Modal Subir Libro -->
 <div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -416,24 +476,25 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="formCrearClub">
                     <div class="form-group">
                         <label for="nombreClub">Nombre del club</label>
-                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club">
+                        <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" required>
                     </div>
                     <div class="form-group">
                         <label for="generoClub">Género del club</label>
-                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club">
+                        <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club" required>
                     </div>
                     <div class="form-group">
                         <label for="descripcionClub">Descripción</label>
-                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club"></textarea>
+                        <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="portadaClub">Portada</label>
                         <input type="file" class="form-control-file" id="portadaClub" accept="image/*" required>
                     </div>
                 </form>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearClub')">Cancelar</button>
@@ -529,15 +590,17 @@
 
 <script>
     function crearClub() {
-        const nombre = document.getElementById("nombreClub").value;
-        const genero = document.getElementById("generoClub").value;
-        const descripcion = document.getElementById("descripcionClub").value;
-        const portadaInput = document.getElementById("portadaClub");
-    
-        if (portadaInput.files.length === 0) {
-            alert("Por favor selecciona una imagen.");
+        const form = document.getElementById("formCrearClub");
+
+        if (!form.checkValidity()) {
+            form.reportValidity(); // Muestra los mensajes de validación nativos del navegador
             return;
         }
+
+        const nombre = document.getElementById("nombreClub").value.trim();
+        const genero = document.getElementById("generoClub").value.trim();
+        const descripcion = document.getElementById("descripcionClub").value.trim();
+        const portadaInput = document.getElementById("portadaClub");
     
         const reader = new FileReader();
         reader.readAsDataURL(portadaInput.files[0]);
@@ -576,6 +639,11 @@
     }
     </script>    
     
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
 
