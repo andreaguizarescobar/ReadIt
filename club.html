@@ -41,13 +41,21 @@
         let tokenData;
         let rol;
         document.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('jwtToken');
-        if (!token || isTokenExpired(token)) {
-            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-            window.location.href = 'signing.html';
-        }
-        tokenData = decodeToken(token);
-        });
+          const token = localStorage.getItem('jwtToken');
+          if (!token || isTokenExpired(token)) {
+              Swal.fire({
+                  icon: 'warning',
+                  title: 'Sesión expirada',
+                  text: 'Por favor, inicia sesión de nuevo.',
+                  confirmButtonText: 'Ir a iniciar sesión'
+              }).then(() => {
+                  window.location.href = 'signing.html';
+              });
+              return; // Evita continuar si el token no es válido
+          }
+
+          tokenData = decodeToken(token);
+      });
     </script>
     <script>
         function showSection(sectionId, tabId) {
@@ -210,14 +218,33 @@
                             method: 'POST',
                         })
                         .then(response => {
-                            if (response.ok) {
-                                alert('Te has unido al club');
-                                location.reload();
+                              if (response.ok) {
+                                Swal.fire({
+                                  icon: 'success',
+                                  title: '¡Éxito!',
+                                  text: 'Te has unido al club.',
+                                  timer: 3000,
+                                  confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                  location.reload();
+                                });
                             } else {
-                                alert('Error al unirse al club');
+                              Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                timer: 3000,
+                                text: 'Error al unirse al club.',
+                              });
                             }
                         })
-                        .catch(() => alert('Error al unirse al club'));
+                        .catch(() => {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              timer: 3000,
+                              text: 'Error al unirse al club. Verifica tu conexión.',
+                            });
+                          });
                     };
                 } else if (rol === 'member') {
                     const miembroElem = document.getElementById("Miembro");
@@ -230,15 +257,34 @@
                             method: 'DELETE',
                         })
                         .then(response => {
-                            if (response.ok) {
-                                alert('Has salido del club');
+                          if (response.ok) {
+                              Swal.fire({
+                                icon: 'success',
+                                title: 'Has salido del club',
+                                text: 'Esperamos verte de nuevo pronto.',
+                                timer: 4000,
+                                confirmButtonText: 'Aceptar'
+                              }).then(() => {
                                 location.reload();
-                            } else {
-                                alert('Error al salir del club');
-                            }
+                              });
+                          } else {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              timer: 5000,
+                              text: 'No se pudo salir del club.',
+                            });
+                          }
                         })
-                        .catch(() => alert('Error al salir del club'));
-                    };
+                        .catch(() => {
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Error de red',
+                            timer: 5000,
+                            text: 'Ocurrió un problema al intentar salir del club.',
+                          });
+                        });
+                      };
                 } else if (rol === 'admin') {
                     const adminElem = document.getElementById("btn-admin");
                     const libro = document.getElementById("subirLibro");
@@ -411,17 +457,23 @@
   document.getElementById('btnCrearVotacion').addEventListener('click', async () => {
     const diasVotacion = document.getElementById('diasVotacion').value.trim();
     if (!diasVotacion) {
-      alert('Por favor, ingrese el número de días de votación.');
-      return;
-    }
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Campo obligatorio',
+      text: 'Por favor, ingrese el número de días de votación.',
+    });
+  }
 
     const titulos = [];
     const titulo1 = document.getElementById('titulo1').value.trim();
     const titulo2 = document.getElementById('titulo2').value.trim();
 
     if (!titulo1 || !titulo2) {
-      alert('Por favor, ingrese al menos dos títulos.');
-      return;
+      return Swal.fire({
+      icon: 'warning',
+      title: 'Campos obligatorios',
+      text: 'Debe ingresar al menos dos títulos.',
+      });
     }
 
     titulos.push(titulo1, titulo2);
@@ -458,17 +510,31 @@
       });
 
       if (response.ok) {
-        alert('Votación creada exitosamente');
+      Swal.fire({
+        icon: 'success',
+        title: 'Votación creada',
+        text: 'La votación se creó exitosamente.',
+        confirmButtonText: 'OK'
+      }).then(() => {
         hideModal('modalCrearVotacion');
         location.reload();
-      } else {
-        const errorData = await response.json();
-        alert('Error al crear la votación: ' + (errorData.error || 'Error desconocido'));
-      }
-    } catch (error) {
-      alert('Error al crear la votación: ' + error.message);
+      });
+    } else {
+      const errorData = await response.json();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al crear la votación',
+        text: errorData.error || 'Error desconocido',
+      });
     }
-  });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de red',
+      text: error.message,
+    });
+  }
+});
 </script>
 
 
