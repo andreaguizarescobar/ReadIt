@@ -44,7 +44,13 @@
                             iframe.src = fileUrl;
                         } else {
                             iframe.src = '';
-                            alert('No se encontró archivo para este libro.');
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Archivo no encontrado',
+                                text: 'No se encontró archivo disponible para este libro.',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#ffc107'
+                            });
                         }
                     }
 
@@ -65,7 +71,13 @@
                 const comentarios = await response.json();
                 renderComments(comentarios);
             } catch (error) {
-                alert(error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Ups!',
+                    text: error.message,
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33'
+                });
             }
         }
 
@@ -293,12 +305,21 @@ function renderReplies(replies, comentarioId) {
     document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('jwtToken');
         if (!token || isTokenExpired(token)) {
-            alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-            window.location.href = 'signing.html';
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sesión expirada',
+                text: 'Por favor, inicia sesión de nuevo.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#f59e0b' // color ámbar como Bootstrap warning
+            }).then(() => {
+                window.location.href = 'signing.html';
+            });
+            return;
         }
+
         tokenData = decodeToken(token);
         let img = document.getElementById('imgperfil');
-        if(tokenData && tokenData.picture) {
+        if (tokenData && tokenData.picture) {
             img.src = tokenData.picture;
         }
     });
@@ -389,7 +410,13 @@ function renderReplies(replies, comentarioId) {
             // Prepare comment data to send to API
             const libroId = localStorage.getItem('selectedLibroId');
             if (!libroId) {
-                alert('No se proporcionó el ID del libro para el comentario.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se proporcionó el ID del libro para el comentario.',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#d33' // rojo para errores
+                });
                 return;
             }
 
@@ -448,13 +475,26 @@ function renderReplies(replies, comentarioId) {
       }
 
       if (!comentarioId) {
-        alert('No se pudo identificar el comentario para dar like.');
-        return;
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo identificar el comentario para dar like.',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Aceptar'
+          });
+          return;
       }
-
+      
       const token = localStorage.getItem('jwtToken');
       if (!token) {
-        alert('Debe iniciar sesión para dar like.');
+        Swal.fire({
+          title: 'Debe iniciar sesión para dar like.',
+          icon: 'warning',
+          timer: 2000, // Establecer el temporizador de 2 segundos
+          showConfirmButton: false,
+        }).then(() => {
+          // Aquí puedes agregar cualquier acción después de que desaparezca la alerta
+        });
         return;
       }
 

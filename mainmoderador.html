@@ -309,7 +309,12 @@
     function aplicarSancion() {
         const sancion = document.getElementById('tipoSancion').value;
         if (!sancion) {
-            alert('Selecciona una sanción válida.');
+            Swal.fire({
+                title: 'Selección inválida',
+                text: 'Selecciona una sanción válida.',
+                icon: 'warning',
+                confirmButtonText: 'Aceptar',
+            });
             return;
         }
 
@@ -330,23 +335,30 @@
         }
 
         const fila = document.querySelector(`tr[data-usuario="${usuarioSeleccionado}"]`);
-        if (fila) {
-            fila.querySelector('.sancion').innerText = textoSancion;
+            if (fila) {
+                fila.querySelector('.sancion').innerText = textoSancion;
 
-            if (sancion === 'unban') {
-                fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
-                fila.querySelector('button.btn-danger').disabled = true;
-            } else {
-                fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
-                const btnQuitar = fila.querySelector('button.btn-danger');
-                btnQuitar.disabled = false;
+                if (sancion === 'unban') {
+                    fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+                    fila.querySelector('button.btn-danger').disabled = true;
+                } else {
+                    fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+                    const btnQuitar = fila.querySelector('button.btn-danger');
+                    btnQuitar.disabled = false;
+                }
             }
-        }
 
-        alert(`Sanción aplicada a ${usuarioSeleccionado}: ${textoSancion}`);
-
-        const modal = bootstrap.Offcanvas.getInstance(document.getElementById('modalSancion'));
-        modal.hide();
+            // Reemplazar alert con SweetAlert
+            Swal.fire({
+                title: 'Sanción aplicada',
+                text: `Sanción aplicada a ${usuarioSeleccionado}: ${textoSancion}`,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+            }).then(() => {
+                // Cerrar el modal después de la alerta
+                const modal = bootstrap.Offcanvas.getInstance(document.getElementById('modalSancion'));
+                modal.hide();
+            });
     }
 
     function quitarSancion(usuario) {
@@ -359,7 +371,13 @@
         const btn = fila.querySelector('button.btn-danger');
         btn.disabled = true;
 
-        alert(`Sanción quitada para ${usuario}`);
+        // Reemplazar el alert con SweetAlert
+        Swal.fire({
+            title: 'Sanción quitada',
+            text: `Sanción quitada para ${usuario}`,
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+        });
     }
 </script>
 

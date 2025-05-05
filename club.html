@@ -398,6 +398,8 @@
           </div>
           <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
               <form id="formCrearVotacion">
+                <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
+
                   <div class="form-group">
                       <label for="diasVotacion">Dias de votacion</label>
                       <input type="text" class="form-control" id="diasVotacion" placeholder="Ingrese el número de dias de votación" required>
@@ -518,8 +520,6 @@
 });
 </script>
 
-
-
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="font-weight-bold">Próximos Eventos</h3>
@@ -608,6 +608,8 @@
             </div>
             <div class="modal-body">
                 <form id="formActualizarClub">
+                  <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
+
                   <div class="form-group">
                       <label for="nombreClub">Nombre del club</label>
                       <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
@@ -650,26 +652,32 @@
                 <div class="form-group">
                     <label for="tituloLibro">Título del libro</label>
                     <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro" required>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
                 </div>
                 <div class="form-group">
                     <label for="autorLibro">Autor</label>
                     <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro" required>
-                </div>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
+                  </div>
                 <div class="form-group">
                     <label for="descripcionLibro">Descripción</label>
                     <textarea class="form-control" id="descripcionLibro" rows="3" placeholder="Breve descripción del libro" required></textarea>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
                 </div>
                 <div class="form-group">
                     <label for="fechaInicioLibro">Fecha de inicio</label>
                     <input type="date" class="form-control" id="fechaInicioLibro" required>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
                 </div>
                 <div class="form-group">
                     <label for="fechaFinLibro">Fecha de fin</label>
                     <input type="date" class="form-control" id="fechaFinLibro" required>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
                 </div>
                 <div class="form-group">
                     <label for="portadaLibro">Portada</label>
                     <input type="file" class="form-control-file" id="portadaLibro" accept="image/*" required>
+                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
                 </div>
                 <div class="form-group">
                   <label for="archivoLibro">Archivo del libro (Opcional)</label>
@@ -705,6 +713,8 @@
           <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
           <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
               <form id="formCrearEvento">
+                <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
+
                 <div class="form-group">
                     <label for="nombreEvento">Nombre del evento</label>
                     <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento" required>
@@ -1263,22 +1273,35 @@ let notificationCount = 3; // Número inicial de notificaciones
     function renderChart() {
       barContainer.innerHTML = '';
       const totalVotos = currentVotacion.Libro.reduce((sum, libro) => sum + libro.votos, 0) || 1;
-  
+
       currentVotacion.Libro.forEach(libro => {
         const porcentaje = (libro.votos / totalVotos) * 100;
-  
+
+        const barWrapper = document.createElement('div');
+        barWrapper.className = 'bar-wrapper';
+
+        // Crear la barra
         const bar = document.createElement('div');
         bar.className = 'bar';
-  
+
         const barFill = document.createElement('div');
         barFill.className = 'bar-fill';
         barFill.style.width = porcentaje + '%';
-        barFill.textContent = `${libro.name} — ${libro.votos} voto(s)`;
-  
+
         bar.appendChild(barFill);
-        barContainer.appendChild(bar);
+
+        // Crear el contenedor para el nombre y los votos, alineado a la derecha
+        const nameContainer = document.createElement('div');
+        nameContainer.className = 'bar-name-container';
+        nameContainer.textContent = `${libro.name} — ${libro.votos} voto(s)`;
+
+        // Añadir la barra y el contenedor del nombre al contenedor general
+        barWrapper.appendChild(bar);
+        barWrapper.appendChild(nameContainer);
+        barContainer.appendChild(barWrapper);
       });
     }
+
     function renderButtons() {
       voteButtons.innerHTML = '';
   

@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>ReadIt- Mi perfil</title>
+    <title>ReadIt- Perfil asociación</title>
     <link rel="icon" href="images/logo.png">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
@@ -128,7 +128,7 @@
             <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
-                <a href="myprofile.html">Mi perfil</a>
+                <a href="profileasociacion.html">Mi perfil</a>
                 <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
@@ -136,86 +136,44 @@
 </header>
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 
-<div class="bg-cover bg-center profile-banner" style="background-color: rgb(253, 236, 216); height: 300px;" >
+<div class="bg-cover bg-center profile-banner" style="background-color: rgb(253, 236, 216); height: 400px;" >
     <img src="" alt="" id="portada" class="card-img-top club-banner" style="height: 100%;">
 </div>
  <section id="datosusuario" class="mt-5">
     <div class="d-flex align-items-center ml-4 justify-content-between">
         <div>
             <img id="fotoPerfil" src="" alt="Foto de perfil"
-              class="rounded-circle position-absolute profile-pic">
+              class="rounded-circle position-absolute profile-pic" style="width: 300px; height: 300px; margin-top: -30vh; left:40vh;">
       
-            <div class="profile-username">
-              <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-4"></h2>
-              <p id="descripcion" class="mb-1" style="margin-top: 10px;"></p>
+            <div class="profile-username" style="margin-left: 62vh; margin-top: -4vh;">
+              <h1 id="NombreUsuario" class="font-weight-bold mb-0 mr-4"></h1>
+              <h4 id="descripcion" class="mb-1" style="margin-top: 10px;">hola</h4>
               <p id="fechaRegistro" class="mb-1"></p>
+              <h5 id="ubicacion" class="mb-1"><strong>Ubicación:</strong> lodelameño</h5>
             </div>
         
         </div>
    
-    <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">
-      Editar mi perfil
-    </button>
+    <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">Editar perfil</button>
     </div>
   </section>
 
-<nav class="bg-white shadow-sm">
-    <ul class="nav justify-content-right p-3">
-        <li class="nav-item">
-            <a id="tab-mis-clubes" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Clubes</a>
-        </li>
-        <li class="nav-item">
-            <a id="tab-mis-insignias" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-insignias', 'tab-mis-insignias')">Insignias</a>
-        </li>
-    </ul>
-</nav>
+<div class="bg-white shadow-sm border-bottom" style="margin-top: 5vh; padding: 1rem 1.5rem;">
+    <span class="text-dark font-weight-bold">Eventos</span>
+</div>
 
-<main class="p-4">
-    <section id="mis-clubes">
-        <h2 class="font-weight-bold mb-3">Clubes de <i class="titulos"></i></h2>
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                    <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                    <div class="club-footer">
-                        <span>Romántica</span>
-                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
-                        <div class="options-menu" id="options-menu-1">
-                            <a href="#">Opción 1</a>
-                            <a href="#">Opción 2</a>
-                            <a href="#">Opción 3</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-4">
-                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
-                    <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
-                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                    <div class="club-footer">
-                        <span>Ficción</span>
-                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
-                        <div class="options-menu" id="options-menu-2">
-                            <a href="#">Opción 1</a>
-                            <a href="#">Opción 2</a>
-                            <a href="#">Opción 3</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section id="mis-insignias" style="display: none;">
-        <h2 class="font-weight-bold mb-4">Insignias de <i class="titulos"></i></h2>
-        <div id="insignias-container" class="d-flex flex-wrap">
-            <!-- Badges will be dynamically inserted here -->
-        </div>
-    </section>
+<section id="seccionEventos" >
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="font-weight-bold">Próximos Eventos</h3>
+        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
+            <i class="fas fa-plus"></i> Crear Evento
+        </button>
+    </div>
+    <div id="eventos">
+
+    </div>      
+</section>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -393,35 +351,43 @@
       <div class="modal-content">
         <form id="formEditarPerfil">
           <div class="modal-header">
-            <h5 class="modal-title">Editar Perfil</h5>
+            <h5 class="modal-title">Editar Perfil - Asociación</h5>
             <button type="button" class="close" onclick="hideModal('modalEditarPerfil')" aria-label="Cerrar">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-  
+          <small class="form-text text-muted" style="text-align: right; margin-right: 5vh;">* Todos los campos son obligatorios *</small>
+
             <!-- Nombre de usuario -->
-            <div class="modal-body">
-            <div class="form-group">
-                <label for="nombre">Nombre de usuario</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="" required>
-                <small class="form-text text-muted">* Este campo es obligatorio.</small>
-            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <div class="form-group">
+                    <label for="nombre">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                
             <div class="form-group">
                 <label for="descripcionModal">Descripción</label>
                 <textarea class="form-control" id="descripcionModal" name="descripcionModal"></textarea>
             </div>
   
-            <!-- Ubicación -->
+            <!-- Foto de portada -->
             <div class="form-group">
                 <label for="portadaUsuario">Portada</label>
                 <input type="file" class="form-control-file" id="portadaUsuario">
             </div>
-  
-            <!-- Fecha de registro (no editable) -->
+
+            <!-- Foto de perfil-->
             <div class="form-group">
                 <label for="fotoPerfilM">Foto de perfil</label>
                 <input type="file" class="form-control-file" id="fotoPerfilM">
             </div>
+
+            <div class="form-group">
+                <label for="ubicacionUsuario">Ubicación</label>
+                <input type="text" class="form-control" id="ubicacionUsuario" placeholder="Ubicación detectada automáticamente" readonly>
+                <button type="button" class="btn btn-secondary mt-2" onclick="obtenerUbicacion()">Detectar ubicación</button>
+            </div>
+
         </div>
           </form>
   
@@ -515,6 +481,180 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+    document.getElementById('btnCrearEvento').addEventListener('click', () => {
+      const form = document.getElementById('formCrearEvento');
+      if (!form.checkValidity()) {
+        form.reportValidity(); // Muestra mensajes nativos de validación del navegador
+        return;
+      }
+      const nombreEvento = document.getElementById('nombreEvento').value.trim();
+      const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
+      const fechaEvento = document.getElementById('fechaEvento').value;
+      const horaEvento = document.getElementById('horaEvento').value;
+      const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
+      const lugarEvento = document.getElementById('lugarEvento').value.trim();
+      const portadaEventoFile = document.getElementById('portadaEvento').files[0];
+    
+      if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento) {
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Por favor, complete todos los campos obligatorios.',
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        });
+        return;
+      }
+    
+      if (portadaEventoFile) {
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          const portadaBase64 = event.target.result;
+    
+          const eventoData = {
+            Evento: nombreEvento,
+            Descripcion: descripcionEvento,
+            Fecha: fechaEvento,
+            Hora: horaEvento,
+            Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
+            info: lugarEvento,
+            Portada: portadaBase64,
+            clubId: club
+          };
+    
+          try {
+            const token = localStorage.getItem('jwtToken');
+            const response = await fetch('http://localhost:3050/eventos', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(eventoData)
+            });
+    
+            if (response.ok) {
+              Swal.fire({
+                title: '¡Éxito!',
+                text: 'Evento creado exitosamente',
+                icon: 'success',
+                timer: 5000,
+                willClose: () => {
+                  hideModal('modalCrearEvento');
+                  location.reload();
+                }
+              });
+            } else {
+              const errorData = await response.json();
+              Swal.fire({
+                title: '¡Error!',
+                text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+              });
+            }
+          } catch (error) {
+            Swal.fire({
+              title: '¡Error!',
+              text: 'Error al crear el evento: ' + error.message,
+              icon: 'error',
+              confirmButtonText: 'Intentar de nuevo'
+            });
+          }
+        };
+        reader.readAsDataURL(portadaEventoFile);
+      } else {
+        const eventoData = {
+          Evento: nombreEvento,
+          Descripcion: descripcionEvento,
+          Fecha: fechaEvento,
+          Hora: horaEvento,
+          Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
+          info: lugarEvento,
+          clubId: club
+        };
+    
+        (async () => {
+          try {
+            const token = localStorage.getItem('jwtToken');
+            const response = await fetch('http://localhost:3050/eventos', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(eventoData)
+            });
+    
+            if (response.ok) {
+              Swal.fire({
+                title: '¡Éxito!',
+                text: 'Evento creado exitosamente',
+                icon: 'success',
+                timer: 5000,
+                willClose: () => {
+                  hideModal('modalCrearEvento');
+                  location.reload();
+                }
+              });
+            } else {
+              const errorData = await response.json();
+              Swal.fire({
+                title: '¡Error!',
+                text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+              });
+            }
+          } catch (error) {
+            Swal.fire({
+              title: '¡Error!',
+              text: 'Error al crear el evento: ' + error.message,
+              icon: 'error',
+              confirmButtonText: 'Intentar de nuevo'
+            });
+          }
+        })();
+      }
+    });
+    </script>
+    
+    <script>
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    document.getElementById("ubicacionUsuario").value = `Lat: ${lat}, Lon: ${lon}`;
+    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Ubicación obtenida',
+                        text: `Lat: ${lat}, Lon: ${lon}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }, function(error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo obtener la ubicación.',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Navegador no compatible',
+                    text: 'La geolocalización no es compatible con este navegador.',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }
+        }
+    </script>
+    
 </body>
 </html>
 <script>

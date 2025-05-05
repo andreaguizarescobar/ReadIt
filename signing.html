@@ -186,13 +186,13 @@
       <script>
         document.getElementById('registerForm').addEventListener('submit', async function(event) {
           event.preventDefault();
-
+      
           const name = document.getElementById('registerName').value.trim();
           const email = document.getElementById('registerEmail').value.trim();
           const password = document.getElementById('registerPassword').value;
           const confirmPassword = document.getElementById('registerConfirmPassword').value;
-          const reader = new FileReader();
           const picture = "images/fotoperfil.jpg";
+      
           if (password !== confirmPassword) {
             Swal.fire({
               icon: 'error',
@@ -201,7 +201,7 @@
             });
             return;
           }
-
+      
           try {
             const isAssociation = document.getElementById('isAssociation').checked;
             const ubicacion = isAssociation ? document.getElementById('associationLocation').value.trim() : null;
@@ -210,35 +210,50 @@
               bodyData.tipo = "asociacion";
               bodyData.ubicacion = ubicacion;
             }
+      
             const response = await fetch('http://localhost:3050/usuarios/registrar', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(bodyData),
             });
-
+      
             const data = await response.json();
             console.log(data);
+      
             if (response.ok) {
               localStorage.setItem('jwtToken', data.token);
               Swal.fire({
                 icon: 'success',
                 title: 'Registro exitoso',
                 text: 'Verifica tu correo electrónico para iniciar sesión',
-              });
-
-              fetch(`http://localhost:3050/usuarios/${data.user._id}/insignia/680e4de94d4e9715973c6ac4/add`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+                timer: 3000, // Temporizador de 3 segundos
+                showConfirmButton: false, // Sin botón de confirmación
+              }).then(() => {
+                // Asignar insignia automáticamente
+                fetch(`http://localhost:3050/usuarios/${data.user._id}/insignia/680e4de94d4e9715973c6ac4/add`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                });
+                window.location.href = "main.html"; // Redireccionar a la página principal después de 3 segundos
               });
             } else {
-              alert(data.error || 'Error en el registro');
+              Swal.fire({
+                icon: 'error',
+                title: 'Error en el registro',
+                text: data.error || 'Ocurrió un error durante el registro',
+              });
             }
           } catch (error) {
             console.error('Error en la solicitud de registro:', error);
-            alert('Error en la solicitud de registro');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema con la solicitud de registro',
+            });
           }
         });
       </script>
+      
     </div>
   </div>
 
@@ -264,7 +279,7 @@
     });
   </script>
   
-  <script>
+  <script>  
     function handleCredentialResponse(response) {
       const token = response.credential;
       console.log(token);
@@ -277,19 +292,27 @@
       .then(data => {
         console.log('Usuario:', data.user);
         localStorage.setItem('jwtToken', data.token);
-        alert(`Bienvenido ${data.user.name}`);
-        fetch(`http://localhost:3050/usuarios/${data.user.id}/insignia/680e4de94d4e9715973c6ac4/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+  
+        // Usar SweetAlert en lugar de alert()
+        Swal.fire({
+          title: `Bienvenido ${data.user.name}`,
+          icon: 'success',
+          timer: 2000, // El temporizador de 2 segundos
+          showConfirmButton: false,
+        }).then(() => {
+          fetch(`http://localhost:3050/usuarios/${data.user.id}/insignia/680e4de94d4e9715973c6ac4/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          window.location.href = "main.html";
         });
-        window.location.href = "main.html";
       })
       .catch(err => {
         console.error('Error al iniciar sesión:', err);
       });
     }
   </script>
-
+  
   <!-- USUARIO O ASOCIACION-->
   <script>
     document.getElementById('isAssociation').addEventListener('change', function() {

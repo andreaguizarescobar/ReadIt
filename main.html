@@ -46,14 +46,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('jwtToken');
             if (!token || isTokenExpired(token)) {
-                alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-                window.location.href = 'signing.html';
+                Swal.fire({
+                    title: 'Sesión expirada',
+                    text: 'Por favor, inicia sesión de nuevo.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                }).then(() => {
+                    window.location.href = 'signing.html';
+                });
                 return;
             }
+
             obtenerBestsellers();
-            tokenData = decodeToken(token);
-            img = document.getElementById('imgperfil');
-            if(tokenData && tokenData.picture) {
+
+            const tokenData = decodeToken(token);
+            const img = document.getElementById('imgperfil');
+            if (tokenData && tokenData.picture) {
                 img.src = tokenData.picture;
             }
         });
@@ -482,6 +490,8 @@
             </div>
             <div class="modal-body">
                 <form id="formCrearClub">
+                    <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
+
                     <div class="form-group">
                         <label for="nombreClub">Nombre del club</label>
                         <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" required>
@@ -648,7 +658,12 @@
             })
             .catch(error => {
                 console.error("Error al crear el club:", error);
-                alert("Hubo un error al crear el club");
+                Swal.fire({
+                    title: 'Hubo un error al crear el club',
+                    text: error.message || 'Por favor, intente nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar',
+                });
             });
         };
     }
