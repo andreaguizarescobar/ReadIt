@@ -74,10 +74,14 @@
             }).then(() => {
               if (data.user.tipo && data.user.tipo === "asociacion") {
                 window.location.href = "mainasociacion.html";
-              } else if(data.user.tipo && data.user.tipo === "admin"){
+              } else if(data.user.tipo && (data.user.tipo === "admin" || data.user.tipo === "adminPrincipal")) {
                 window.location.href = "mainmoderador.html";
               } else {
-                window.location.href = "main.html";
+                if (data.user.estado.status === 'Activo') {
+                  window.location.href = "main.html";
+                } else {
+                  window.location.href = "banneduser.html";
+                }
               }
             });
           } else {
@@ -130,7 +134,7 @@
         </div>
 
         <div class="mb-3 text-end">
-          <a class="text-warning" href="#">¿Olvidaste tu contraseña?</a>
+          <a class="text-warning" href="forgot-password.html">¿Olvidaste tu contraseña?</a>
         </div>
         <div style="margin-bottom: 10px;">
           <button class="btn btn-primary w-100" type="submit">Iniciar sesión</button>
@@ -304,7 +308,17 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
           });
-          window.location.href = "main.html";
+          if (data.user.tipo && data.user.tipo === "asociacion") {
+                window.location.href = "mainasociacion.html";
+              } else if(data.user.tipo && (data.user.tipo === "admin" || data.user.tipo === "adminPrincipal")) {
+                window.location.href = "mainmoderador.html";
+              } else {
+                if (data.user.estado.status === 'Activo') {
+                  window.location.href = "main.html";
+                } else {
+                  window.location.href = "banneduser.html";
+                }
+              }
         });
       })
       .catch(err => {

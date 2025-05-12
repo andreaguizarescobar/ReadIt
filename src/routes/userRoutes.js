@@ -22,7 +22,12 @@ router.post("/registrar", userController.register);
 router.get("/verify-email", userController.verifyEmail);
 router.post("/login", userController.login);
 
+router.post("/forgot-password", userController.forgotPassword);
+router.post("/reset-password", userController.resetPassword);
+
+router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUserById);
+router.put("/rol/:id", userController.updateRol);
 router.put("/:id", upload.fields([
   { name: "fotoPerfil", maxCount: 1 },
   { name: "portadaUsuario", maxCount: 1 }
@@ -36,5 +41,7 @@ router.get("/:userId/club/:clubId/rol", userController.getUserClubRole);
 router.delete("/:userId/club/:clubId/remove-miembro", userController.removeClubMember);
 
 router.post("/:userId/insignia/:insigniaId/add", userController.addInsigniaToUser);
+router.post("/sancion", userController.applySanctionAndDeleteComment);
+router.post("/quitarbaneo", userController.removeBan);
 
 export default router;

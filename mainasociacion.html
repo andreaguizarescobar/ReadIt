@@ -13,6 +13,54 @@
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
 
     <script>
+
+        function isTokenExpired(token) {
+            if (!token) return true;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp;
+                if (!exp) return true;
+                const now = Math.floor(Date.now() / 1000);
+                return now >= exp;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function decodeToken(token) {
+            if (!token) return null;
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                return JSON.parse(payloadJson);
+            } catch (e) {
+                console.error('Error decoding token:', e);
+                return null;
+            }
+        }
+
+        let tokenData;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwtToken');
+            if (!token || isTokenExpired(token)) {
+                Swal.fire({
+                    title: 'Sesión expirada',
+                    text: 'Por favor, inicia sesión de nuevo.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                }).then(() => {
+                    window.location.href = 'signing.html';
+                });
+                return;
+            }
+            tokenData = decodeToken(token);
+            const img = document.getElementById('imgperfil');
+            if (tokenData && tokenData.picture) {
+                img.src = tokenData.picture;
+            }
+        });
+
         function showSection(sectionId, tabId) {
             document.getElementById('inicio').style.display = 'none';
             document.getElementById('seccionEventos').style.display = 'none';
@@ -68,30 +116,14 @@
         <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
         <h1 class="text-dark font-weight-bold ml-2">Read-It - Asociación cultural</h1>
     </div>
-    <div class="d-flex align-items-center">
-        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
-        <button class="btn btn-dark rounded-right" >
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
-            <i class="fas fa-bell text-dark mr-3" style="font-size: 1.5rem;"></i>
-            <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -5px; right: 5px; display: none;">3</span>
-            
-            <div id="notification-menu" class="notification-menu">
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
-            </div>
-        </div>        
+    <div class="d-flex justify-content-between align-items-center mb-3">      
     
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
-                <a href="myprofile.html">Mi perfil</a>
+                <a href="profileasociacion.html">Ver perfil</a>
                 <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
@@ -185,7 +217,7 @@
 <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="font-weight-bold">Próximos Eventos</h3>
-        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
+        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento">
             <i class="fas fa-plus"></i> Crear Evento
         </button>
     </div>
@@ -198,7 +230,7 @@
 </main>
  
 
-<footer class="bg-dark text-white text-center py-3">
+<footer class="bg-dark text-white text-center py-3" style="position: fixed; bottom: 0; width: 100%;">
     <div class="container">
     <p class="mb-1">
         📚 connectReadit@gmail.com | 
@@ -352,78 +384,139 @@ window.addEventListener('click', function(e) {
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
-
 <script>
-let notificationCount = 3; // Número inicial de notificaciones
+document.getElementById('btnCrearEvento').addEventListener('click', async () => {
+    const nombreEvento = document.getElementById('nombreEvento').value.trim();
+    const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
+    const fechaEvento = document.getElementById('fechaEvento').value;
+    const horaEvento = document.getElementById('horaEvento').value;
+    const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
+    const lugarEvento = document.getElementById('lugarEvento').value.trim();
+    const portadaEventoFile = document.getElementById('portadaEvento').files[0];
 
-    function updateNotificationBadge() {
-        let badge = document.getElementById('notification-badge');
-        if (notificationCount > 0) {
-            badge.textContent = notificationCount;
-            badge.style.display = 'inline-block';
+    if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !tipoEvento || !lugarEvento) {
+        alert('Por favor, complete todos los campos requeridos.');
+        return;
+    }
+
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        alert('No se encontró token de autenticación. Por favor, inicie sesión.');
+        return;
+    }
+
+    // Function to convert file to base64
+    const fileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    };
+
+    let portadaBase64 = '';
+    if (portadaEventoFile) {
+        try {
+            portadaBase64 = await fileToBase64(portadaEventoFile);
+        } catch (error) {
+            alert('Error al leer la imagen de portada: ' + error.message);
+            return;
+        }
+    }
+
+    const eventoData = {
+        Evento: nombreEvento,
+        Descripcion: descripcionEvento,
+        Fecha: fechaEvento,
+        Hora: horaEvento,
+        Tipo: tipoEvento,
+        info: lugarEvento,
+        asociacion: tokenData.id,
+        Portada: portadaBase64
+    };
+
+    try {
+        const response = await fetch('http://localhost:3050/eventos/asociacion/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(eventoData)
+        });
+
+        if (response.ok) {
+            alert('Evento creado exitosamente.');
+            hideModal('modalCrearEvento');
+            document.getElementById('nombreEvento').value = '';
+            document.getElementById('descripcionEvento').value = '';
+            document.getElementById('fechaEvento').value = '';
+            document.getElementById('horaEvento').value = '';
+            document.querySelector('input[name="tipoEvento"][value="virtual"]').checked = true;
+            document.getElementById('lugarEvento').value = '';
+            document.getElementById('portadaEvento').value = '';
         } else {
-            badge.style.display = 'none';
+            const errorData = await response.json();
+            alert('Error al crear el evento: ' + (errorData.error || 'Error desconocido'));
         }
+    } catch (error) {
+        alert('Error al crear el evento: ' + error.message);
     }
+});
 
-    function toggleNotificationMenu() {
-        let menu = document.getElementById('notification-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function markAsRead(event, element) {
-        event.stopPropagation(); // Evita que el clic cierre el menú
-        if (element.classList.contains('unread')) {
-            element.classList.remove('unread');
-            element.style.background = 'white'; // Quita el resaltado
-            notificationCount--;
-            updateNotificationBadge();
+async function fetchUpcomingEventos() {
+    try {
+        const response = await fetch(`http://localhost:3050/eventos/asociacion/${tokenData.id}`);
+        if (response.ok) {
+            const eventos = await response.json();
+            renderEventos(eventos);
+        } else {
+            alert('Error al obtener los eventos.');
         }
+    } catch (error) {
+        alert('Error al obtener los eventos: ' + error.message);
     }
+}
 
-    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
-    updateNotificationBadge();
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:3050/clubes")
-        .then(response => response.json())
-        .then(data => {
-            let clubesContainer = document.getElementById("clubes-container"); 
-            clubesContainer.innerHTML = ""; // Limpiar contenido previo
-            console.log(data);
-            data.forEach(club => {
-                let clubCard = `
-                    <div class="col-md-6 mb-4">
-                        <div class="card club-banner-container" onclick="goToClubPage('${club._id}')">
-                            <div class="card-header bg-warning text-white text-center font-weight-bold">${club.NombreClub}</div>
-                            <img class="card-img-top club-banner" src="${club.Portada}" alt="${club.NombreClub}"/>
-                            <i class="far fa-heart favorite-icon" onclick="toggleFavorite(event, this)"></i>
-                            <div class="club-footer">
-                                <span>${club.Genero}</span>
-                            </div>
+function renderEventos(eventos) {
+    const eventosDiv = document.getElementById('eventos');
+    eventosDiv.innerHTML = '';
+    if (eventos.length === 0) {
+        eventosDiv.innerHTML = '<p>No hay eventos próximos.</p>';
+        return;
+    }
+    eventos.forEach(evento => {
+        let eventoCard = `
+                <div class="container mt-4">
+                    <div class="row align-items-center event-card">
+                        <div class="col-md-4">
+                            <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>${evento.Evento}</h5>
+                            <p>${evento.Descripcion}</p>
+                            <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                            <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                            ${evento.Tipo === 'virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
+                            '<p>Direccion: '+evento.info+'</p>' }
                         </div>
                     </div>
-                `;
-                clubesContainer.innerHTML += clubCard;
-            });
-        })
-        .catch(error => console.error("Error al obtener los clubes:", error));
-        fetchUserClubs();
+                </div>`;
+            eventosDiv.innerHTML += eventoCard;
     });
+}
 
-    function goToClubPage(NombreClub) {
-        sessionStorage.setItem('selectedClub', NombreClub);
-        window.location.href = 'club.html';
-    }
+document.getElementById('tab-eventos').addEventListener('click', () => {
+    fetchUpcomingEventos();
+    showSection('seccionEventos', 'tab-eventos');
+});
 
-    function toggleFavorite(event, element) {
-        event.stopPropagation();
-        element.classList.toggle("favorited");
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tab-eventos').classList.contains('active-tab')) {
+        fetchUpcomingEventos();
     }
+});
 </script>
+</body>
+</html>

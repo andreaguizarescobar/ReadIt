@@ -10,7 +10,8 @@ export const registerUser = async (req, res) => {
       email: user.email, 
       name: user.name, 
       picture: user.picture,
-      sub: user.sub
+      sub: user.sub,
+      tipo: user.tipo
     });
     res.json({ message: 'Login exitoso', user, token: jwtToken });
   } catch (err) {
@@ -54,6 +55,7 @@ export const login = async (req, res) => {
       email: user.email,
       name: user.name,
       picture: user.picture,
+      tipo: user.tipo,
     });
     res.json({ message: 'Login exitoso', user, token: jwtToken });
   } catch (error) {
@@ -69,6 +71,26 @@ export const getUserById = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateRol = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tipo } = req.body;
+    const user = await userService.updateRol(id, tipo);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+}
 
 export const updateUser = async (req, res) => {
   try {
@@ -145,5 +167,70 @@ export const addInsigniaToUser = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+import * as comentService from "../services/comentService.js";
+
+export const applySanctionAndDeleteComment = async (req, res) => {
+  try {
+    const { userId, comentarioId, status, razon, duracion, finBan } = req.body;
+    if (!userId || !comentarioId) {
+      return res.status(400).json({ message: "userId and comentarioId are required" });
+    }
+
+    // Apply sanction to user with detailed data
+    const sanctionedUser = await userService.applySanctionToUser(userId, {
+      status,
+      razon,
+      duracion,
+      finBan
+    });
+
+    // Remove comment reference from libro (do not delete comment)
+    await comentService.removeComentarioReferenceFromLibro(comentarioId);
+
+    res.status(200).json({ message: "Sanction applied and comment reference removed", user: sanctionedUser });
+  } catch (error) {
+    res.status(500).json({ message: "Error applying sanction and removing comment reference", error: error.message });
+  }
+};
+
+export const removeBan = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+    const updatedUser = await userService.removeBanFromUser(userId);
+    res.status(200).json({ message: "Ban removed", user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: "Error removing ban", error: error.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    await userService.forgotPassword(email);
+    res.status(200).json({ message: "Correo de restablecimiento enviado" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+    await userService.resetPassword(token, newPassword);
+    res.status(200).json({ message: "Contraseña actualizada exitosamente" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

@@ -7,7 +7,8 @@ const EventSchema = new mongoose.Schema({
       Fecha: String,
       Hora: String,
       Tipo: String,
-      info: String
+      info: String,
+      asociacion: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 const Evento = mongoose.model("Eventos", EventSchema, "Eventos");

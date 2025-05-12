@@ -19,6 +19,55 @@
     </div>
 </header>
 
+<script>
+    function decodeToken(token) {
+        if (!token) return null;
+        try {
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            return JSON.parse(payloadJson);
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return null;
+        }
+    }
+
+    async function fetchBanInfo(userId, token) {
+        try {
+            const response = await fetch(`http://localhost:3050/usuarios/${userId}`);
+            if (!response.ok) {
+                throw new Error('Error fetching user info');
+            }
+            const userData = await response.json();
+            return userData.estado;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            return null;
+        }
+    }
+
+    function updateBanInfo(estado) {
+
+        const sancionInfoDiv = document.querySelector('.sancion-info');
+        sancionInfoDiv.innerHTML = `
+            <p><strong>Tipo de sanción:</strong> ${estado.status}${estado.duracion ? ' por ' + estado.duracion : ''}.</p>
+            <p><strong>Motivo:</strong> ${estado.razon || 'No especificado'}.</p>
+            ${estado.finBan ? `<p><strong>Fin de la sanción:</strong> ${new Date(estado.finBan).toLocaleDateString()}</p>` : ''}
+        `;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('jwtToken');
+        const tokenData = decodeToken(token);
+        if (!tokenData || !tokenData.id) {
+            console.error('No valid token or user ID found');
+            return;
+        }
+        const estado = await fetchBanInfo(tokenData.id, token);
+        updateBanInfo(estado);
+    });
+</script>
+
 <!-- Separador -->
 <div class="bg-dark" style="height: 6vh;"></div>
 
@@ -27,12 +76,10 @@
     <div class="card border-0 shadow-lg p-5">
         <i class="fas fa-user-slash fa-5x text-danger mb-4"></i>
         <h1 class="font-weight-bold text-danger">Acceso Restringido</h1>
-        <p class="lead text-muted mt-4">Tu cuenta ha sido <strong>baneada / restringida (poner según sea el caso)</strong> de Read-It.</p>
+        <p class="lead text-muted mt-4">Tu cuenta ha sido <strong>baneada / restringida</strong> de Read-It.</p>
 
         <div class="sancion-info">
-            <p><strong>Tipo de sanción:</strong> Suspendida por 5 días.</p>
-            <p>(Las sanciones pueden variar entre 5 días, 10 días o suspensión definitiva según la gravedad.)</p>
-            <p><strong>Motivo:</strong> Uso de lenguaje inapropiado. (Según sea el caso)</p> <!-- Aquí puedes cambiar el motivo dinámicamente -->
+            <p>Cargando información de la sanción...</p>
         </div>
 
         <p class="text-muted mt-4">Si crees que se trata de un error o deseas más información, puedes contactarnos o iniciar un proceso de apelación enviando un correo a:</p>

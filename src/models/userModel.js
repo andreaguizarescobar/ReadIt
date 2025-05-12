@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   picture: {
     type: String,
   },
-  tipo: String,
+  tipo: {type: String, default: 'lector'},
   descripcion: {
     type: String,
     default: "Hola!, Me gusta leer",
@@ -46,6 +46,18 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Clubes',
   }],
+  estado: {
+    status: { type: String, default: "Activo" }, // e.g., "Activo", "Suspendido", "Baneado"
+    razon: { type: String, default: "" },
+    duracion: { type: String, default: "" }, // duration in days
+    finBan: { type: Date, default: null }
+  },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  }
 });
 
 const User = mongoose.model('User', userSchema, "User");

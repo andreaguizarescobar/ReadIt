@@ -113,3 +113,24 @@ export const decrementLikeRespuesta = async (comentarioId, respuestaId, userId) 
   await comentario.save();
   return comentario;
 };
+
+export const deleteComentario = async (comentarioId) => {
+  const comentario = await Comentario.findById(comentarioId);
+  if (!comentario) {
+    throw new Error("Comentario no encontrado");
+  }
+  await Comentario.findByIdAndDelete(comentarioId);
+  return true;
+};
+
+export const removeComentarioReferenceFromLibro = async (comentarioId) => {
+  // Find the libro that contains the comentarioId in its comentarios array
+  const libro = await Libro.findOne({ comentarios: comentarioId });
+  if (!libro) {
+    throw new Error("Libro no encontrado para el comentario");
+  }
+  // Remove the comentarioId from the comentarios array
+  libro.comentarios = libro.comentarios.filter(id => id.toString() !== comentarioId.toString());
+  await libro.save();
+  return true;
+};

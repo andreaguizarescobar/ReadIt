@@ -20,11 +20,40 @@ export const createEvento = async (req, res) => {
   }
 };
 
+export const createEventoAsociacion = async (req, res) => {
+  try {
+    const data = req.body;
+    const nuevoEvento = await eventoService.createEventoAsociacion(data);
+    res.status(201).json(nuevoEvento);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getEventoById = async (req, res) => {
   try {
     const evento = await eventoService.getEventoById(req.params.id);
     if (!evento) return res.status(404).json({ message: "Evento no encontrado" });
     res.status(200).json(evento);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUpcomingEventosByAsociacion = async (req, res) => {
+  try {
+    const asociacionId = req.params.id;
+    const eventos = await eventoService.getUpcomingEventosByAsociacion(asociacionId);
+    res.status(200).json(eventos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAllUpcomingEventosWithAsociacion = async (req, res) => {
+  try {
+    const eventos = await eventoService.getAllUpcomingEventosWithAsociacion();
+    res.status(200).json(eventos);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

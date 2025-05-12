@@ -139,6 +139,19 @@ export const getUserById = async (id) => {
   return user;
 };
 
+export const getAllUsers = async () => {
+  const users = await User.find({tipo: {$nin: ['asociacion', 'adminPrincipal']}});
+  return users;
+};
+
+export const updateRol = async (id, tipo) => {
+  const user = await User.findByIdAndUpdate(id, {tipo: tipo}, {new: true});
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+    return user;
+}
+
 export const updateUser = async (id, data) => {
   const user = await User.findById(id);
   if (!user) {
@@ -153,6 +166,32 @@ export const updateUser = async (id, data) => {
 
   // Add other fields as needed
 
+  await user.save();
+  return user;
+};
+
+export const applySanctionToUser = async (userId, sanctionData) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  user.estado.status = sanctionData.status || "Suspendido";
+  user.estado.razon = sanctionData.razon || "";
+  user.estado.duracion = sanctionData.duracion || "";
+  user.estado.finBan = sanctionData.finBan || null;
+  await user.save();
+  return user;
+};
+
+export const removeBanFromUser = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  user.estado.status = "Activo";
+  user.estado.razon = "";
+  user.estado.duracion = "";
+  user.estado.finBan = null;
   await user.save();
   return user;
 };
@@ -210,4 +249,76 @@ export const addInsigniaToUser = async (userId, insigniaId) => {
     await user.save();
   }
   return user;
+};
+
+// Forgot password function
+import crypto from "crypto";
+
+export const forgotPassword = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  // Generate reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Set reset token and expiration (1 hour)
+  user.resetPasswordToken = resetTokenHash;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+  await user.save();
+
+  // Send reset email
+  await sendResetPasswordEmail(user.email, user.name, resetToken);
+
+  return true;
+};
+
+async function sendResetPasswordEmail(email, name, token) {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",  
+    auth: {
+      user: "connectReadit@gmail.com",
+      pass: "addalnjufqpnkwoi"
+    },
+  });
+
+  const resetUrl = `${CLIENT_URL}/reset-password?token=${token}`;
+
+  let mailOptions = {
+    from: "ReadIt",
+    to: email,
+    subject: "Restablecer contraseña",
+    text: `Hola ${name},\n\nPara restablecer tu contraseña, haz clic en el siguiente enlace:\n${resetUrl}\n\nSi no solicitaste este cambio, ignora este correo.\n\nGracias!`,
+    html: `<p>Hola ${name},</p><p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>Si no solicitaste este cambio, ignora este correo.</p><p>Gracias!</p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+export const resetPassword = async (token, newPassword) => {
+  const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken: resetTokenHash,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new Error('Token inválido o expirado');
+  }
+
+  // Hash new password and update
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+
+  // Clear reset token fields
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+
+  await user.save();
+
+  return true;
 };

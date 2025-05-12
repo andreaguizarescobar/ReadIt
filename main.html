@@ -59,7 +59,7 @@
 
             obtenerBestsellers();
 
-            const tokenData = decodeToken(token);
+            tokenData = decodeToken(token);
             const img = document.getElementById('imgperfil');
             if (tokenData && tokenData.picture) {
                 img.src = tokenData.picture;
@@ -77,6 +77,10 @@
             document.getElementById('tab-mis-clubes').classList.remove('active-tab');
             document.getElementById('tab-eventos').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
+
+            if(sectionId === 'seccionEventos') {
+                fetchAndDisplayEventosAsociacion();
+            }
         }
 
         function toggleProfileMenu() {
@@ -368,9 +372,7 @@
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="font-weight-bold">Eventos por asociaciones culturales</h3>
-        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
-            <i class="fas fa-plus"></i> Crear Evento
-        </button>
+        
     </div>
     <div id="eventos">
 
@@ -439,44 +441,7 @@
       }
     });
     </script>
-    
-<!-- Modal Subir Libro -->
-<div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir libro</h5>
-                <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="tituloLibro">Título del libro</label>
-                        <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro">
-                    </div>
-                    <div class="form-group">
-                        <label for="autorLibro">Autor</label>
-                        <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro">
-                    </div>
-                    <div class="form-group">
-                        <label for="portadaLibro">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaLibro">
-                    </div>
-                    <div class="form-group">
-                        <label for="archivoLibro">Archivo Libro</label>
-                        <input type="file" class="form-control-file" id="archivoLibro">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
-                <button type="button" class="btn btn-primary">Subir libro</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Modal Crear Club -->
 <div class="modal" id="modalCrearClub" tabindex="-1" role="dialog">
@@ -518,86 +483,6 @@
         </div>
     </div>
 </div>
-
-<div id="modalLibro" class="modalLibro">
-    <div class="modal-contentLibro" id="modalContentLibro">
-      <h2 id="modalTitle"></h2>
-      <p id="modalAuthor"></p>
-      <img id="modalImage" src="" alt="">
-      <div id="modalButtons"></div>
-      <p id="modalDesc"></p>
-      <button onclick="hideModal('modalLibro')" class="btnLibro">Cerrar</button>
-    </div>
-  </div>
-
-
-<!-- Modal Crear Evento -->
-<div class="modal" id="modalCrearEvento" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Crear evento</h5>
-                <button type="button" class="close" onclick="hideModal('modalCrearEvento')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            
-            <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
-            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-                <form>
-                    <div class="form-group">
-                        <label for="nombreEvento">Nombre del evento</label>
-                        <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento">
-                    </div>
-                    <!-- Descripción del evento -->
-                    <div class="form-group">
-                      <label for="descripcionEvento">Descripción del evento</label>
-                      <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="fechaEvento">Fecha del evento</label>
-                        <input type="date" class="form-control" id="fechaEvento">
-                    </div>
-  
-                    <div class="form-group">
-                        <label for="horaEvento">Hora del evento</label>
-                        <input type="time" class="form-control" id="horaEvento">
-                    </div>
-  
-                    <!-- Tipo de evento -->
-                    <div class="form-group">
-                        <label>Tipo de evento</label>
-                        <div>
-                            <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()">
-                            <label for="virtual">Virtual</label>
-                            
-                            <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()">
-                            <label for="presencial">Presencial</label>
-                        </div>
-                    </div>
-  
-                    <!-- Campo dinámico: Lugar o Link -->
-                    <div class="form-group">
-                        <label id="labelLugar">Link a videollamada</label>
-                        <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada">
-                    </div>
-  
-                    <div class="form-group">
-                        <label for="portadaEvento">Portada</label>
-                        <input type="file" class="form-control-file" id="portadaEvento">
-                    </div>
-                </form>
-            </div>
-  
-            <!-- Fijar el footer para que siempre se vea -->
-            <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10;">
-                <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearEvento')">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnCrearEvento">Crear evento</button>
-            </div>
-        </div>
-    </div>
-  </div>
-  
   
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -797,5 +682,37 @@ let notificationCount = 3; // Número inicial de notificaciones
 
       modal.style.display = 'flex';
     }
+
+     function fetchAndDisplayEventosAsociacion() {
+    fetch('http://localhost:3050/eventos/asociacion/')
+        .then(response => response.json())
+        .then(eventos => {
+            const eventosContainer = document.getElementById('eventos');
+            eventosContainer.innerHTML = '';
+
+            eventos.forEach(evento => {
+                let eventoCard = `
+                    <div class="container mt-4">
+                        <div class="row align-items-center event-card">
+                            <div class="col-md-4">
+                                <img class="img-fluid" src="${evento.Portada}" alt="Portada del evento">
+                            </div>
+                            <div class="col-md-8">
+                                <h5>${evento.Evento}</h5>
+                                <p>${evento.Descripcion}</p>
+                                <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                                <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                                ${evento.Tipo === 'virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'</a></p>' :
+                                '<p>Direccion: '+evento.info+'</p>' }
+                            </div>
+                        </div>
+                    </div>`;
+                eventosContainer.innerHTML += eventoCard;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching eventos:', error);
+        });
+}
 
 </script>

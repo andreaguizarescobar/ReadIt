@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
     <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Visualizar archivos --> <!-- PDF.js viewer embebido -->
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 
@@ -135,7 +136,7 @@ function renderComments(comentarios) {
                 <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
                     <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${likesCount} .</span></span>
                     <span class="me-3" onclick="toggleReplyInput(this)" class="responder"> Responder .</span>
-                    <span class="me-3 text-danger" onclick="openReportModal('${comentario.id}')"> Reportar .</span>
+                    <span class="me-3 text-danger" onclick="openReportModal('${comentario._id}')"> Reportar .</span>
 
                     <span>${commentTimeAgo}</span>
                 </div>
@@ -754,14 +755,25 @@ async function enviarReporte() {
         return;
     }
 
+    // Decode token to get user ID
+    let userId = null;
     try {
-        const response = await fetch(`http://localhost:3050/comentarios/${comentarioId}/reportar`, {
+        const payloadBase64 = token.split('.')[1];
+        const payloadJson = atob(payloadBase64);
+        const user = JSON.parse(payloadJson);
+        userId = user.id;
+    } catch (e) {
+        console.error('Error decoding token:', e);
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3050/reporte`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ motivo })
+            body: JSON.stringify({ motivo, usuario: userId, comentario: comentarioId, fecha: new Date() })
         });
 
         if (!response.ok) throw new Error('Error al enviar el reporte');
