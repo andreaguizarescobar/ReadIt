@@ -497,3 +497,27 @@ header {
   background-color: #e68a00;
   color: white;
 }
+
+.modal-encuesta {
+display: none;
+position: fixed;
+bottom: 30px;
+right: 30px;
+z-index: 9999;
+max-width: 320px;
+font-family: 'Roboto', sans-serif;
+}
+
+.modal-encuesta .btn-close {
+background: transparent;
+border: none;
+font-size: 1.2rem;
+}
+
+@media (max-width: 576px) {
+.modal-encuesta {
+right: 15px;
+left: 15px;
+max-width: 100%;
+}
+}

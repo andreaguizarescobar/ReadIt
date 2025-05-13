@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Encuesta de Satisfacción</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <style>
+    .star-rating {
+      display: flex; /* Establece el contenedor como flex */
+      justify-content: center; /* Centra las estrellas horizontalmente */
+      align-items: center; /* Centra las estrellas verticalmente */
+    }
+
+    .star-rating i {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+      margin-right: 0.6rem; 
+      display: flex;
+      justify-content: center; /* Centra las estrellas horizontalmente */
+      align-items: center; /* Centra las estrellas verticalmente */
+      gap: 0.6rem; /* Espacio entre las estrellas */
+    }
+
+    .star-rating i.active {
+      color: #ffc107;
+    }
+    .rating-label {
+      font-size: 0.9rem;
+      color: #555;
+      min-height: 1.2em;
+    }
+    .rating-guide {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="text-center mt-4">Bienvenido a Readit, el sitio de creación de clubes y eventos de lectura</h1>
+
+  <!-- Botón para abrir el modal -->
+  <div class="text-center mt-4">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEncuesta">
+      Responder encuesta
+    </button>
+  </div>
+
+  <!-- Modal Bootstrap -->
+  <div class="modal fade" id="modalEncuesta" tabindex="-1" aria-labelledby="modalEncuestaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <!-- Encabezado -->
+        <div class="modal-header">
+          <img src="images/logo.png" style="width: 10vh;">
+          <h5 class="modal-title" id="modalEncuestaLabel">Encuesta de Satisfacción</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo del modal -->
+        <div class="modal-body">
+          <form id="formEncuesta">
+
+            <!-- Guía de estrellas -->
+            <div class="rating-guide text-center mb-3">
+              1 estrella = Muy malo, 2 = Malo, 3 = Regular, 4 = Bueno, 5 = Excelente
+            </div>
+
+            <!-- Pregunta 1 -->
+            <div class="mb-3">
+              <label class="form-label">¿Qué tan satisfecho estás con nuestro sitio?</label>
+              <div class="star-rating" data-max="5" data-name="satisfaccion"></div>
+              <div class="rating-label" id="label-satisfaccion"></div>
+            </div>
+
+            <!-- Pregunta 2 -->
+            <div class="mb-3">
+              <label class="form-label">¿Qué tan intuitivas te parecen las herramientas para crear y gestionar clubes, lecturas y eventos?</label>
+              <div class="star-rating" data-max="5" data-name="herramientas"></div>
+              <div class="rating-label" id="label-herramientas"></div>
+            </div>
+
+            <!-- Pregunta 3 -->
+            <div class="mb-3">
+              <label class="form-label">¿Qué tan fácil fue interactuar con otros usuarios?</label>
+              <div class="star-rating" data-max="5" data-name="interaccion"></div>
+              <div class="rating-label" id="label-interaccion"></div>
+            </div>
+
+            <!-- Pregunta 4 -->
+            <div class="mb-3">
+              <label class="form-label">¿Qué tan flexible consideras el proceso de creación de clubes, lecturas y eventos?</label>
+              <div class="star-rating" data-max="5" data-name="flexibilidad"></div>
+              <div class="rating-label" id="label-flexibilidad"></div>
+            </div>
+
+            <!-- Campos ocultos -->
+            <input type="hidden" name="satisfaccion">
+            <input type="hidden" name="herramientas">
+            <input type="hidden" name="interaccion">
+            <input type="hidden" name="flexibilidad">
+
+            <!-- Botón enviar -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript para estrellas -->
+  <script>
+    const etiquetas = ["Muy malo", "Malo", "Regular", "Bueno", "Excelente"];
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll('.star-rating').forEach(function(container) {
+        const max = parseInt(container.getAttribute('data-max'));
+        const name = container.getAttribute('data-name');
+        const label = document.getElementById(`label-${name}`);
+
+        for (let i = 1; i <= max; i++) {
+          const star = document.createElement('i');
+          star.classList.add('fas', 'fa-star');
+          star.dataset.value = i;
+
+          star.addEventListener('click', function () {
+            const value = parseInt(this.dataset.value);
+            container.querySelectorAll('i').forEach(star => {
+              star.classList.toggle('active', parseInt(star.dataset.value) <= value);
+            });
+            document.querySelector(`input[name="${name}"]`).value = value;
+            label.textContent = etiquetas[value - 1];
+          });
+
+          container.appendChild(star);
+        }
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
