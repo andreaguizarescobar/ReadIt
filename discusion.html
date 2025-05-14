@@ -238,35 +238,17 @@ function renderReplies(replies, comentarioId) {
     </script>
 </head>
 <body class="bg-light">
-<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
     <a href="main.html">
-      <div class="d-flex align-items-center">
-          <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
-          <h1 class="text-dark font-weight-bold ml-2">Read-It</h1>
-      </div>
-    </a>
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="45vh" src="images/logo.png" />
+            <h1 class="text-dark font-weight-bold ml-0" style="font-size: 5vh;">Read-It</h1>
+        </div>
+    </a>  
 
-    <div class="d-flex align-items-center">
-        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
-        <button class="btn btn-dark rounded-right" >
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
-            <i class="fas fa-bell text-dark mr-3 position-relative" style="font-size: 1.5rem;">
-                <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -15px; right: -15px; display: none;">3</span>
-            </i>
-            <div id="notification-menu" class="notification-menu">
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
-            </div>
-        </div> 
-    
+    <div class="d-flex justify-content-between align-items-center mb-3">   
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;">
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
@@ -344,9 +326,8 @@ function renderReplies(replies, comentarioId) {
 </script>
 
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
-<img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-<div class="d-flex align-items-center bg-primary" style="height: 50px;">
-  <h1 class="text-white font-weight-bold ml-2" style="margin-top: 5px; margin-bottom: 5px ;" id="NombreClub"></h1>
+<div class="d-flex align-items-center bg-primary" style="height: 10vh;">
+  <h3 class="text-white font-weight-bold ml-2" style="margin-top: 5px; margin-bottom: 5px ; font-size: 4vh;" id="NombreClub"></h3>
 </div>
 
 <div class="container-fluid px-4">

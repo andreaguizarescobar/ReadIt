@@ -114,32 +114,17 @@
     </script>
 </head>
 <body class="bg-light">
-<header class="bg-warning p-4 d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
-        <h1 class="text-dark font-weight-bold ml-2">Read-It - Administrador</h1>
-    </div>
-    <div class="d-flex align-items-center">
-        <input class="form-control rounded-left" placeholder="Buscar" type="text"/>
-        <button class="btn btn-dark rounded-right" >
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
+    <a href="main.html">
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="45vh" src="images/logo.png" />
+            <h1 class="text-dark font-weight-bold ml-0" style="font-size: 5vh;">Read-It Administrador</h1>
+        </div>
+    </a>  
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="notification-container d-flex align-items-center position-relative" onclick="toggleNotificationMenu()">
-            <i class="fas fa-bell text-dark mr-3" style="font-size: 1.5rem;"></i>
-            <span id="notification-badge" class="badge badge-danger position-absolute" style="top: -5px; right: 5px; display: none;">3</span>
-            
-            <div id="notification-menu" class="notification-menu">
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 1</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 2</a>
-                <a href="#" class="notification-item unread" onclick="markAsRead(event, this)">Notificación 3</a>
-            </div>
-        </div>        
-    
+    <div class="d-flex justify-content-between align-items-center mb-3">   
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <i class="fas fa-user-circle text-dark" style="font-size: 2rem;"></i>
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>

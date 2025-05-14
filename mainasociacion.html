@@ -111,19 +111,20 @@
     </script>
 </head>
 <body class="bg-light">
-<header class="bg-warning p-4 d-flex justify-content-between align-items-center" >
-    <div class="d-flex align-items-center">
-        <img alt="Logo" class="rounded-circle" height="60" src="images/logo.png" width="60"/>
-        <h1 class="text-dark font-weight-bold ml-2">Read-It - Asociación cultural</h1>
-    </div>
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
+    <a href="main.html">
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="45vh" src="images/logo.png" />
+            <h1 class="text-dark font-weight-bold ml-0" style="font-size: 2vh;">Read-It Asociación cultural</h1>
+        </div>
+    </a>  
 
-    <div class="d-flex justify-content-between align-items-center mb-3">      
-    
+    <div class="d-flex justify-content-between align-items-center mb-3">   
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
-            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;">
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
             <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
             <div id="profile-menu" class="profile-menu">
-                <a href="profileasociacion.html">Ver perfil</a>
+                <a href="profileasociacion.html">Mi perfil</a>
                 <a href="#" onclick="logout()">Cerrar sesión</a>
             </div>
         </div>
