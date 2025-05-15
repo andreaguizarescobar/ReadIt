@@ -1,0 +1,11 @@
+import express from "express";
+import * as comentController from "../controllers/comentController.js";
+const router = express.Router();
+router.post("/:libroId", comentController.createComentario);
+router.post("/:comentarioId/respuestas", comentController.addRespuestaToComentario);
+router.post("/:comentarioId/like", comentController.incrementLikeComentario);
+router.post("/:comentarioId/unlike", comentController.decrementLikeComentario);
+router.post("/:comentarioId/respuestas/:respuestaId/like", comentController.incrementLikeRespuesta);
+router.post("/:comentarioId/respuestas/:respuestaId/unlike", comentController.decrementLikeRespuesta);
+router.get("/libro/:libroId", comentController.getComentariosByLibroId);
+export default router;

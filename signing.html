@@ -74,7 +74,7 @@
             }).then(() => {
               if (data.user.tipo && data.user.tipo === "asociacion") {
                 window.location.href = "mainasociacion.html";
-              } else if(data.user.tipo && (data.user.tipo === "admin" || data.user.tipo === "adminPrincipal")) {
+              } else if(data.user.tipo && (data.user.tipo === "adminPrincipal")) {
                 window.location.href = "mainmoderador.html";
               } else {
                 if (data.user.estado.status === 'Activo') {
@@ -310,7 +310,7 @@
           });
           if (data.user.tipo && data.user.tipo === "asociacion") {
                 window.location.href = "mainasociacion.html";
-              } else if(data.user.tipo && (data.user.tipo === "admin" || data.user.tipo === "adminPrincipal")) {
+              } else if(data.user.tipo && ( data.user.tipo === "adminPrincipal")) {
                 window.location.href = "mainmoderador.html";
               } else {
                 if (data.user.estado.status === 'Activo') {

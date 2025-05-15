@@ -1,0 +1,10 @@
+import express from "express";
+import * as eventoController from "../controllers/eventoController.js";
+const router = express.Router();
+router.get("/", eventoController.getAllEventos);
+router.get("/asociacion/:id", eventoController.getUpcomingEventosByAsociacion);
+router.get("/asociacion/", eventoController.getAllUpcomingEventosWithAsociacion);
+router.get("/:id", eventoController.getEventoById);
+router.post("/", eventoController.createEvento);
+router.post("/asociacion/", eventoController.createEventoAsociacion);
+export default router;

@@ -44,6 +44,7 @@
         let tokenData;
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('tab-reportes').style.display = 'none';
             const token = localStorage.getItem('jwtToken');
             if (!token || isTokenExpired(token)) {
                 Swal.fire({
@@ -64,6 +65,63 @@
             if (tokenData && tokenData.picture) {
                 img.src = tokenData.picture;
             }
+
+            if(tokenData.tipo === 'admin'){
+                document.getElementById('tab-reportes').style.display = 'block';
+
+                const reportesTableBody = document.getElementById("reportes-table-body");
+
+        function formatDate(dateString) {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            if (isNaN(date)) return dateString;
+            // Format as YYYY-MM-DD
+            return date.toISOString().split('T')[0];
+        }
+
+        function fetchReportes() {
+            fetch("http://localhost:3050/reporte")
+                .then(response => response.json())
+                .then(reportes => {
+                    reportesTableBody.innerHTML = ""; // Clear existing rows
+                    reportes.forEach(reporte => {
+                        const estado = reporte.estado || "Pendiente";
+                        let estadoBadgeClass = "badge-success";
+                        if (estado === "Pendiente") estadoBadgeClass = "badge-warning";
+                        else if (estado === "Suspendido") estadoBadgeClass = "badge-warning";
+                        else if (estado === "Baneado") estadoBadgeClass = "badge-danger";
+                        else if (estado === "Resuelto") estadoBadgeClass = "badge-success";
+                        else if (estado === "Activo") estadoBadgeClass = "badge-success";
+
+                        const sancionText = reporte.sancion ? reporte.sancion : "Sin aplicar";
+                        const quitarSancionDisabled = sancionText === "Sin aplicar" || sancionText === "Resuelto" ? "disabled" : "";
+
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-usuario", reporte.usuario.name || "Desconocido");
+                        row.innerHTML = `
+                        <td>${reporte.usuario.name || "Desconocido"}</td>
+                        <td>${reporte.motivo || ""}</td>
+                        <td>"${reporte.comentario.comentario || ""}"</td>
+                        <td>${formatDate(reporte.fecha) || ""}</td>
+                        <td class="estado"><span class="badge ${estadoBadgeClass}">${estado}</span></td>
+                        <td class="sancion">${sancionText}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="abrirModalSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte.comentario._id}', '${reporte._id}')">Resolver</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="quitarSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte._id}')" ${quitarSancionDisabled}>Quitar sanción</button>
+                        </td>
+                    `;
+                        reportesTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching reportes:", error);
+                });
+        }
+
+        fetchReportes();
+            }
         });
     </script>
     <script>
@@ -71,11 +129,13 @@
             document.getElementById('inicio').style.display = 'none';
             document.getElementById('mis-clubes').style.display = 'none';
             document.getElementById('seccionEventos').style.display = 'none';
+            document.getElementById('reportes').style.display = 'none';
             document.getElementById(sectionId).style.display = 'block';
 
             document.getElementById('tab-inicio').classList.remove('active-tab');
             document.getElementById('tab-mis-clubes').classList.remove('active-tab');
             document.getElementById('tab-eventos').classList.remove('active-tab');
+            document.getElementById('tab-reportes').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
 
             if(sectionId === 'seccionEventos') {
@@ -262,7 +322,7 @@
 
 <!-- Barra de búsqueda debajo del header -->
 <div class="d-flex justify-content-center align-items-center mt-0 px-3" style="z-index: 1; position: relative;  background-color: #ffc107;">
-    <input class="form-control rounded-left w-50" placeholder="Buscar clubes" type="text" />
+    <input class="form-control rounded-left w-50" placeholder="Buscar clubes" type="text" style="margin: 10px 10px;" />
     <button class="btn btn-dark rounded-right ml-0">
         <i class="fas fa-search"></i>
     </button>
@@ -281,6 +341,9 @@
         </li>
         <li class="nav-item">
             <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-reportes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('reportes', 'tab-reportes')">Reportes</a>
         </li>
     </ul>
 </nav>
@@ -369,6 +432,29 @@
              
     </section>
 
+
+    <section id="reportes" style="display: none;">
+    <h4 class="font-weight-bold mb-3">Listado de reportes</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Usuario reportado</th>
+                    <th>Motivo</th>
+                    <th>Comentario realizado</th> <!-- NUEVA COLUMNA -->
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Sanción aplicada</th>
+                    <th>Acción</th>
+                    <th>Quitar sanción</th>
+                </tr>
+            </thead>
+            <tbody id="reportes-table-body">
+                <!-- Los reportes se cargarán dinámicamente aquí -->
+            </tbody>
+        </table>
+    </div>
+</section>
 </main>
     
 <footer class="bg-dark text-white text-center py-3">
@@ -412,6 +498,17 @@
     <button id="cerrar-modal">Cerrar</button>
   </div>
 </div>
+
+<div id="modalLibro" class="modalLibro">
+    <div class="modal-contentLibro" id="modalContentLibro">
+      <h2 id="modalTitle"></h2>
+      <p id="modalAuthor"></p>
+      <img id="modalImage" src="" alt="">
+      <div id="modalButtons"></div>
+      <p id="modalDesc"></p>
+      <button onclick="hideModal('modalLibro')" class="btnLibro">Cerrar</button>
+    </div>
+  </div>
 
 <script>
     document.getElementById('acerca-link').addEventListener('click', function() {
@@ -550,38 +647,6 @@
 
 </body>
 </html>
-
-<script>
-let notificationCount = 3; // Número inicial de notificaciones
-
-    function updateNotificationBadge() {
-        let badge = document.getElementById('notification-badge');
-        if (notificationCount > 0) {
-            badge.textContent = notificationCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
-    function toggleNotificationMenu() {
-        let menu = document.getElementById('notification-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function markAsRead(event, element) {
-        event.stopPropagation(); // Evita que el clic cierre el menú
-        if (element.classList.contains('unread')) {
-            element.classList.remove('unread');
-            element.style.background = 'white'; // Quita el resaltado
-            notificationCount--;
-            updateNotificationBadge();
-        }
-    }
-
-    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
-    updateNotificationBadge();
-</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
