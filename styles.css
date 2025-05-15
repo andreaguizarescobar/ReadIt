@@ -12,6 +12,23 @@ header {
     height: 80px;
 }
 
+.bg-custom {
+  background: linear-gradient(135deg, #cddff5, #95bbe9);
+}
+
+.btn-primary:hover {
+  background-color: #569aff;
+}
+
+.text-warning:hover {
+  text-decoration: underline;
+  color: #ffc107;
+}
+
+input:focus ~ .fas {
+  color: #6c63ff;
+}
+
 /* Suaviza la entrada */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
