@@ -280,7 +280,7 @@
             <a id="tab-mis-clubes" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Mis clubes</a>
         </li>
         <li class="nav-item">
-            <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos</a>
+            <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos por asociaciones culturales</a>
         </li>
     </ul>
 </nav>
@@ -360,7 +360,7 @@
     
   <section id="seccionEventos" style="display: none;">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="font-weight-bold">Eventos por asociaciones culturales</h3>
+        <h5 class="font-weight-bold">Eventos publicados por asociaciones culturales</h5>
         
     </div>
     <div id="eventos">
@@ -672,7 +672,7 @@ let notificationCount = 3; // Número inicial de notificaciones
       modal.style.display = 'flex';
     }
 
-     function fetchAndDisplayEventosAsociacion() {
+    function fetchAndDisplayEventosAsociacion() {
     fetch('http://localhost:3050/eventos/asociacion/')
         .then(response => response.json())
         .then(eventos => {
@@ -683,6 +683,10 @@ let notificationCount = 3; // Número inicial de notificaciones
                 let eventoCard = `
                     <div class="container mt-4">
                         <div class="row align-items-center event-card">
+                            <div class="col-12 d-flex align-items-center mb-3">
+                                <img src="${evento.FotoAsociacion}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
+                                <h6 class="mb-0">${evento.NombreAsociacion}</h6>
+                            </div>
                             <div class="col-md-4">
                                 <img class="img-fluid" src="${evento.Portada}" alt="Portada del evento">
                             </div>
@@ -691,8 +695,8 @@ let notificationCount = 3; // Número inicial de notificaciones
                                 <p>${evento.Descripcion}</p>
                                 <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
                                 <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
-                                ${evento.Tipo === 'virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'</a></p>' :
-                                '<p>Direccion: '+evento.info+'</p>' }
+                                ${evento.Tipo === 'virtual' ? `<p>Link de la llamada: <a href="${evento.info}">${evento.info}</a></p>` :
+                                `<p>Dirección: ${evento.info}</p>`}
                             </div>
                         </div>
                     </div>`;
@@ -702,6 +706,7 @@ let notificationCount = 3; // Número inicial de notificaciones
         .catch(error => {
             console.error('Error fetching eventos:', error);
         });
-}
+    }
+
 
 </script>

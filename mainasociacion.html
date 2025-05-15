@@ -491,6 +491,10 @@ function renderEventos(eventos) {
         let eventoCard = `
                 <div class="container mt-4">
                     <div class="row align-items-center event-card">
+                        <div class="col-12 d-flex align-items-center mb-3">
+                            <img src="${evento.FotoAsociacion}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
+                            <h6 class="mb-0">${evento.NombreAsociacion}</h6>
+                        </div>
                         <div class="col-md-4">
                             <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
                         </div>
