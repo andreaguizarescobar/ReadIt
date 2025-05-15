@@ -231,7 +231,7 @@
 </main>
  
 
-<footer class="bg-dark text-white text-center py-3" style="position: fixed; bottom: 0; width: 100%;">
+<footer class="bg-dark text-white text-center py-3">
     <div class="container">
     <p class="mb-1">
         📚 connectReadit@gmail.com | 
@@ -492,8 +492,8 @@ function renderEventos(eventos) {
                 <div class="container mt-4">
                     <div class="row align-items-center event-card">
                         <div class="col-12 d-flex align-items-center mb-3">
-                            <img src="${evento.FotoAsociacion}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
-                            <h6 class="mb-0">${evento.NombreAsociacion}</h6>
+                            <img src="${tokenData.picture}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
+                            <h6 class="mb-0">${tokenData.name}</h6>
                         </div>
                         <div class="col-md-4">
                             <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">

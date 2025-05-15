@@ -2,7 +2,7 @@ import Club from "../models/clubModel.js";
 import User from "../models/userModel.js";
 
 export const getAllClubs = async () => await Club.find();
-export const getClub = async (id) => await Club.findById(id);
+export const getClub = async (id) => await Club.findById(id).populate('Administrador', '_id name');
 export const createClub = async (data) => {
   const nuevoClub = new Club(data);
   return await nuevoClub.save();

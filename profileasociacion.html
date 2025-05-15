@@ -132,7 +132,7 @@
               <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-0"></h2>
               <h5 id="descripcion" class="mb-1" style="margin-top: 10px;">hola</h5>
               <p id="fechaRegistro" class="mb-1"></p>
-              <h6 id="ubicacion" class="mb-1"><strong>Ubicación:</strong> lodelameño</h6>
+              <h6 class="mb-1"><strong>Ubicación: </strong><i id="ubicacion"></i></h6>
             </div>
         
         </div>
@@ -148,7 +148,7 @@
 
 <section id="seccionEventos" >
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="font-weight-bold">Próximos Eventos</h3>
+        <h3 class="font-weight-bold" style="margin: 10px 10px;">Próximos Eventos</h3>
         <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
             <i class="fas fa-plus"></i> Crear Evento
         </button>
@@ -165,10 +165,51 @@
             const payloadBase64 = token.split('.')[1];
             const payloadJson = atob(payloadBase64);
             tokenData = JSON.parse(payloadJson);
-            fetchUserInsignias(tokenData.id);
             fetchUserProfile(tokenData.id);
-            fetchUserClubs();
+            fetchUpcomingEventos();
         });
+
+        async function fetchUpcomingEventos() {
+            try {
+                const response = await fetch(`http://localhost:3050/eventos/asociacion/${tokenData.id}`);
+                if (response.ok) {
+                    const eventos = await response.json();
+                    renderEventos(eventos);
+                } else {
+                    alert('Error al obtener los eventos.');
+                }
+            } catch (error) {
+                alert('Error al obtener los eventos: ' + error.message);
+            }
+        }
+
+        function renderEventos(eventos) {
+            const eventosDiv = document.getElementById('eventos');
+            eventosDiv.innerHTML = '';
+            if (eventos.length === 0) {
+                eventosDiv.innerHTML = '<p>No hay eventos próximos.</p>';
+                return;
+            }
+            eventos.forEach(evento => {
+                let eventoCard = `
+                        <div class="container mt-4">
+                            <div class="row align-items-center event-card">
+                                <div class="col-md-4">
+                                    <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
+                                </div>
+                                <div class="col-md-8">
+                                    <h5>${evento.Evento}</h5>
+                                    <p>${evento.Descripcion}</p>
+                                    <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                                    <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                                    ${evento.Tipo === 'virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
+                                    '<p>Direccion: '+evento.info+'</p>' }
+                                </div>
+                            </div>
+                        </div>`;
+                    eventosDiv.innerHTML += eventoCard;
+            });
+        }
 
         function fetchUserProfile(userId) {
             fetch(`http://localhost:3050/usuarios/${userId}`)
@@ -191,78 +232,41 @@
             const fotoPerfil = document.getElementById('fotoPerfil');
             const nombreUsuario = document.getElementById('NombreUsuario');
             const desc = document.getElementById('descripcion');
-            const titulos = document.getElementsByClassName('titulos');
+            const ubicacion = document.getElementById('ubicacion');
             const portada = document.getElementById('portada');
 
             if (fotoPerfil && user.picture) {
-                console.log(user.picture);
                 fotoPerfil.src = user.picture;
-            }
-            if (portada && user.portada) {
-                portada.src = user.portada;
             }
             if (nombreUsuario && user.name) {
                 nombreUsuario.textContent = user.name;
-                titulos.item(0).textContent = user.name;
-                titulos.item(1).textContent = user.name;
             }
             if (descripcion && user.descripcion) {
                 desc.textContent = user.descripcion;
                 descripcion.textContent = user.descripcion;
             }
-            if (fechaRegistro && user.createdAt) {
-                const date = new Date(user.createdAt);
-                fechaRegistro.textContent = `Miembro desde: ${date.toLocaleDateString()}`;
+            if (ubicacion && user.ubicacion) {
+                ubicacion.textContent = user.ubicacion;
+            }
+            if (portada && user.portada) {
+                portada.src = user.portada;
             }
 
             // Set modal input values for editing
             const modalNombre = document.getElementById('nombre');
             const modalDescripcion = document.getElementById('descripcionModal');
+            const ubicacionUsuario = document.getElementById('ubicacionUsuario');
             if (modalNombre && user.name) {
                 modalNombre.value = user.name;
             }
             if (modalDescripcion && user.descripcion) {
                 modalDescripcion.value = user.descripcion;
             }
+            if (ubicacionUsuario && user.ubicacion) {
+                ubicacionUsuario.value = user.ubicacion;
+            }
         }
 
-        function fetchUserInsignias(userId) {
-            fetch(`http://localhost:3050/insignias/user/${userId}`)
-                .then(response => response.json())
-                .then(insignias => {
-                    displayInsignias(insignias);
-                })
-                .catch(error => {
-                    console.error('Error fetching user insignias:', error);
-                });
-        }
-
-        function displayInsignias(insignias) {
-            const container = document.getElementById('insignias-container');
-            container.innerHTML = '';
-            insignias.forEach(insignia => {
-                const badgeBox = document.createElement('div');
-                badgeBox.className = 'badge-box m-2 text-center';
-
-                const img = document.createElement('img');
-                img.src = insignia.img || 'images/insignias/default.png';
-                img.alt = insignia.nombre;
-                img.className = 'img-fluid badge-img';
-
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = insignia.descripcion || '';
-
-                const p = document.createElement('p');
-                p.textContent = insignia.nombre;
-
-                badgeBox.appendChild(img);
-                badgeBox.appendChild(tooltip);
-                badgeBox.appendChild(p);
-
-                container.appendChild(badgeBox);
-            });
-        }
     </script>
           
 </main>
@@ -367,8 +371,7 @@
 
             <div class="form-group">
                 <label for="ubicacionUsuario">Ubicación</label>
-                <input type="text" class="form-control" id="ubicacionUsuario" placeholder="Ubicación detectada automáticamente" readonly>
-                <button type="button" class="btn btn-secondary mt-2" onclick="obtenerUbicacion()">Detectar ubicación</button>
+                <input type="text" class="form-control" id="ubicacionUsuario" placeholder="Ubicación">
             </div>
 
         </div>
@@ -403,6 +406,7 @@
      const descripcion = document.getElementById('descripcionModal').value.trim();
      const fotoPerfilInput = document.getElementById('fotoPerfilM').files[0];
      const portadaUsuarioInput = document.getElementById('portadaUsuario').files[0];
+     const ubicacion = document.getElementById('ubicacionUsuario').value.trim();
  
      // Validación del nombre obligatorio
     if (!nombre) {
@@ -417,6 +421,7 @@
      const formData = new FormData();
      formData.append('name', nombre);
      formData.append('descripcion', descripcion);
+     formData.append('ubicacion', ubicacion);
      if (fotoPerfilInput) {
        formData.append('fotoPerfil', fotoPerfilInput);
      }
@@ -463,219 +468,9 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-    document.getElementById('btnCrearEvento').addEventListener('click', () => {
-      const form = document.getElementById('formCrearEvento');
-      if (!form.checkValidity()) {
-        form.reportValidity(); // Muestra mensajes nativos de validación del navegador
-        return;
-      }
-      const nombreEvento = document.getElementById('nombreEvento').value.trim();
-      const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
-      const fechaEvento = document.getElementById('fechaEvento').value;
-      const horaEvento = document.getElementById('horaEvento').value;
-      const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
-      const lugarEvento = document.getElementById('lugarEvento').value.trim();
-      const portadaEventoFile = document.getElementById('portadaEvento').files[0];
-    
-      if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento) {
-        Swal.fire({
-          title: '¡Error!',
-          text: 'Por favor, complete todos los campos obligatorios.',
-          icon: 'error',
-          confirmButtonText: 'Cerrar'
-        });
-        return;
-      }
-    
-      if (portadaEventoFile) {
-        const reader = new FileReader();
-        reader.onload = async function(event) {
-          const portadaBase64 = event.target.result;
-    
-          const eventoData = {
-            Evento: nombreEvento,
-            Descripcion: descripcionEvento,
-            Fecha: fechaEvento,
-            Hora: horaEvento,
-            Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
-            info: lugarEvento,
-            Portada: portadaBase64,
-            clubId: club
-          };
-    
-          try {
-            const token = localStorage.getItem('jwtToken');
-            const response = await fetch('http://localhost:3050/eventos', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(eventoData)
-            });
-    
-            if (response.ok) {
-              Swal.fire({
-                title: '¡Éxito!',
-                text: 'Evento creado exitosamente',
-                icon: 'success',
-                timer: 5000,
-                willClose: () => {
-                  hideModal('modalCrearEvento');
-                  location.reload();
-                }
-              });
-            } else {
-              const errorData = await response.json();
-              Swal.fire({
-                title: '¡Error!',
-                text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
-                icon: 'error',
-                confirmButtonText: 'Intentar de nuevo'
-              });
-            }
-          } catch (error) {
-            Swal.fire({
-              title: '¡Error!',
-              text: 'Error al crear el evento: ' + error.message,
-              icon: 'error',
-              confirmButtonText: 'Intentar de nuevo'
-            });
-          }
-        };
-        reader.readAsDataURL(portadaEventoFile);
-      } else {
-        const eventoData = {
-          Evento: nombreEvento,
-          Descripcion: descripcionEvento,
-          Fecha: fechaEvento,
-          Hora: horaEvento,
-          Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
-          info: lugarEvento,
-          clubId: club
-        };
-    
-        (async () => {
-          try {
-            const token = localStorage.getItem('jwtToken');
-            const response = await fetch('http://localhost:3050/eventos', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(eventoData)
-            });
-    
-            if (response.ok) {
-              Swal.fire({
-                title: '¡Éxito!',
-                text: 'Evento creado exitosamente',
-                icon: 'success',
-                timer: 5000,
-                willClose: () => {
-                  hideModal('modalCrearEvento');
-                  location.reload();
-                }
-              });
-            } else {
-              const errorData = await response.json();
-              Swal.fire({
-                title: '¡Error!',
-                text: 'Error al crear el evento: ' + (errorData.error || 'Error desconocido'),
-                icon: 'error',
-                confirmButtonText: 'Intentar de nuevo'
-              });
-            }
-          } catch (error) {
-            Swal.fire({
-              title: '¡Error!',
-              text: 'Error al crear el evento: ' + error.message,
-              icon: 'error',
-              confirmButtonText: 'Intentar de nuevo'
-            });
-          }
-        })();
-      }
-    });
-    </script>
-    
-    <script>
-        function obtenerUbicacion() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    document.getElementById("ubicacionUsuario").value = `Lat: ${lat}, Lon: ${lon}`;
-    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Ubicación obtenida',
-                        text: `Lat: ${lat}, Lon: ${lon}`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                }, function(error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo obtener la ubicación.',
-                        timer: 4000,
-                        showConfirmButton: false
-                    });
-                });
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Navegador no compatible',
-                    text: 'La geolocalización no es compatible con este navegador.',
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            }
-        }
-    </script>
-    
 </body>
 </html>
 <script>
-    let nombreUsuario = "";
-    let usuarioActual = {}; // Guarda la información actual del usuario
-
-    function fetchAndDisplayClub() {
-        const params = new URLSearchParams(window.location.search);
-        nombreUsuario = params.get("usuario") || sessionStorage.getItem('selectedUsuario');
-
-        if (nombreUsuario) {
-            fetch(`http://localhost:3050/usuarios/${encodeURIComponent(nombreUsuario)}`)
-                .then(response => response.json())
-                .then(usuario => {
-                    usuarioActual = usuario;
-
-                    // Actualizar elementos de la página
-                    document.getElementById("NombreUsuario").textContent = usuario.NombreUsuario;
-                    document.querySelector(".profile-banner").src = usuario.Portada;
-                    document.getElementById("descripcion").textContent = usuario.Descripcion;
-                    document.getElementById("ubicacion").textContent = "Ubicación: " + usuario.ubicacion;
-                    document.getElementById("fecharegistro").textContent = "Fecha de registro: " + new Date(usuario.createdAt).toLocaleDateString();
-                    document.querySelector(".profile-img").src = usuario.fotoperfil;
-
-                    // Actualizar los campos en el modal de edición
-                    document.getElementById("nombre").value = usuario.NombreUsuario || "";
-                    document.getElementById("descripcion").value = usuario.Descripcion || "";
-                    document.getElementById("portadaUsuario").value = ""; // Aquí deberías manejar la carga de archivos
-                    document.getElementById("fotoPerfil").value = ""; // Aquí deberías manejar la carga de archivos
-
-                    cargarLecturas(usuario.Clubes);
-                    cargarEventos(usuario.Insignias);
-                })
-                .catch(error => console.error("Error al obtener los detalles del usuario:", error));
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", fetchAndDisplayClub);
 
     function mostrarModalEditar() {
         document.getElementById("modalEditarPerfil").style.display = "block";
@@ -684,196 +479,5 @@
     function cerrarModalEditar() {
         document.getElementById("modalEditarPerfil").style.display = "none";
     }
-
-
-    function cargarClubes() {
-        const clubesContainer = document.getElementById("clubesContainer");
-        clubesContainer.innerHTML = ""; // Limpiar cualquier contenido previo
-
-        clubes.forEach(club => {
-            const clubCard = `
-                <div class="col-md-6 mb-4">
-                    <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
-                        <div class="card-header bg-warning text-white text-center font-weight-bold">${club.nombre}</div>
-                        <img alt="Club ${club.nombre}" class="card-img-top club-banner" src="${club.portada}"/>
-                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
-                        <div class="club-footer">
-                            <span>${club.genero}</span>
-                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-${club.nombre}')"></i>
-                            <div class="options-menu" id="options-menu-${club.nombre}">
-                                <a href="#">Opción 1</a>
-                                <a href="#">Opción 2</a>
-                                <a href="#">Opción 3</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            clubesContainer.innerHTML += clubCard;
-        });
-    }
-
-    function createClubCard(club) {
-            const colDiv = document.createElement('div');
-            colDiv.className = 'col-6 mb-4';
-
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'card club-banner-container';
-            cardDiv.style.cursor = 'pointer';
-            cardDiv.onclick = () => goToClubPage(club._id);
-
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'card-header bg-warning text-white text-center font-weight-bold';
-            headerDiv.textContent = club.NombreClub;
-
-            const img = document.createElement('img');
-            img.className = 'card-img-top club-banner';
-            img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
-            img.alt = club.NombreClub;
-
-            const favoriteIcon = document.createElement('i');
-            favoriteIcon.className = 'far fa-heart favorite-icon';
-            favoriteIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleFavorite(favoriteIcon);
-            };
-
-            const footerDiv = document.createElement('div');
-            footerDiv.className = 'club-footer';
-
-            const genreSpan = document.createElement('span');
-            genreSpan.textContent = club.Genero || '';
-
-            const optionsIcon = document.createElement('i');
-            optionsIcon.className = 'fas fa-ellipsis-v';
-            optionsIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleOptionsMenu(`options-menu-${club._id}`);
-            };
-
-            const optionsMenu = document.createElement('div');
-            optionsMenu.className = 'options-menu';
-            optionsMenu.id = `options-menu-${club._id}`;
-
-            const option1 = document.createElement('a');
-            option1.href = '#';
-            option1.textContent = 'Opción 1';
-
-            const option2 = document.createElement('a');
-            option2.href = '#';
-            option2.textContent = 'Opción 2';
-
-            const option3 = document.createElement('a');
-            option3.href = '#';
-            option3.textContent = 'Opción 3';
-
-            optionsMenu.appendChild(option1);
-            optionsMenu.appendChild(option2);
-            optionsMenu.appendChild(option3);
-
-            footerDiv.appendChild(genreSpan);
-            footerDiv.appendChild(optionsIcon);
-            footerDiv.appendChild(optionsMenu);
-
-            cardDiv.appendChild(headerDiv);
-            cardDiv.appendChild(img);
-            cardDiv.appendChild(favoriteIcon);
-            cardDiv.appendChild(footerDiv);
-
-            colDiv.appendChild(cardDiv);
-
-            return colDiv;
-        }
-
-    function cargarInsignias() {
-        const insigniasContainer = document.getElementById("insigniasContainer");
-        insigniasContainer.innerHTML = ""; // Limpiar cualquier contenido previo
-
-        insignias.forEach(insignia => {
-            const insigniaCard = `
-                <div class="badge-box">
-                    <img src="${insignia.imagen}" alt="${insignia.nombre}" class="img-fluid badge-img">
-                    <span class="tooltip">${insignia.descripcion}</span>
-                    <p>${insignia.nombre}</p>
-                </div>
-            `;
-            insigniasContainer.innerHTML += insigniaCard;
-        });
-    }
-</script>
-
-<script>
-let notificationCount = 3; // Número inicial de notificaciones
-
-    function updateNotificationBadge() {
-        let badge = document.getElementById('notification-badge');
-        if (notificationCount > 0) {
-            badge.textContent = notificationCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
-    function toggleNotificationMenu() {
-        let menu = document.getElementById('notification-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function markAsRead(event, element) {
-        event.stopPropagation(); // Evita que el clic cierre el menú
-        if (element.classList.contains('unread')) {
-            element.classList.remove('unread');
-            element.style.background = 'white'; // Quita el resaltado
-            notificationCount--;
-            updateNotificationBadge();
-        }
-    }
-
-    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
-    updateNotificationBadge();
-    
-    function fetchUserClubs() {
-            fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
-                .then(response => response.json())
-                .then(data => {
-                    displayUserClubs(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching user clubs:', error);
-                });
-        }
-
-    function displayUserClubs(data) {
-            const misClubesSection = document.getElementById('mis-clubes');
-            const container = misClubesSection.querySelector('.row');
-            container.innerHTML = '';
-
-            // Admin clubs
-            if (data.adminClubs && data.adminClubs.length > 0) {
-                const adminHeader = document.createElement('h3');
-                adminHeader.textContent = 'Clubes donde eres administrador';
-                adminHeader.classList.add('w-100', 'mb-3');
-                container.appendChild(adminHeader);
-
-                data.adminClubs.forEach(club => {
-                    const clubCard = createClubCard(club);
-                    container.appendChild(clubCard);
-                });
-            }
-
-            // Member clubs
-            if (data.memberClubs && data.memberClubs.length > 0) {
-                const memberHeader = document.createElement('h3');
-                memberHeader.textContent = 'Clubes donde eres miembro';
-                memberHeader.classList.add('w-100', 'mt-4', 'mb-3');
-                container.appendChild(memberHeader);
-
-                data.memberClubs.forEach(club => {
-                    const clubCard = createClubCard(club);
-                    container.appendChild(clubCard);
-                });
-            }
-        }
 
 </script>

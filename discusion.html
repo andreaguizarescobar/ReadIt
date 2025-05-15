@@ -110,16 +110,14 @@ function renderComments(comentarios) {
     commentSection.innerHTML = ''; // Clear existing comments
 
     comentarios.comentarios.forEach(comentario => {
-        console.log(comentario);
         const commentDiv = document.createElement('div');
         commentDiv.classList.add('d-flex', 'mb-3');
         commentDiv.setAttribute('data-comentario-id', comentario._id || comentario.id);
-
         // Avatar de usuario simulado
         const avatarURL = (comentario.User && comentario.User.length > 0 && comentario.User[0].picture) ? comentario.User[0].picture : `https://i.pravatar.cc/40?img=${Math.floor(Math.random() * 70) + 1}`;
         const avatarHTML = `
             <img src="${avatarURL}"
-                 class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px;" alt="avatar">
+                 class="rounded-circle me-2 mt-1" style="width: 40px; height: 40px; cursor: pointer;" alt="avatar" onclick="verPerfil('${comentario.User[0]._id}')">
         `;
 
         const userName = (comentario.User && comentario.User.length > 0 && comentario.User[0].name) ? comentario.User[0].name : 'Usuario';
@@ -130,7 +128,7 @@ function renderComments(comentarios) {
         const contentHTML = `
             <div class="flex-grow-1">
                 <div class="bg-light px-3 py-2 rounded-3">
-                    <p class="mb-1 fw-bold text-primary comment-author">${userName}</p>
+                    <p class="mb-1 fw-bold text-primary comment-author" onclick="verPerfil('${comentario.User[0]._id}')" style="cursor: pointer;">${userName}</p>
                     <p class="mb-1">${comentario.comentario}</p>
                 </div>
                 <div class="text-muted small mt-1 ms-1 d-flex align-items-center">
@@ -152,10 +150,16 @@ function renderComments(comentarios) {
     });
 }
 
+  function verPerfil(id) {
+    localStorage.setItem("userId", id);
+    window.location.href = "verperfil.html";
+  }
+
 function renderReplies(replies, comentarioId) {
     if (!replies || replies.length === 0) return '';
 
     return replies.map(reply => {
+      console.log(reply);
         // User is an array, get first user's name or fallback
         const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
         const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
@@ -164,9 +168,9 @@ function renderReplies(replies, comentarioId) {
         return `
             <div class="d-flex mb-2 ps-3 border-start" data-comentario-id="${comentarioId}" data-respuesta-id="${reply._id || reply.id}">
                 <img src="${replyAvatarURL}"
-                     class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
+                     class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px; cursor: pointer;" alt="avatar" onclick="verPerfil('${reply.User[0]._id}')">
                 <div class="flex-grow-1 bg-body-secondary p-2 rounded">
-                    <p class="mb-1 fw-bold text-primary">${replyUserName}</p>
+                    <p class="mb-1 fw-bold text-primary" style="cursor: pointer"; onclick="verPerfil('${reply.User[0]._id}')">${replyUserName}</p>
                     <p class="mb-1">${reply.comentario}</p>
                     <div class="text-muted small">
                         <span class="me-3" onclick="toggleLike(this)">Me gusta ${replyLikes}</span>
@@ -177,32 +181,6 @@ function renderReplies(replies, comentarioId) {
         `;
     }).join('');
 }
-
-        function renderReplies(replies) {
-            if (!replies || replies.length === 0) return '';
-
-            return replies.map(reply => {
-                // User is an array, get first user's name or fallback
-                const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
-                const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
-                const replyTimeAgo = timeAgo(reply.fecha);
-                const replyLikes = reply.likes || 0;
-                return `
-                    <div class="d-flex mb-2 ps-3 border-start">
-                        <img src="${replyAvatarURL}"
-                             class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px;" alt="avatar">
-                        <div class="flex-grow-1 bg-body-secondary p-2 rounded">
-                            <p class="mb-1 fw-bold text-primary">${replyUserName}</p>
-                            <p class="mb-1">${reply.comentario}</p>
-                            <div class="text-muted small">
-                                <span class="me-3">Me gusta ${replyLikes}</span>
-                                <span>${replyTimeAgo}</span>
-                            </div>
-                        </div>
-                     </div>
-                `;
-            }).join('');
-        }
 
         function toggleProfileMenu() {
             let menu = document.getElementById('profile-menu');

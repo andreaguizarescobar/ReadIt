@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 const clubSchema = new mongoose.Schema({
   NombreClub: String,
   Descripcion: String,
-  Administrador: String,
+  Administrador:     {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   Genero: String,
   Miembros: Number,
   Portada: String,

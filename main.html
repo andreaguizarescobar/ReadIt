@@ -595,7 +595,7 @@
             const clubData = {
                 "NombreClub": nombre,
                 "Descripcion": descripcion,
-                "Administrador": tokenData.name,  
+                "Administrador": tokenData.id,  
                 "Genero": genero,
                 "Miembros": 1,
                 "Portada": imagenBase64,  // Guardamos la imagen en Base64
@@ -748,9 +748,9 @@
                 let eventoCard = `
                     <div class="container mt-4">
                         <div class="row align-items-center event-card">
-                            <div class="col-12 d-flex align-items-center mb-3">
-                                <img src="${evento.FotoAsociacion}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
-                                <h6 class="mb-0">${evento.NombreAsociacion}</h6>
+                            <div class="col-12 d-flex align-items-center mb-3" style="cursor: pointer;" onclick="asociacion('${evento.asociacion._id}')">
+                                <img src="${evento.asociacion.picture}" alt="Foto de perfil de la asociación" class="rounded-circle me-2" style="width: 8vh; height: 8vh; object-fit: cover;">
+                                <h6 class="mb-0" style="margin:10px 10px">${evento.asociacion.name}</h6>
                             </div>
                             <div class="col-md-4">
                                 <img class="img-fluid" src="${evento.Portada}" alt="Portada del evento">
@@ -773,5 +773,9 @@
         });
     }
 
+    function asociacion(id){
+        localStorage.setItem('asociacionId', id);
+        window.location.href = 'infoasociacion.html';
+    }
 
 </script>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt - Información Asociación</title>
+    <link rel="icon" href="images/logo.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        let associationId = null;
+        let associationData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            associationId = localStorage.getItem('asociacionId');
+            if (!associationId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ID de asociación no encontrado',
+                    text: 'No se encontró el ID de la asociación en localStorage.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+            fetchAssociationProfile(associationId);
+            fetchUpcomingEventos();
+        });
+
+        async function fetchAssociationProfile(id) {
+            try {
+                const response = await fetch(`http://localhost:3050/usuarios/${id}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos de la asociación');
+                }
+                associationData = await response.json();
+                displayAssociationProfile(associationData);
+            } catch (error) {
+                console.error('Error fetching association profile:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        }
+
+        function displayAssociationProfile(user) {
+            const fotoPerfil = document.getElementById('fotoPerfil');
+            const nombreUsuario = document.getElementById('NombreUsuario');
+            const desc = document.getElementById('descripcion');
+            const ubicacion = document.getElementById('ubicacion');
+            const portada = document.getElementById('portada');
+            const fechaRegistro = document.getElementById('fechaRegistro');
+
+            if (fotoPerfil && user.picture) {
+                fotoPerfil.src = user.picture;
+            }
+            if (nombreUsuario && user.name) {
+                nombreUsuario.textContent = user.name;
+            }
+            if (desc && user.descripcion) {
+                desc.textContent = user.descripcion;
+            }
+            if (ubicacion && user.ubicacion) {
+                ubicacion.textContent = user.ubicacion;
+            }
+            if (portada && user.portada) {
+                portada.src = user.portada;
+            }
+            if (fechaRegistro && user.createdAt) {
+                fechaRegistro.textContent = new Date(user.createdAt).toLocaleDateString();
+            }
+        }
+
+        async function fetchUpcomingEventos() {
+            try {
+                const response = await fetch(`http://localhost:3050/eventos/asociacion/${associationId}`);
+                if (response.ok) {
+                    const eventos = await response.json();
+                    renderEventos(eventos);
+                } else {
+                    alert('Error al obtener los eventos.');
+                }
+            } catch (error) {
+                alert('Error al obtener los eventos: ' + error.message);
+            }
+        }
+
+        function renderEventos(eventos) {
+            const eventosDiv = document.getElementById('eventos');
+            eventosDiv.innerHTML = '';
+            if (eventos.length === 0) {
+                eventosDiv.innerHTML = '<p>No hay eventos próximos.</p>';
+                return;
+            }
+            eventos.forEach(evento => {
+                let eventoCard = `
+                    <div class="container mt-4">
+                        <div class="row align-items-center event-card">
+                            <div class="col-md-4">
+                                <img class="img-fluid" src="${evento.Portada}" alt="Portada del evento">
+                            </div>
+                            <div class="col-md-8">
+                                <h5>${evento.Evento}</h5>
+                                <p>${evento.Descripcion}</p>
+                                <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                                <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                                ${evento.Tipo === 'virtual' ? `<p>Link de la llamada: <a href="${evento.info}">${evento.info}</a></p>` :
+                                `<p>Dirección: ${evento.info}</p>`}
+                            </div>
+                        </div>
+                    </div>`;
+                eventosDiv.innerHTML += eventoCard;
+            });
+        }
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
+    <a href="main.html">
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="45vh" src="images/logo.png" />
+            <h1 class="text-dark font-weight-bold ml-0" style="font-size: 2vh;">Read-It Asociación cultural</h1>
+        </div>
+    </a>  
+
+        <div class="d-flex justify-content-between align-items-center mb-3">   
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="myprofile.html">Mi perfil</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+
+<div class="bg-cover bg-center profile-banner" style="background-color: rgb(253, 236, 216); height: 25vh;" >
+    <img src="" alt="" id="portada" class="card-img-top club-banner" style="height: 100%;">
+</div>
+<section id="datosusuario" class="mt-5">
+    <div class="d-flex align-items-center ml-4 justify-content-between">
+        <div>
+            <img id="fotoPerfil" src="" alt="Foto de perfil"
+              class="rounded-circle position-absolute profile-pic" >
+      
+            <div class="profile-username">
+              <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-0"></h2>
+              <h5 id="descripcion" class="mb-1" style="margin-top: 10px;"></h5>
+              <p id="fechaRegistro" class="mb-1"></p>
+              <h6 class="mb-1"><strong>Ubicación: </strong><i id="ubicacion"></i></h6>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="bg-white shadow-sm border-bottom" style="margin-top: 5vh; padding: 1rem 1.5rem;">
+    <span class="text-dark font-weight-bold">Eventos</span>
+</div>
+
+<section id="seccionEventos" >
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="font-weight-bold" style="margin: 10px 10px;">Próximos Eventos</h3>
+    </div>
+    <div id="eventos">
+    </div>      
+</section>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

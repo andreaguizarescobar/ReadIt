@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ReadIt - Ver Perfil</title>
+    <link rel="icon" href="images/logo.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+
+    <script>
+        function showSection(sectionId, tabId) {
+            document.getElementById('mis-clubes').style.display = 'none';
+            document.getElementById('mis-insignias').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.getElementById('tab-mis-clubes').classList.remove('active-tab');
+            document.getElementById('tab-mis-insignias').classList.remove('active-tab');
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function toggleFavorite(icon) {
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+        }
+
+        function toggleOptionsMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function goToClubPage() {
+            window.location.href = 'club.html';
+        }
+    </script>
+</head>
+<body class="bg-light">
+<header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
+    <a href="main.html">
+        <div class="d-flex align-items-center">
+            <img alt="Logo" class="rounded-circle" height="45vh" src="images/logo.png" />
+            <h1 class="text-dark font-weight-bold ml-0" style="font-size: 5vh;">Read-It</h1>
+        </div>
+    </a>  
+
+        <div class="d-flex justify-content-between align-items-center mb-3">   
+        <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
+            <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <div id="profile-menu" class="profile-menu">
+                <a href="myprofile.html">Mi perfil</a>
+                <a href="#" onclick="logout()">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+
+<div class="bg-cover bg-center profile-banner" style="background-color: rgb(253, 236, 216); height: 25vh;" >
+    <img src="" alt="" id="portada" class="card-img-top club-banner" style="height: 100%;">
+</div>
+<section id="datosusuario" class="mt-5">
+    <div class="d-flex align-items-center ml-4 justify-content-between">
+        <div>
+            <img id="fotoPerfil" src="" alt="Foto de perfil"
+              class="rounded-circle position-absolute profile-pic">
+      
+            <div class="profile-username">
+              <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-0"></h2>
+              <p id="descripcion" class="mb-1" style="margin-top: 10px;"></p>
+              <p id="fechaRegistro" class="mb-1"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<nav class="bg-white shadow-sm">
+    <ul class="nav justify-content-right p-3 ">
+        <li class="nav-item">
+            <a id="tab-mis-clubes" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('mis-clubes', 'tab-mis-clubes')">Clubes</a>
+        </li>
+        <li class="nav-item">
+            <a id="tab-mis-insignias" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('mis-insignias', 'tab-mis-insignias')">Insignias</a>
+        </li>
+    </ul>
+</nav>
+
+<main class="p-4">
+    <section id="mis-clubes">
+        <h2 class="font-weight-bold mb-3">Clubes de <i class="titulos"></i></h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Romántica</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
+                        <div class="options-menu" id="options-menu-1">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
+                    <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
+                    <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
+                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
+                    <div class="club-footer">
+                        <span>Ficción</span>
+                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
+                        <div class="options-menu" id="options-menu-2">
+                            <a href="#">Opción 1</a>
+                            <a href="#">Opción 2</a>
+                            <a href="#">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mis-insignias" style="display: none;">
+        <h2 class="font-weight-bold mb-4">Insignias de <i class="titulos"></i></h2>
+        <div id="insignias-container" class="d-flex flex-wrap">
+            <!-- Badges will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error('No userId found in localStorage');
+                return;
+            }
+            fetchUserInsignias(userId);
+            fetchUserProfile(userId);
+            fetchUserClubs(userId);
+        });
+
+        function fetchUserProfile(userId) {
+            fetch(`http://localhost:3050/usuarios/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los datos del usuario');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    console.log(user);
+                    displayUserProfile(user);
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                });
+        }
+
+        function displayUserProfile(user) {
+            const fotoPerfil = document.getElementById('fotoPerfil');
+            const nombreUsuario = document.getElementById('NombreUsuario');
+            const desc = document.getElementById('descripcion');
+            const titulos = document.getElementsByClassName('titulos');
+            const portada = document.getElementById('portada');
+            const fechaRegistro = document.getElementById('fechaRegistro');
+
+            if (fotoPerfil && user.picture) {
+                fotoPerfil.src = user.picture;
+            }
+            if (portada && user.portada) {
+                portada.src = user.portada;
+            }
+            if (nombreUsuario && user.name) {
+                nombreUsuario.textContent = user.name;
+                for (let i = 0; i < titulos.length; i++) {
+                    titulos[i].textContent = user.name;
+                }
+            }
+            if (desc && user.descripcion) {
+                desc.textContent = user.descripcion;
+            }
+            if (fechaRegistro && user.createdAt) {
+                const date = new Date(user.createdAt);
+                fechaRegistro.textContent = `Miembro desde: ${date.toLocaleDateString()}`;
+            }
+        }
+
+        function fetchUserInsignias(userId) {
+            fetch(`http://localhost:3050/insignias/user/${userId}`)
+                .then(response => response.json())
+                .then(insignias => {
+                    displayInsignias(insignias);
+                })
+                .catch(error => {
+                    console.error('Error fetching user insignias:', error);
+                });
+        }
+
+        function displayInsignias(insignias) {
+            const container = document.getElementById('insignias-container');
+            container.innerHTML = '';
+            insignias.forEach(insignia => {
+                const badgeBox = document.createElement('div');
+                badgeBox.className = 'badge-box m-2 text-center';
+
+                const img = document.createElement('img');
+                img.src = insignia.img || 'images/insignias/default.png';
+                img.alt = insignia.nombre;
+                img.className = 'img-fluid badge-img';
+
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = insignia.descripcion || '';
+
+                const p = document.createElement('p');
+                p.textContent = insignia.nombre;
+
+                badgeBox.appendChild(img);
+                badgeBox.appendChild(tooltip);
+                badgeBox.appendChild(p);
+
+                container.appendChild(badgeBox);
+            });
+        }
+
+        function fetchUserClubs(userId) {
+            fetch(`http://localhost:3050/clubes/user/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayUserClubs(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user clubs:', error);
+                });
+        }
+
+        function displayUserClubs(data) {
+            const misClubesSection = document.getElementById('mis-clubes');
+            const container = misClubesSection.querySelector('.row');
+            container.innerHTML = '';
+
+            if (data.adminClubs && data.adminClubs.length > 0) {
+                const adminHeader = document.createElement('h3');
+                adminHeader.textContent = 'Clubes donde es administrador';
+                adminHeader.classList.add('w-100', 'mb-3');
+                container.appendChild(adminHeader);
+
+                data.adminClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+
+            if (data.memberClubs && data.memberClubs.length > 0) {
+                const memberHeader = document.createElement('h3');
+                memberHeader.textContent = 'Clubes donde es miembro';
+                memberHeader.classList.add('w-100', 'mt-4', 'mb-3');
+                container.appendChild(memberHeader);
+
+                data.memberClubs.forEach(club => {
+                    const clubCard = createClubCard(club);
+                    container.appendChild(clubCard);
+                });
+            }
+        }
+
+        function createClubCard(club) {
+            const colDiv = document.createElement('div');
+            colDiv.className =  'col-md-6 mb-4';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card club-banner-container';
+            cardDiv.style.cursor = 'pointer';
+            cardDiv.onclick = () => goToClubPage(club._id);
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'card-header bg-warning text-white text-center font-weight-bold';
+            headerDiv.textContent = club.NombreClub;
+
+            const img = document.createElement('img');
+            img.className = 'card-img-top club-banner';
+            img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
+            img.alt = club.NombreClub;
+
+            const favoriteIcon = document.createElement('i');
+            favoriteIcon.className = 'far fa-heart favorite-icon';
+            favoriteIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleFavorite(favoriteIcon);
+            };
+
+            const footerDiv = document.createElement('div');
+            footerDiv.className = 'club-footer';
+
+            const genreSpan = document.createElement('span');
+            genreSpan.textContent = club.Genero || '';
+
+            const optionsIcon = document.createElement('i');
+            optionsIcon.className = 'fas fa-ellipsis-v';
+            optionsIcon.onclick = (event) => {
+                event.stopPropagation();
+                toggleOptionsMenu(`options-menu-${club._id}`);
+            };
+
+            const optionsMenu = document.createElement('div');
+            optionsMenu.className = 'options-menu';
+            optionsMenu.id = `options-menu-${club._id}`;
+
+            const option1 = document.createElement('a');
+            option1.href = '#';
+            option1.textContent = 'Opción 1';
+
+            const option2 = document.createElement('a');
+            option2.href = '#';
+            option2.textContent = 'Opción 2';
+
+            const option3 = document.createElement('a');
+            option3.href = '#';
+            option3.textContent = 'Opción 3';
+
+            optionsMenu.appendChild(option1);
+            optionsMenu.appendChild(option2);
+            optionsMenu.appendChild(option3);
+
+            footerDiv.appendChild(genreSpan);
+            footerDiv.appendChild(optionsIcon);
+            footerDiv.appendChild(optionsMenu);
+
+            cardDiv.appendChild(headerDiv);
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(favoriteIcon);
+            cardDiv.appendChild(footerDiv);
+
+            colDiv.appendChild(cardDiv);
+
+            return colDiv;
+        }
+
+        function toggleProfileMenu() {
+            let menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'signing.html'; // Redirige al login
+        }
+    </script>
+</main>
+
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+    <p class="mb-1">
+        📚 connectReadit@gmail.com | 
+        <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
+        © 2025 Read-it
+        </p>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

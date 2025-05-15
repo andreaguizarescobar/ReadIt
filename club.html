@@ -1059,7 +1059,9 @@ let notificationCount = 3; // Número inicial de notificaciones
                     document.getElementById("NombreClub").textContent = club.NombreClub;
                     document.querySelector(".club-banner").src = club.Portada;
                     document.querySelector(".text-muted").textContent = club.Descripcion;
-                    document.getElementById("admin").textContent = "Administrado por: " + club.Administrador;
+                    document.getElementById("admin").textContent = "Administrado por: " + club.Administrador.name;
+                    document.getElementById("admin").style = "cursor: pointer;";
+                    document.getElementById("admin").onclick = function () { verPerfil(club.Administrador._id); }
                     document.getElementById("memberCount").textContent = club.Miembros;
                     document.getElementById("genero").textContent = club.Genero;
 
@@ -1073,6 +1075,11 @@ let notificationCount = 3; // Número inicial de notificaciones
                 })
                 .catch(error => console.error("Error al obtener los detalles del club:", error));
         }
+    }
+
+    function verPerfil(id) {
+      localStorage.setItem("userId", id);
+      window.location.href = "verperfil.html";
     }
 
     document.addEventListener("DOMContentLoaded", fetchAndDisplayClub);
