@@ -739,7 +739,6 @@
         .then(data => {
             let clubesContainer = document.getElementById("clubes-container"); 
             clubesContainer.innerHTML = ""; // Limpiar contenido previo
-            console.log(data);
             data.forEach(club => {
                 let clubCard = `
                     <div class="col-md-6 mb-4">

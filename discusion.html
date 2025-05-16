@@ -159,8 +159,6 @@ function renderReplies(replies, comentarioId) {
     if (!replies || replies.length === 0) return '';
 
     return replies.map(reply => {
-      console.log(reply);
-        // User is an array, get first user's name or fallback
         const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
         const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
         const replyTimeAgo = timeAgo(reply.fecha);
@@ -385,7 +383,6 @@ function renderReplies(replies, comentarioId) {
                 comentario: commentText,
                 fecha: new Date(),
             };
-            console.log(commentData);
             try {
                 const response = await fetch(`http://localhost:3050/comentarios/${encodeURIComponent(libroId)}`, {
                     method: 'POST',

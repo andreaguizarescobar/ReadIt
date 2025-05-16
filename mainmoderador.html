@@ -174,7 +174,6 @@
             const tipoCell = row.cells[2];
             const userId = row.getAttribute('data-user-id');
             try {
-                console.log(userId);
                 const response = await fetch(`http://localhost:3050/usuarios/rol/${userId}`, {
                     method: 'PUT',
                     headers: {
@@ -427,7 +426,6 @@
             })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
                 if (result.message) {
                     // Update report status to "Resuelto"
                     fetch(`http://localhost:3050/reporte/${reporteSeleccionado}`, {
@@ -541,7 +539,6 @@
                         },
                         body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
                     })
-            console.log('Ban removed:', data);
         })
         .catch(error => {
             console.error('Error removing ban:', error);
@@ -656,7 +653,6 @@ window.addEventListener('click', function(e) {
 
                         const row = document.createElement("tr");
                         row.setAttribute("data-usuario", reporte.usuario.name || "Desconocido");
-                        console.log(reporte);
                         row.innerHTML = `
                         <td>${reporte.usuario.name || "Desconocido"}</td>
                         <td>${reporte.motivo || ""}</td>

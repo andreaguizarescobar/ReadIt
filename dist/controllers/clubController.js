@@ -9,6 +9,19 @@ export const getClubs = async (req, res) => {
     });
   }
 };
+
+// New controller function to search clubs by query and populate administrator name
+export const getClubsBySearch = async (req, res) => {
+  try {
+    const query = req.query.q || '';
+    const clubs = await clubService.searchClubs(query);
+    res.status(200).json(clubs);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+};
 export const getClub = async (req, res) => {
   try {
     const club = await clubService.getClub(req.params.id);

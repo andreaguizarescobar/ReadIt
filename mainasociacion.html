@@ -324,7 +324,10 @@
                         <label for="horaEvento">Hora del evento</label>
                         <input type="time" class="form-control" id="horaEvento">
                     </div>
-  
+                    <div class="form-group">
+                        <label for="horaFin">Hora de fin</label>
+                        <input type="time" class="form-control" id="horaFin">
+                    </div>
                     <!-- Tipo de evento -->
                     <div class="form-group">
                         <label>Tipo de evento</label>
@@ -391,11 +394,12 @@ document.getElementById('btnCrearEvento').addEventListener('click', async () => 
     const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
     const fechaEvento = document.getElementById('fechaEvento').value;
     const horaEvento = document.getElementById('horaEvento').value;
+    const horaFin = document.getElementById('horaFin').value;
     const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
     const lugarEvento = document.getElementById('lugarEvento').value.trim();
     const portadaEventoFile = document.getElementById('portadaEvento').files[0];
 
-    if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !tipoEvento || !lugarEvento) {
+    if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !tipoEvento || !lugarEvento || !horaFin) {
         alert('Por favor, complete todos los campos requeridos.');
         return;
     }
@@ -431,6 +435,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', async () => 
         Descripcion: descripcionEvento,
         Fecha: fechaEvento,
         Hora: horaEvento,
+        HoraF: horaFin,
         Tipo: tipoEvento,
         info: lugarEvento,
         asociacion: tokenData.id,
@@ -454,6 +459,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', async () => 
             document.getElementById('descripcionEvento').value = '';
             document.getElementById('fechaEvento').value = '';
             document.getElementById('horaEvento').value = '';
+            document.getElementById('horaFin').value = '';
             document.querySelector('input[name="tipoEvento"][value="virtual"]').checked = true;
             document.getElementById('lugarEvento').value = '';
             document.getElementById('portadaEvento').value = '';
@@ -501,7 +507,7 @@ function renderEventos(eventos) {
                         <div class="col-md-8">
                             <h5>${evento.Evento}</h5>
                             <p>${evento.Descripcion}</p>
-                            <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
+                            <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora} - ${evento.HoraF}</p>
                             <p><i class="fas fa-${evento.Tipo === 'virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
                             ${evento.Tipo === 'virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
                             '<p>Direccion: '+evento.info+'</p>' }
