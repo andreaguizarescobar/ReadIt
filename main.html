@@ -322,11 +322,106 @@
 
 <!-- Barra de búsqueda debajo del header -->
 <div class="d-flex justify-content-center align-items-center mt-0 px-3" style="z-index: 1; position: relative;  background-color: #ffc107;">
-    <input class="form-control rounded-left w-50" placeholder="Buscar clubes" type="text" style="margin: 10px 10px;" />
+    <div style="position: relative; width: 50%; margin: 10px 10px; min-width: 330px;">
+        <input id="clubSearchInput" class="form-control rounded-left w-100" placeholder="Buscar clubes" type="text" autocomplete="off" />
+        <ul id="clubSearchResults" class="list-group position-absolute w-100" style="top: 100%; left: 0; z-index: 1000;"></ul>
+    </div>
     <button class="btn btn-dark rounded-right ml-0">
         <i class="fas fa-search"></i>
     </button>
 </div>
+
+<script>
+    const searchInput = document.getElementById('clubSearchInput');
+    const resultsList = document.getElementById('clubSearchResults');
+
+    let timeout = null;
+
+    searchInput.addEventListener('input', () => {
+        clearTimeout(timeout);
+        const query = searchInput.value.trim();
+        if (query.length === 0) {
+            resultsList.innerHTML = '';
+            resultsList.style.display = 'none';
+            return;
+        }
+        timeout = setTimeout(() => {
+            fetch(`http://localhost:3050/clubes/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(clubs => {
+                    resultsList.innerHTML = '';
+                    if (clubs.length === 0) {
+                        resultsList.innerHTML = '<li class="list-group-item">No se encontraron clubes</li>';
+                        resultsList.style.display = 'block';
+                        return;
+                    }
+    clubs.forEach(club => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex align-items-center justify-content-between';
+
+        const leftDiv = document.createElement('div');
+        leftDiv.className = 'd-flex flex-column';
+
+        const topRow = document.createElement('div');
+        topRow.className = 'd-flex align-items-center';
+
+        const img = document.createElement('img');
+        img.src = club.Portada || 'https://via.placeholder.com/50x50?text=No+Image';
+        img.alt = club.NombreClub || club.nombre;
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.objectFit = 'cover';
+        img.style.marginRight = '10px';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = club.NombreClub || club.nombre;
+        nameSpan.style.fontWeight = 'bold';
+        nameSpan.style.marginRight = '50px';
+
+        topRow.appendChild(img);
+        topRow.appendChild(nameSpan);
+
+        const genreSpan = document.createElement('small');
+        genreSpan.textContent = club.Genero || '';
+        genreSpan.style.color = '#666';
+        genreSpan.style.marginLeft = '60px';
+        genreSpan.style.marginTop = '-5px';
+
+        leftDiv.appendChild(topRow);
+        leftDiv.appendChild(genreSpan);
+
+        const adminSpan = document.createElement('span');
+        adminSpan.textContent = club.Administrador?.name || 'Sin administrador';
+        adminSpan.style.fontStyle = 'italic';
+        adminSpan.style.marginLeft = 'auto';
+
+        li.appendChild(leftDiv);
+        li.appendChild(adminSpan);
+
+        li.style.cursor = 'pointer';
+        li.onclick = () => {
+            sessionStorage.setItem('selectedClub', club._id);
+            window.location.href = 'club.html';
+        };
+        resultsList.appendChild(li);
+    });
+                    resultsList.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching clubs:', error);
+                    resultsList.innerHTML = '<li class="list-group-item">Error al buscar clubes</li>';
+                    resultsList.style.display = 'block';
+                });
+        }, 300); // debounce delay
+    });
+
+    // Hide results when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!searchInput.contains(event.target) && !resultsList.contains(event.target)) {
+            resultsList.style.display = 'none';
+        }
+    });
+</script>
 
 <div class="cover-image">
 <div class="bg-cover bg-center" style="background-image: url('images/portada.png'); height: 200px;"></div>
