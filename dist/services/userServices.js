@@ -159,6 +159,7 @@ export const updateUser = async (id, data) => {
   // Update fields from data
   if (data.name !== undefined) user.name = data.name;
   if (data.descripcion !== undefined) user.descripcion = data.descripcion;
+  if (data.ubicacion !== undefined) user.ubicacion = data.ubicacion;
   if (data.picture !== undefined) user.picture = data.picture;
   if (data.portada !== undefined) user.portada = data.portada;
 

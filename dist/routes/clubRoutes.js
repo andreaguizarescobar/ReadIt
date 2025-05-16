@@ -1,6 +1,7 @@
 import express from "express";
 import * as clubController from "../controllers/clubController.js";
 const router = express.Router();
+router.get("/search", clubController.getClubsBySearch);
 router.get("/", clubController.getClubs);
 router.get("/:id", clubController.getClub);
 router.post("/", clubController.createClub);
