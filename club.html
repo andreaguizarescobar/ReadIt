@@ -1344,7 +1344,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
 
           renderChart();
           renderButtons();
-        } else if (response.status === 404) {
+        } else if (response.status === 201) {
           mensajeVoto.textContent = 'No hay votación activa en este momento.';
           barContainer.innerHTML = '';
           voteButtons.innerHTML = '';
