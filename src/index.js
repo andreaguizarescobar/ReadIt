@@ -29,5 +29,5 @@ app.use("/votaciones", votacionRoutes);
 app.use("/comentarios", comentRoutes);
 app.use("/reporte", reporteRoutes);
 
-const PORT = 3050;
+const PORT = process.env.PORT || 3050;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
