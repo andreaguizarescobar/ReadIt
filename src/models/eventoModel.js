@@ -6,6 +6,7 @@ const EventSchema = new mongoose.Schema({
       Descripcion: String,
       Fecha: String,
       Hora: String,
+      HoraF: String,
       Tipo: String,
       info: String,
       asociacion: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

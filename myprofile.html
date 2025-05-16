@@ -221,7 +221,6 @@
                     return response.json();
                 })
                 .then(user => {
-                    console.log(user);
                     displayUserProfile(user);
                 })
                 .catch(error => {
@@ -237,7 +236,6 @@
             const portada = document.getElementById('portada');
 
             if (fotoPerfil && user.picture) {
-                console.log(user.picture);
                 fotoPerfil.src = user.picture;
             }
             if (portada && user.portada) {

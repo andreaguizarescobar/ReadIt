@@ -180,7 +180,6 @@
         fetch(`http://localhost:3050/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/rol`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 const rol = data.role;
                 if (rol === 'none') {
                     const miembroElem = document.getElementById("Miembro");
@@ -457,7 +456,6 @@
     const fechaInicio = new Date();
     const fechaFin = new Date();
     fechaFin.setDate(fechaInicio.getDate() + parseInt(diasVotacion));
-    console.log(club);
     const votacionData = {
       Libro: titulos.map(titulo => ({ name: titulo, votos: 0 })),
       F_Inicio: fechaInicio.toISOString().split('T')[0],
@@ -718,6 +716,10 @@
                     <label for="horaEvento">Hora del evento</label>
                     <input type="time" class="form-control" id="horaEvento" required>
                 </div>
+                <div class="form-group">
+                    <label for="horaFin">Hora de Fin</label>
+                    <input type="time" class="form-control" id="horaFin" required>
+                </div>
             
                 <div class="form-group">
                     <label>Tipo de evento</label>
@@ -845,11 +847,12 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
   const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
   const fechaEvento = document.getElementById('fechaEvento').value;
   const horaEvento = document.getElementById('horaEvento').value;
+  const horaFin = document.getElementById('horaFin').value;
   const tipoEvento = document.querySelector('input[name="tipoEvento"]:checked').value;
   const lugarEvento = document.getElementById('lugarEvento').value.trim();
   const portadaEventoFile = document.getElementById('portadaEvento').files[0];
 
-  if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento) {
+  if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento || !horaFin) {
     Swal.fire({
       title: '¡Error!',
       text: 'Por favor, complete todos los campos obligatorios.',
@@ -869,6 +872,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
         Descripcion: descripcionEvento,
         Fecha: fechaEvento,
         Hora: horaEvento,
+        HoraF: horaFin,
         Tipo: tipoEvento === 'virtual' ? 'Virtual' : 'Presencial',
         info: lugarEvento,
         Portada: portadaBase64,
@@ -973,38 +977,6 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
 </script>
 </body>
 </html>
-
-<script>
-let notificationCount = 3; // Número inicial de notificaciones
-
-    function updateNotificationBadge() {
-        let badge = document.getElementById('notification-badge');
-        if (notificationCount > 0) {
-            badge.textContent = notificationCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
-    function toggleNotificationMenu() {
-        let menu = document.getElementById('notification-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function markAsRead(event, element) {
-        event.stopPropagation(); // Evita que el clic cierre el menú
-        if (element.classList.contains('unread')) {
-            element.classList.remove('unread');
-            element.style.background = 'white'; // Quita el resaltado
-            notificationCount--;
-            updateNotificationBadge();
-        }
-    }
-
-    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
-    updateNotificationBadge();
-</script>
 
 <script>
   function toggleLugar() {
@@ -1174,15 +1146,15 @@ let notificationCount = 3; // Número inicial de notificaciones
             // Helper function to render books
             function renderBooks(books) {
                 return books.map(data => `
-                <div class="container mt-4" style="margin-bottom: 20px;">
+                <div class="container mt-4" style="margin-bottom: 20px; background-color: #fbfbe9; border-radius: 3%; padding: 10px 10px;">
                     <div class="row align-items-center book-card">
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="text-align: center;">
                             <img class="img-fluid book-cover" src="${data.Portada}" alt="${data.Libro}">
                         </div>
                         <div class="col-md-8">
                             <h5>${data.Libro}</h5>
                             <p><strong>Autor:</strong> ${data.Autor}</p>
-                            <p class="book-description">${data.descripcion}</p>
+                            <p class="book-description" style="text-align: justify;">${data.descripcion}</p>
                             <p><strong>Inicio:</strong> ${data.F_Inicio}</p>
                             <p><strong>Fin:</strong> ${data.F_Fin}</p>
                             <button class="btn btn-primary btn-sm" onclick="goToDiscussion('${data._id}')">
@@ -1210,31 +1182,41 @@ let notificationCount = 3; // Número inicial de notificaciones
         });
     }
 
-    function cargarEventos(eventos) {
+        function cargarEventos(eventos) {
         let eventosContainer = document.getElementById("eventos");
         eventosContainer.innerHTML = "";
+
+        const now = new Date();
+        let upcomingEventsCount = 0;
 
         eventos.forEach(evento => {
           fetch(`http://localhost:3050/eventos/${evento}`)
             .then(response => response.json())
             .then(evento => {
-            let eventoCard = `
-                <div class="container mt-4">
-                    <div class="row align-items-center event-card">
-                        <div class="col-md-4">
-                            <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
+              const eventoFecha = new Date(evento.Fecha);
+              if (eventoFecha >= now) {
+                upcomingEventsCount++;
+                let eventoCard = `
+                    <div class="container mt-4" style="margin-bottom: 20px; background-color: #fbfbe9; border-radius: 3%; padding: 10px 10px;">
+                        <div class="row align-items-center event-card">
+                            <div class="col-md-4">
+                                <img class="img-fluid" src="${ evento.Portada }" alt="Portada del evento">
+                            </div>
+                            <div class="col-md-8">
+                                <h5>${evento.Evento}</h5>
+                                <p>${evento.Descripcion}</p>
+                                <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora} - ${evento.HoraF}</p>
+                                <p><i class="fas fa-${evento.Tipo === 'Virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
+                                ${evento.Tipo === 'Virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
+                                '<p>Direccion: '+evento.info+'</p>' }
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            <h5>${evento.Evento}</h5>
-                            <p>${evento.Descripcion}</p>
-                            <p><i class="far fa-calendar-alt"></i> ${evento.Fecha}, ${evento.Hora}</p>
-                            <p><i class="fas fa-${evento.Tipo === 'Virtual' ? 'video' : 'map-marker-alt'}"></i> ${evento.Tipo}</p>
-                            ${evento.Tipo === 'Virtual' ? '<p>Link de la llamada: <a href="'+evento.info+'">'+evento.info+'<a></p>' :
-                            '<p>Direccion: '+evento.info+'</p>' }
-                        </div>
-                    </div>
-                </div>`;
-            eventosContainer.innerHTML += eventoCard;
+                    </div>`;
+                eventosContainer.innerHTML += eventoCard;
+              }
+              if (upcomingEventsCount === 0) {
+                eventosContainer.innerHTML = "<p>No hay eventos próximos disponibles.</p>";
+              }
             });
         });
     }
@@ -1380,7 +1362,6 @@ let notificationCount = 3; // Número inicial de notificaciones
       }
     }
   
-    // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
       fetchCurrentVotacion();
     });
