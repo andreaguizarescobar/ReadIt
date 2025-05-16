@@ -24,12 +24,16 @@ async function verifyGoogleToken(idToken) {
     // Guardar o actualizar usuario en la base de datos
     let user = await User.findOne({ sub: userData.sub });
     if (user) {
-      // Update existing user info
-      user.name = userData.name;
-      user.email = userData.email;
-      user.picture = userData.picture;
-      await user.save();
+
     } else {
+      // Check if email already exists with different sub
+      const existingEmailUser = await User.findOne({ email: userData.email });
+      if (existingEmailUser) {
+        // Throw error if email already registered
+        const error = new Error('El correo electrónico ya está registrado con otra cuenta');
+        error.code = 'EMAIL_ALREADY_REGISTERED';
+        throw error;
+      }
       user = await User.create(userData);
     }
   

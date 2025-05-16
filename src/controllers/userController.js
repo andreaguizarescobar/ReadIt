@@ -16,7 +16,11 @@ export const registerUser = async (req, res) => {
     res.json({ message: 'Login exitoso', user, token: jwtToken });
   } catch (err) {
     console.error(err);
-    res.status(401).json({ message: 'Token inválido' });
+    if (err.code === 'EMAIL_ALREADY_REGISTERED') {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(401).json({ message: 'Token inválido' });
+    }
   }
 };
 
