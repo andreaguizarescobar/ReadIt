@@ -56,27 +56,12 @@
             document.getElementById('tab-mis-insignias').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
         }
-
         
         function toggleProfileMenu() {
             let menu = document.getElementById('profile-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function toggleNotificationMenu() {
-            let menu = document.getElementById('notification-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function toggleFavorite(icon) {
-            icon.classList.toggle('fas');
-            icon.classList.toggle('far');
-        }
-
-        function toggleOptionsMenu(menuId) {
-            const menu = document.getElementById(menuId);
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
 
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
@@ -129,18 +114,22 @@
               class="rounded-circle position-absolute profile-pic">
       
             <div class="profile-username">
-              <h2 id="NombreUsuario" class="font-weight-bold mb-0 mr-0"></h2>
+              <h3 id="NombreUsuario" class="font-weight-bold mb-0 mr-0"></h3>
               <p id="descripcion" class="mb-1" style="margin-top: 10px;"></p>
               <p id="fechaRegistro" class="mb-1"></p>
             </div>
         
         </div>
-   
-    <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh;">
-      Editar mi perfil
-    </button>
+
     </div>
-  </section>
+   
+    <div style="text-align: right;">
+  <button class="btn btn-success" onclick="showModal('modalEditarPerfil')" style="margin-right: 5vh; margin-bottom: 3vh; margin-top: 3vh;">
+    Editar mi perfil
+  </button>
+</div>
+
+</section>
 
 <nav class="bg-white shadow-sm">
     <ul class="nav justify-content-right p-3 ">
@@ -161,15 +150,8 @@
                 <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                     <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
                     <div class="club-footer">
                         <span>Romántica</span>
-                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-1')"></i>
-                        <div class="options-menu" id="options-menu-1">
-                            <a href="#">Opción 1</a>
-                            <a href="#">Opción 2</a>
-                            <a href="#">Opción 3</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -178,15 +160,8 @@
                 <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                     <div class="card-header bg-warning text-white text-center font-weight-bold">Nombre del club</div>
                     <img alt="Club Ficción" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/vXEV3f9DJVWiS2Nm1QiukSPcpoOPc-e9xlG5Lud8sWE.jpg"/>
-                    <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
                     <div class="club-footer">
                         <span>Ficción</span>
-                        <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-2')"></i>
-                        <div class="options-menu" id="options-menu-2">
-                            <a href="#">Opción 1</a>
-                            <a href="#">Opción 2</a>
-                            <a href="#">Opción 3</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -543,7 +518,6 @@
         document.getElementById("modalEditarPerfil").style.display = "none";
     }
 
-
     function cargarClubes() {
         const clubesContainer = document.getElementById("clubesContainer");
         clubesContainer.innerHTML = ""; // Limpiar cualquier contenido previo
@@ -554,15 +528,8 @@
                     <div class="card club-banner-container" onclick="goToClubPage()" style="cursor: pointer;">
                         <div class="card-header bg-warning text-white text-center font-weight-bold">${club.nombre}</div>
                         <img alt="Club ${club.nombre}" class="card-img-top club-banner" src="${club.portada}"/>
-                        <i class="far fa-heart favorite-icon" onclick="toggleFavorite(this)"></i>
                         <div class="club-footer">
                             <span>${club.genero}</span>
-                            <i class="fas fa-ellipsis-v" onclick="toggleOptionsMenu('options-menu-${club.nombre}')"></i>
-                            <div class="options-menu" id="options-menu-${club.nombre}">
-                                <a href="#">Opción 1</a>
-                                <a href="#">Opción 2</a>
-                                <a href="#">Opción 3</a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -589,53 +556,17 @@
             img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
             img.alt = club.NombreClub;
 
-            const favoriteIcon = document.createElement('i');
-            favoriteIcon.className = 'far fa-heart favorite-icon';
-            favoriteIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleFavorite(favoriteIcon);
-            };
-
             const footerDiv = document.createElement('div');
             footerDiv.className = 'club-footer';
 
             const genreSpan = document.createElement('span');
             genreSpan.textContent = club.Genero || '';
 
-            const optionsIcon = document.createElement('i');
-            optionsIcon.className = 'fas fa-ellipsis-v';
-            optionsIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleOptionsMenu(`options-menu-${club._id}`);
-            };
-
-            const optionsMenu = document.createElement('div');
-            optionsMenu.className = 'options-menu';
-            optionsMenu.id = `options-menu-${club._id}`;
-
-            const option1 = document.createElement('a');
-            option1.href = '#';
-            option1.textContent = 'Opción 1';
-
-            const option2 = document.createElement('a');
-            option2.href = '#';
-            option2.textContent = 'Opción 2';
-
-            const option3 = document.createElement('a');
-            option3.href = '#';
-            option3.textContent = 'Opción 3';
-
-            optionsMenu.appendChild(option1);
-            optionsMenu.appendChild(option2);
-            optionsMenu.appendChild(option3);
 
             footerDiv.appendChild(genreSpan);
-            footerDiv.appendChild(optionsIcon);
-            footerDiv.appendChild(optionsMenu);
 
             cardDiv.appendChild(headerDiv);
             cardDiv.appendChild(img);
-            cardDiv.appendChild(favoriteIcon);
             cardDiv.appendChild(footerDiv);
 
             colDiv.appendChild(cardDiv);
@@ -661,36 +592,7 @@
 </script>
 
 <script>
-let notificationCount = 3; // Número inicial de notificaciones
 
-    function updateNotificationBadge() {
-        let badge = document.getElementById('notification-badge');
-        if (notificationCount > 0) {
-            badge.textContent = notificationCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
-    function toggleNotificationMenu() {
-        let menu = document.getElementById('notification-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function markAsRead(event, element) {
-        event.stopPropagation(); // Evita que el clic cierre el menú
-        if (element.classList.contains('unread')) {
-            element.classList.remove('unread');
-            element.style.background = 'white'; // Quita el resaltado
-            notificationCount--;
-            updateNotificationBadge();
-        }
-    }
-
-    // Llamar a la función para asegurarse de que se muestre correctamente al cargar
-    updateNotificationBadge();
-    
     function fetchUserClubs() {
             fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
                 .then(response => response.json())

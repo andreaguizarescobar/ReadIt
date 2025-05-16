@@ -106,11 +106,6 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function toggleFavorite(icon) {
-            icon.classList.toggle('fas');
-            icon.classList.toggle('far');
-        }
-
         function toggleOptionsMenu(menuId) {
             const menu = document.getElementById(menuId);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
@@ -156,8 +151,10 @@
 </header>
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
-<div class="d-flex align-items-center bg-primary" style="height: 10vh;">
-  <h2 class="text-white font-weight-bold ml-2" id="NombreClub" style="font-size: 4vh;"></h2>
+<div class="d-flex justify-content-center align-items-center bg-primary px-3 py-2">
+  <h2 class="text-white font-weight-bold text-center" id="NombreClub"
+      style="font-size: 6vh; word-break: break-word; overflow-wrap: break-word; white-space: normal;">
+  </h2>
 </div>
 
 <div class="container-fluid">
@@ -169,7 +166,7 @@
     </div>
 
     <!-- Botón y Me gusta alineados a la derecha con margen superior -->
-    <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
+    <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3" >
         <button class="btn btn-primary join-btn" onclick="toggleMembership(this)" id="Miembro" style="display: none;">Unirse al Club</button>
         <button class="btn btn-primary join-btn" onclick="mostrarModalEditar()" id="btn-admin" style="display: none;">Editar Club</button>
       <script>
@@ -287,13 +284,11 @@
         }
       </script>
 
-      <!-- Me gusta -->
-      <span class="like-btn ml-3 text-danger"><i class="far fa-heart"></i> 120</span>
     </div>
   </div>
 </div>
 
-<nav class="bg-white shadow-sm">
+<nav class="bg-white shadow-sm" style="margin-top: 2vh;">
     <ul class="nav justify-content-right p-3">
         <li class="nav-item">
             <a id="tab-informacion" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('informacion', 'tab-informacion')">Información</a>
