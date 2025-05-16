@@ -80,7 +80,7 @@
         }
 
         function fetchReportes() {
-            fetch("http://localhost:3050/reporte")
+            fetch("https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte")
                 .then(response => response.json())
                 .then(reportes => {
                     reportesTableBody.innerHTML = ""; // Clear existing rows
@@ -172,7 +172,7 @@
 
         // Fetch clubs where user is admin and member
         function fetchUserClubs() {
-            fetch(`http://localhost:3050/clubes/user/${tokenData.id}`)
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/clubes/user/${tokenData.id}`)
                 .then(response => response.json())
                 .then(data => {
                     displayUserClubs(data);
@@ -245,36 +245,8 @@
             const genreSpan = document.createElement('span');
             genreSpan.textContent = club.Genero || '';
 
-            const optionsIcon = document.createElement('i');
-            optionsIcon.className = 'fas fa-ellipsis-v';
-            optionsIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleOptionsMenu(`options-menu-${club._id}`);
-            };
-
-            const optionsMenu = document.createElement('div');
-            optionsMenu.className = 'options-menu';
-            optionsMenu.id = `options-menu-${club._id}`;
-
-            const option1 = document.createElement('a');
-            option1.href = '#';
-            option1.textContent = 'Opción 1';
-
-            const option2 = document.createElement('a');
-            option2.href = '#';
-            option2.textContent = 'Opción 2';
-
-            const option3 = document.createElement('a');
-            option3.href = '#';
-            option3.textContent = 'Opción 3';
-
-            optionsMenu.appendChild(option1);
-            optionsMenu.appendChild(option2);
-            optionsMenu.appendChild(option3);
 
             footerDiv.appendChild(genreSpan);
-            footerDiv.appendChild(optionsIcon);
-            footerDiv.appendChild(optionsMenu);
 
             cardDiv.appendChild(headerDiv);
             cardDiv.appendChild(img);
@@ -340,7 +312,7 @@
             return;
         }
         timeout = setTimeout(() => {
-            fetch(`http://localhost:3050/clubes/search?q=${encodeURIComponent(query)}`)
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/clubes/search?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(clubs => {
                     resultsList.innerHTML = '';
@@ -687,14 +659,14 @@
                 "Eventos": []
             };
     
-            fetch("http://localhost:3050/clubes", {
+            fetch("https://read-it-es-e4ec0ccdc25d.herokuapp.com/clubes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(clubData)
             })
             .then(response => response.json())
             .then(data => {
-                fetch(`http://localhost:3050/usuarios/${tokenData.id}/club/${data._id}/add-admin`, {method: "POST"})
+                fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${tokenData.id}/club/${data._id}/add-admin`, {method: "POST"})
                 .then(response2 => response2.json())
                 Swal.fire({
                     icon: 'success',
@@ -704,7 +676,7 @@
                     confirmButtonText: 'Aceptar'
                }).then(() => {
                 hideModal("modalCrearClub");
-                fetch(`http://localhost:3050/usuarios/${tokenData.id}/insignia/680e4e3d4d4e9715973c6ac6/add`, {
+                fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${tokenData.id}/insignia/680e4e3d4d4e9715973c6ac6/add`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                 });
@@ -734,7 +706,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:3050/clubes")
+        fetch("https://read-it-es-e4ec0ccdc25d.herokuapp.com/clubes")
         .then(response => response.json())
         .then(data => {
             let clubesContainer = document.getElementById("clubes-container"); 
@@ -815,7 +787,7 @@
     }
 
     function fetchAndDisplayEventosAsociacion() {
-    fetch('http://localhost:3050/eventos/asociacion/')
+    fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/eventos/asociacion/')
         .then(response => response.json())
         .then(eventos => {
             const eventosContainer = document.getElementById('eventos');

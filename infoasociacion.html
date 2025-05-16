@@ -33,7 +33,7 @@
 
         async function fetchAssociationProfile(id) {
             try {
-                const response = await fetch(`http://localhost:3050/usuarios/${id}`);
+                const response = await fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${id}`);
                 if (!response.ok) {
                     throw new Error('Error al obtener los datos de la asociación');
                 }
@@ -80,7 +80,7 @@
 
         async function fetchUpcomingEventos() {
             try {
-                const response = await fetch(`http://localhost:3050/eventos/asociacion/${associationId}`);
+                const response = await fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/eventos/asociacion/${associationId}`);
                 if (response.ok) {
                     const eventos = await response.json();
                     renderEventos(eventos);

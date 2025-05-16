@@ -149,7 +149,7 @@
         });
 
         function fetchUserProfile(userId) {
-            fetch(`http://localhost:3050/usuarios/${userId}`)
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${userId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error al obtener los datos del usuario');
@@ -194,7 +194,7 @@
         }
 
         function fetchUserInsignias(userId) {
-            fetch(`http://localhost:3050/insignias/user/${userId}`)
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/insignias/user/${userId}`)
                 .then(response => response.json())
                 .then(insignias => {
                     displayInsignias(insignias);
@@ -232,7 +232,7 @@
         }
 
         function fetchUserClubs(userId) {
-            fetch(`http://localhost:3050/clubes/user/${userId}`)
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/clubes/user/${userId}`)
                 .then(response => response.json())
                 .then(data => {
                     displayUserClubs(data);
