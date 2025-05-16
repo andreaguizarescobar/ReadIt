@@ -26,7 +26,7 @@ export const getCurrentVotacionByClubId = async (req, res) => {
   try {
     const clubId = req.params.clubId;
     if (!clubId) {
-      return res.status(400).json({ message: "ClubId inválido" });
+      return res.status(201).json({ message: "ClubId inválido" });
     }
     const votacion = await votacionService.getCurrentVotacionByClubId(clubId);
     if (!votacion) return res.status(201).json({ message: "No hay votación activa para este club" });
