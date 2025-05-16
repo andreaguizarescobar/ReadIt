@@ -33,7 +33,8 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function goToClubPage() {
+        function goToClubPage(NombreClub) {
+            sessionStorage.setItem('selectedClub', NombreClub);
             window.location.href = 'club.html';
         }
     </script>

@@ -71,7 +71,8 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function goToClubPage() {
+        function goToClubPage(NombreClub) {
+            sessionStorage.setItem('selectedClub', NombreClub);
             window.location.href = 'club.html';
         }
 
