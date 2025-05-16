@@ -25,10 +25,16 @@ export const getVotacionById = async (req, res) => {
 export const getCurrentVotacionByClubId = async (req, res) => {
   try {
     const clubId = req.params.clubId;
+    if (!clubId) {
+      return res.status(400).json({ message: "ClubId inválido" });
+    }
     const votacion = await votacionService.getCurrentVotacionByClubId(clubId);
     if (!votacion) return res.status(201).json({ message: "No hay votación activa para este club" });
     res.status(200).json(votacion);
   } catch (error) {
+    if (error.message === "Club no encontrado") {
+      return res.status(201).json({ message: "Club no encontrado" });
+    }
     res.status(500).json({ error: error.message });
   }
 };
