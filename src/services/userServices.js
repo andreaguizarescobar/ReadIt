@@ -88,7 +88,7 @@ async function sendVerificationEmail(email, name, userId) {
 */
   const verificationToken = generateToken({ id: userId, email });
 
-  const verificationUrl = `${CLIENT_URL}/verify-email?token=${verificationToken}`;
+  const verificationUrl = `${CLIENT_URL}/verify-email.html?token=${verificationToken}`;
 
   // Email content
   let mailOptions = {
@@ -290,7 +290,7 @@ async function sendResetPasswordEmail(email, name, token) {
     },
   });
 
-  const resetUrl = `${CLIENT_URL}/reset-password?token=${token}`;
+  const resetUrl = `${CLIENT_URL}/reset-password.html?token=${token}`;
 
   let mailOptions = {
     from: "ReadIt",
