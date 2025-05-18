@@ -2,7 +2,7 @@ import User from "../models/userModel.js";
 import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcrypt";
 const GOOGLE_CLIENT_ID = '442472453936-ihjkn2bismfff6safne168lj91mtolrb.apps.googleusercontent.com';
-const CLIENT_URL = 'https://read-it-es-e4ec0ccdc25d.herokuapp.com';
+const CLIENT_URL = 'https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios';
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 async function verifyGoogleToken(idToken) {
   const ticket = await client.verifyIdToken({
