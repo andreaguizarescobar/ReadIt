@@ -291,12 +291,6 @@
             img.src = club.Portada || 'https://via.placeholder.com/400x200?text=No+Image';
             img.alt = club.NombreClub;
 
-            const favoriteIcon = document.createElement('i');
-            favoriteIcon.className = 'far fa-heart favorite-icon';
-            favoriteIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleFavorite(favoriteIcon);
-            };
 
             const footerDiv = document.createElement('div');
             footerDiv.className = 'club-footer';
@@ -304,40 +298,10 @@
             const genreSpan = document.createElement('span');
             genreSpan.textContent = club.Genero || '';
 
-            const optionsIcon = document.createElement('i');
-            optionsIcon.className = 'fas fa-ellipsis-v';
-            optionsIcon.onclick = (event) => {
-                event.stopPropagation();
-                toggleOptionsMenu(`options-menu-${club._id}`);
-            };
-
-            const optionsMenu = document.createElement('div');
-            optionsMenu.className = 'options-menu';
-            optionsMenu.id = `options-menu-${club._id}`;
-
-            const option1 = document.createElement('a');
-            option1.href = '#';
-            option1.textContent = 'Opción 1';
-
-            const option2 = document.createElement('a');
-            option2.href = '#';
-            option2.textContent = 'Opción 2';
-
-            const option3 = document.createElement('a');
-            option3.href = '#';
-            option3.textContent = 'Opción 3';
-
-            optionsMenu.appendChild(option1);
-            optionsMenu.appendChild(option2);
-            optionsMenu.appendChild(option3);
-
             footerDiv.appendChild(genreSpan);
-            footerDiv.appendChild(optionsIcon);
-            footerDiv.appendChild(optionsMenu);
 
             cardDiv.appendChild(headerDiv);
             cardDiv.appendChild(img);
-            cardDiv.appendChild(favoriteIcon);
             cardDiv.appendChild(footerDiv);
 
             colDiv.appendChild(cardDiv);
