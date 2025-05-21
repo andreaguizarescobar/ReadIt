@@ -827,3 +827,219 @@
     }
 
 </script>
+
+<!-- Script para manejar sanciones -->
+<script>
+    let usuarioSeleccionado = '';
+    let comentarioSeleccionado = '';
+
+        let reporteSeleccionado = '';
+
+        function abrirModalSancion(usuario, userId, comentarioId, reporteId) {
+            usuarioSeleccionado = { id: userId, name: usuario };
+            comentarioSeleccionado = comentarioId;
+            reporteSeleccionado = reporteId;
+            document.getElementById('usuarioReportado').innerText = usuario;
+
+            const fila = document.querySelector(`tr[data-usuario="${usuario}"]`);
+            const sancionActual = fila?.querySelector('.sancion')?.innerText.trim();
+
+            const select = document.getElementById('tipoSancion');
+            select.innerHTML = `
+                <option value="">-- Elegir una opción --</option>
+                <option value="5">Suspensión de 5 días</option>
+                <option value="10">Suspensión de 10 días</option>
+                <option value="ban">Baneo definitivo</option>
+            `;
+
+            const modal = new bootstrap.Offcanvas(document.getElementById('modalSancion'));
+            modal.show();
+        }
+
+        function aplicarSancion() {
+            const sancion = document.getElementById('tipoSancion').value;
+            if (!sancion) {
+                Swal.fire({
+                    title: 'Selección inválida',
+                    text: 'Selecciona una sanción válida.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                });
+                return;
+            }
+
+            let textoSancion = '';
+            let status = '';
+            let razon = '';
+            let duracion = '';
+            let finBan = null;
+
+            switch (sancion) {
+                case '5':
+                    textoSancion = 'Suspensión de 5 días';
+                    status = 'Suspendido';
+                    razon = 'Incumplimiento de normas';
+                    duracion = '5 días';
+                    finBan = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+                    break;
+                case '10':
+                    textoSancion = 'Suspensión de 10 días';
+                    status = 'Suspendido';
+                    razon = 'Incumplimiento de normas';
+                    duracion = '10 días';
+                    finBan = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString();
+                    break;
+                case 'ban':
+                    textoSancion = 'Baneo definitivo';
+                    status = 'Baneado';
+                    razon = 'Violación grave de normas';
+                    duracion = 'tiempo indefinido';
+                    finBan = null;
+                    break;
+                case 'unban':
+                    textoSancion = 'Resuelto';
+                    status = 'Activo';
+                    razon = '';
+                    duracion = '';
+                    finBan = null;
+                    break;
+            }
+
+            // Prepare data to send
+            const data = {
+                userId: usuarioSeleccionado.id,
+                comentarioId: comentarioSeleccionado,
+                status,
+                razon,
+                duracion,
+                finBan
+            };
+
+            fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/sancion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.message) {
+                    // Update report status to "Resuelto"
+                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporteSeleccionado}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ estado: data.status, sancion: textoSancion })
+                    })
+                    .then(response => response.json())
+                    .then(updateResult => {
+                        Swal.fire({
+                            title: 'Sanción aplicada',
+                            text: `Sanción aplicada a ${usuarioSeleccionado.name}: ${textoSancion}`,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar',
+                        }).then(() => {
+                            const modal = bootstrap.Offcanvas.getInstance(document.getElementById('modalSancion'));
+                            modal.hide();
+
+                            // Update the table row with new estado and sancion
+                            const fila = document.querySelector(`tr[data-usuario="${usuarioSeleccionado.name}"]`);
+                            if (fila) {
+                                const estadoCell = fila.querySelector('.estado');
+                                const sancionCell = fila.querySelector('.sancion');
+
+                                if (estadoCell) {
+                                    let badgeClass = 'badge-success';
+                                    if (status === 'Pendiente') badgeClass = 'badge-warning';
+                                    else if (status === 'Suspendido') badgeClass = 'badge-warning';
+                                    else if (status === 'Baneado') badgeClass = 'badge-danger';
+                                    else if (status === 'Activo') badgeClass = 'badge-success';
+                                    else if (status === 'Resuelto') badgeClass = 'badge-success';
+
+                                    estadoCell.innerHTML = `<span class="badge ${badgeClass}">${status}</span>`;
+                                }
+
+                                if (sancionCell) {
+                                    sancionCell.innerText = textoSancion;
+                                }
+
+                                // Enable or disable "Quitar sanción" button based on sancion
+                                const quitarBtn = fila.querySelector('button.btn-danger');
+                                if (quitarBtn) {
+                                    quitarBtn.disabled = (textoSancion === 'Sin aplicar' || textoSancion === 'Resuelto');
+                                }
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo actualizar el estado del reporte.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar',
+                        });
+                        console.error('Error updating report status:', error);
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo aplicar la sanción.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al aplicar la sanción.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                });
+                console.error('Error:', error);
+            });
+        }
+
+    function quitarSancion(usuario, userId, reporte) {
+        const fila = document.querySelector(`tr[data-usuario="${usuario}"]`);
+        if (!fila) return;
+
+        fila.querySelector('.sancion').innerText = 'Resuelto';
+        fila.querySelector('.estado').innerHTML = '<span class="badge badge-success">Resuelto</span>';
+
+        const btn = fila.querySelector('button.btn-danger');
+        btn.disabled = true;
+
+        // Reemplazar el alert con SweetAlert
+        Swal.fire({
+            title: 'Sanción quitada',
+            text: `Sanción quitada para ${usuario}`,
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+        });
+
+        // Optionally, send request to backend to remove ban and update user estado
+        fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/quitarbaneo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporte}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
+                    })
+        })
+        .catch(error => {
+            console.error('Error removing ban:', error);
+        });
+    }
+</script>
