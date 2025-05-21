@@ -68,7 +68,7 @@
             Swal.fire({
               icon: 'success',
               title: `Bienvenido ${data.user.name}`,
-              timer: 3000,
+              timer: 1000,
               showConfirmButton: false
             }).then(() => {
               if (data.user.tipo && data.user.tipo === "asociacion") {
@@ -297,7 +297,7 @@
         Swal.fire({
           title: `Bienvenido ${data.user.name}`,
           icon: 'success',
-          timer: 2000, // El temporizador de 2 segundos
+          timer: 1500, // El temporizador de 2 segundos
           showConfirmButton: false,
         }).then(() => {
           fetch(`http://localhost:3050/usuarios/${data.user.id}/insignia/680e4de94d4e9715973c6ac4/add`, {
