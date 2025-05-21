@@ -79,7 +79,14 @@
                 if (data.user.estado.status === 'Activo') {
                   window.location.href = "main.html";
                 } else {
-                  window.location.href = "banneduser.html";
+                  fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/check-ban/${data.user._id}`)
+                  .then(res => {
+                    if (res.status === 201) {
+                      window.location.href = "main.html";
+                    }else{
+                      window.location.href = "banneduser.html";
+                    }
+                  });
                 }
               }
             });
