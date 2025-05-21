@@ -969,8 +969,9 @@
                             modal.hide();
 
                             // Update the table row with new estado and sancion
-                            const fila = document.querySelector(`tr[data-usuario="${usuarioSeleccionado.name}"]`);
-                            if (fila) {
+                            const filas = document.querySelector(`tr[data-usuario="${usuarioSeleccionado.name}"]`);
+                            if (filas) {
+                                filas.forEach(fila => {
                                 const estadoCell = fila.querySelector('.estado');
                                 const sancionCell = fila.querySelector('.sancion');
 
@@ -995,6 +996,7 @@
                                     quitarBtn.disabled = (textoSancion === 'Sin aplicar' || textoSancion === 'Resuelto');
                                 }
                             }
+                            );}
                         });
                     })
                     .catch(error => {
