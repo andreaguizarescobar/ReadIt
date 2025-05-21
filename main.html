@@ -624,6 +624,30 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal tipo pestaña lateral -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="modalSancion" aria-labelledby="modalSancionLabel">
+    <div class="offcanvas-header">
+        <h5 id="modalSancionLabel">Aplicar sanción a <span id="usuarioReportado"></span></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Seleccionar sanción</label>
+                <select class="form-select" id="tipoSancion">
+                    <option value="">-- Elegir una opción --</option>
+                    <option value="5">Suspensión de 5 días</option>
+                    <option value="10">Suspensión de 10 días</option>
+                    <option value="ban">Baneo definitivo</option>
+                    <option value="unban">Quitar sanción</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-success" onclick="aplicarSancion()">Aplicar</button>
+        </form>
+    </div>
+</div>
   
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
