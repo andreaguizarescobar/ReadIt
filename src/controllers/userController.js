@@ -238,3 +238,33 @@ export const resetPassword = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+
+export const checkAndUpdateBanStatus = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    const estado = user.estado || {};
+    const status = estado.status || "Activo";
+    const finBan = estado.finBan ? new Date(estado.finBan) : null;
+    const now = new Date();
+
+    if (status !== "Activo" && finBan && finBan <= now) {
+      // Ban expired, update status to Activo and clear ban info
+      const updatedUser = await userService.applySanctionToUser(user._id, {
+        status: "Activo",
+        razon: "",
+        duracion: "",
+        finBan: null,
+      });
+      return res.status(201).json({ message: "Estado actualizado a Activo", user: updatedUser });
+    }
+
+    // No update needed, return current user
+    return res.status(200).json({ message: "Estado sin cambios", user });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al verificar y actualizar estado", error: error.message });
+  }
+};

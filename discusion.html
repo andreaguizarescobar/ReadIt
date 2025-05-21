@@ -150,10 +150,10 @@ function renderComments(comentarios) {
     });
 }
 
-  function verPerfil(id) {
-    localStorage.setItem("userId", id);
-    window.location.href = "verperfil.html";
-  }
+function verPerfil(id) {
+  localStorage.setItem("userId", id);
+  window.location.href = "verperfil.html";
+}
 
 function renderReplies(replies, comentarioId) {
     if (!replies || replies.length === 0) return '';
@@ -303,6 +303,7 @@ function renderReplies(replies, comentarioId) {
 
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
 <div class="d-flex align-items-center bg-primary" style="height: 10vh;">
+  <h3>Libro: </h3>
   <h3 class="text-white font-weight-bold ml-2" style="margin-top: 5px; margin-bottom: 5px ; font-size: 4vh;" id="NombreClub"></h3>
 </div>
 
@@ -326,9 +327,9 @@ function renderReplies(replies, comentarioId) {
         </div>
         </div>
     </div>
-<!-- Sección Derecha -->
-<div class="col-md-6 d-flex flex-column overflow-auto" style="background-color: #ffffff;">
-    <h4 class="text-center mt-4">Comentarios</h4>
+  <!-- Sección Derecha -->
+  <div class="col-md-6 d-flex flex-column overflow-auto" style="background-color: #ffffff;">
+      <h4 class="text-center mt-4">Comentarios</h4>
     <div class="p-1">
       <!-- Área para agregar nuevo comentario -->
       <div class="mb-3">

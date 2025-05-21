@@ -76,6 +76,11 @@ h1, h2 {
 
 .club-banner {
     height: 270px;
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
 }
 
 .profile-menu {

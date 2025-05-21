@@ -68,7 +68,7 @@
             Swal.fire({
               icon: 'success',
               title: `Bienvenido ${data.user.name}`,
-              timer: 3000,
+              timer: 1000,
               showConfirmButton: false
             }).then(() => {
               if (data.user.tipo && data.user.tipo === "asociacion") {
@@ -296,7 +296,7 @@
         Swal.fire({
           title: `Bienvenido ${data.user.name}`,
           icon: 'success',
-          timer: 2000, // El temporizador de 2 segundos
+          timer: 1500, // El temporizador de 2 segundos
           showConfirmButton: false,
         }).then(() => {
           fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${data.user.id}/insignia/680e4de94d4e9715973c6ac4/add`, {
@@ -311,7 +311,14 @@
                 if (data.user.estado.status === 'Activo') {
                   window.location.href = "main.html";
                 } else {
-                  window.location.href = "banneduser.html";
+                  fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/check-ban/${data.user._id}`)
+                  .then(res => {
+                    if (res.status === 201) {
+                      window.location.href = "main.html";
+                    }else{
+                      window.location.href = "banneduser.html";
+                    }
+                  });
                 }
               }
         });
