@@ -950,7 +950,7 @@
             .then(result => {
                 if (result.message) {
                     // Update report status to "Resuelto"
-                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${usuarioSeleccionado.id}`, {
+                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporteSeleccionado}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'

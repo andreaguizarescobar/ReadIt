@@ -5,8 +5,8 @@ export const addReporte = async(data) => {
   return await reporte.save();
 };
 
-export async function updateReporte(usuario, data) {
-  return await Reporte.updateMany({usuario: usuario}, data);
+export async function updateReporte(IdReporte, data) {
+  return await Reporte.findByIdAndUpdate(IdReporte, data, { new: true });
 }
 
 export async function getReportes() {
