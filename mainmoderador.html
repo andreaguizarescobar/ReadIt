@@ -705,6 +705,7 @@ window.addEventListener('click', function(e) {
         }
 
         fetchReportes();
+        fetchReportedUsers();
 
         async function fetchReportedUsers() {
             const usuariosReportadosTableBody = document.getElementById("usuarios-reportados-table-body");
@@ -753,9 +754,5 @@ window.addEventListener('click', function(e) {
             }
         }
 
-        // Call fetchReportedUsers on DOMContentLoaded
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchReportedUsers();
-        });
     });
 </script>
