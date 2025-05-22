@@ -496,14 +496,11 @@
                                     sancionCell.innerText = textoSancion;
                                 }
 
-                                // Enable or disable "Quitar sanción" button based on sancion
                                 const quitarBtn = fila.querySelector('button.btn-danger');
                                 if (quitarBtn) {
                                     quitarBtn.disabled = (textoSancion === 'Sin aplicar' || textoSancion === 'Resuelto');
                                 }
                             }
-                            fetchReportedUsers();
-                            fetchReportes();
                         });
                     })
                     .catch(error => {
@@ -570,8 +567,6 @@
                         },
                         body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
                     })
-                    fetchReportedUsers();
-                    fetchReportes();
         })
         .catch(error => {
             console.error('Error removing ban:', error);

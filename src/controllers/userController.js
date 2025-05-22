@@ -1,5 +1,6 @@
 import * as userService from "../services/userServices.js";
 import { generateToken } from "../utils/jwtUtils.js";
+import { updateReportesByUserId } from "../services/reporteService.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -195,10 +196,7 @@ export const applySanctionAndDeleteComment = async (req, res) => {
       await comentService.removeComentarioReferenceFromLibro(comentarioId);
     }
 
-    // Update all reports where the user is involved
-    await import("../services/reporteService.js").then(async (reporteService) => {
-      await reporteService.updateReportesByUserId(userId, { estado: status });
-    });
+    await updateReportesByUserId(userId, { estado: status });
 
     res.status(200).json({ message: "Sanction applied, comment reference removed, and reports updated", user: sanctionedUser });
   } catch (error) {
