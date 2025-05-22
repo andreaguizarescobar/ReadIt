@@ -15,3 +15,10 @@ export async function getReportes() {
     .populate('comentario') 
     .exec();
 }
+
+export async function updateReportesByUserId(userId, updateData) {
+  return await Reporte.updateMany(
+    { usuario: userId },
+    { $set: updateData }
+  );
+}

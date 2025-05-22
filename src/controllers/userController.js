@@ -194,7 +194,13 @@ export const applySanctionAndDeleteComment = async (req, res) => {
     if (comentarioId != null || comentarioId != undefined || comentarioId != "") {
       await comentService.removeComentarioReferenceFromLibro(comentarioId);
     }
-    res.status(200).json({ message: "Sanction applied and comment reference removed", user: sanctionedUser });
+
+    // Update all reports where the user is involved
+    await import("../services/reporteService.js").then(async (reporteService) => {
+      await reporteService.updateReportesByUserId(userId, { estado: status });
+    });
+
+    res.status(200).json({ message: "Sanction applied, comment reference removed, and reports updated", user: sanctionedUser });
   } catch (error) {
     res.status(500).json({ message: "Error applying sanction and removing comment reference", error: error.message });
   }
