@@ -502,6 +502,8 @@
                                     quitarBtn.disabled = (textoSancion === 'Sin aplicar' || textoSancion === 'Resuelto');
                                 }
                             }
+                            fetchReportedUsers();
+                            fetchReportes();
                         });
                     })
                     .catch(error => {
@@ -568,6 +570,8 @@
                         },
                         body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
                     })
+                    fetchReportedUsers();
+                    fetchReportes();
         })
         .catch(error => {
             console.error('Error removing ban:', error);
