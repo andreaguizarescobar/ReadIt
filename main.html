@@ -950,7 +950,7 @@
             .then(result => {
                 if (result.message) {
                     // Update report status to "Resuelto"
-                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporteSeleccionado}`, {
+                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${usuarioSeleccionado.id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -969,9 +969,8 @@
                             modal.hide();
 
                             // Update the table row with new estado and sancion
-                            const filas = document.querySelector(`tr[data-usuario="${usuarioSeleccionado.name}"]`);
-                            if (filas) {
-                                filas.forEach(fila => {
+                            const fila = document.querySelector(`tr[data-usuario="${usuarioSeleccionado.name}"]`);
+                            if (fila) {
                                 const estadoCell = fila.querySelector('.estado');
                                 const sancionCell = fila.querySelector('.sancion');
 
@@ -996,7 +995,6 @@
                                     quitarBtn.disabled = (textoSancion === 'Sin aplicar' || textoSancion === 'Resuelto');
                                 }
                             }
-                            );}
                         });
                     })
                     .catch(error => {

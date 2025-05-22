@@ -12,9 +12,9 @@ export const addReporte = async (req, res) => {
 
 export const updateReporte = async (req, res) => {
   try {
-    const IdReporte = req.params.IdReporte;
+    const usuario = req.params.usuario;
     const data = req.body;
-    const updatedReporte = await reporteService.updateReporte(IdReporte, data);
+    const updatedReporte = await reporteService.updateReporte(usuario, data);
     if (!updatedReporte) {
       return res.status(404).json({ message: "Reporte not found" });
     }
