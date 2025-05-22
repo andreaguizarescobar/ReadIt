@@ -179,8 +179,8 @@ import * as comentService from "../services/comentService.js";
 export const applySanctionAndDeleteComment = async (req, res) => {
   try {
     const { userId, comentarioId, status, razon, duracion, finBan } = req.body;
-    if (!userId || !comentarioId) {
-      return res.status(400).json({ message: "userId and comentarioId are required" });
+    if (!userId) {
+      return res.status(400).json({ message: "userId are required" });
     }
 
     // Apply sanction to user with detailed data
@@ -191,9 +191,9 @@ export const applySanctionAndDeleteComment = async (req, res) => {
       finBan
     });
 
-    // Remove comment reference from libro (do not delete comment)
-    await comentService.removeComentarioReferenceFromLibro(comentarioId);
-
+    if (comentarioId != null || comentarioId != undefined || comentarioId != "") {
+      await comentService.removeComentarioReferenceFromLibro(comentarioId);
+    }
     res.status(200).json({ message: "Sanction applied and comment reference removed", user: sanctionedUser });
   } catch (error) {
     res.status(500).json({ message: "Error applying sanction and removing comment reference", error: error.message });
@@ -236,5 +236,18 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({ message: "Contraseña actualizada exitosamente" });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+export const checkBan = async (req, res) => {
+  try {
+    const user = await userService.checkBanForUser(req.params.id);
+    if (user.estado.status === "Activo") {
+      res.status(201).json({ message: "User active", user });
+    } else {
+      res.status(403).json({ message: "User banned", user });
+    }
+  } catch (error) {
+    res.status(404).json({ message: error.message });
   }
 };

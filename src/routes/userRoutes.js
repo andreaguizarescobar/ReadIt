@@ -43,5 +43,6 @@ router.delete("/:userId/club/:clubId/remove-miembro", userController.removeClubM
 router.post("/:userId/insignia/:insigniaId/add", userController.addInsigniaToUser);
 router.post("/sancion", userController.applySanctionAndDeleteComment);
 router.post("/quitarbaneo", userController.removeBan);
+router.get("/check-ban/:id", userController.checkBan);
 
 export default router;
