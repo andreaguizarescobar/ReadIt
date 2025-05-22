@@ -44,6 +44,4 @@ router.post("/:userId/insignia/:insigniaId/add", userController.addInsigniaToUse
 router.post("/sancion", userController.applySanctionAndDeleteComment);
 router.post("/quitarbaneo", userController.removeBan);
 
-router.get("/check-ban/:id", userController.checkAndUpdateBanStatus);
-
 export default router;
