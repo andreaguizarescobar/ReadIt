@@ -77,6 +77,12 @@
             </div>
         </div>
     </div>
+
+    <div style="text-align: right;">
+        <button class="btn btn-danger" onclick="$('#modalReportarPerfil').modal('show')" style="margin-right: 5vh; margin-bottom: 3vh; margin-top: 3vh;">
+            Reportar perfil
+        </button>
+    </div>
 </section>
 
 <nav class="bg-white shadow-sm">
@@ -318,6 +324,47 @@
             localStorage.removeItem('jwtToken');
             window.location.href = 'signing.html'; // Redirige al login
         }
+        function enviarReporte() {
+            const motivo = document.getElementById('motivoReporte').value;
+            const perfilAReportarId = document.getElementById('perfilAReportarId').value;
+            const usuario = localStorage.getItem('userId');
+            if (!usuario) {
+                Swal.fire('Error', 'No se encontró el usuario. Por favor, inicie sesión.', 'error');
+                return;
+            }
+            if (!motivo) {
+                Swal.fire('Error', 'Por favor, seleccione un motivo para reportar.', 'error');
+                return;
+            }
+            const fecha = new Date().toISOString();
+
+            const reporteData = {
+                motivo: motivo,
+                usuario: usuario,
+                fecha: fecha,
+            };
+
+            fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/reportes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reporteData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al enviar el reporte');
+                }
+                return response.json();
+            })
+            .then(data => {
+                $('#modalReportarPerfil').modal('hide');
+                Swal.fire('Reporte enviado', 'El reporte ha sido enviado correctamente.', 'success');
+            })
+            .catch(error => {
+                Swal.fire('Error', error.message, 'error');
+            });
+        }
     </script>
 </main>
 
@@ -330,6 +377,38 @@
         </p>
     </div>
 </footer>
+
+<!-- Modal para Reportar Perfil -->
+<div class="modal fade" id="modalReportarPerfil" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">Reportar Perfil</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Selecciona un motivo para reportar este perfil:</p>
+        <select id="motivoReporte" class="form-control">
+          <option value="spam">Spam o publicidad no solicitada</option>
+          <option value="ofensivo">Contenido ofensivo o abusivo</option>
+          <option value="acoso">Acoso o bullying</option>
+          <option value="inapropiado">Contenido explícito o inapropiado</option>
+          <option value="odio">Violencia o incitación al odio</option>
+          <option value="falso">Información falsa o engañosa</option>
+          <option value="ilegal">Contenido ilegal</option>
+        </select>
+        <input type="hidden" id="perfilAReportarId" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" onclick="enviarReporte()">Enviar Reporte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

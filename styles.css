@@ -575,3 +575,12 @@ left: 15px;
 max-width: 100%;
 }
 }
+
+.btn-report {
+    background-color: #f33712eb;
+    color: white;
+    border: none;
+}
+.btn-report:hover {
+    background-color: #f33712;
+}
