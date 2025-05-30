@@ -171,7 +171,7 @@ function renderReplies(replies, comentarioId) {
                     <p class="mb-1 fw-bold text-primary" style="cursor: pointer"; onclick="verPerfil('${reply.User[0]._id}')">${replyUserName}</p>
                     <p class="mb-1">${reply.comentario}</p>
                     <div class="text-muted small">
-                        <span class="me-3" onclick="toggleLike(this)">Me gusta ${replyLikes}</span>
+                        <span class="me-3" onclick="toggleLike(this)">Me gusta <span class="like-count">${replyLikes} .</span></span>
                         <span>${replyTimeAgo}</span>
                     </div>
                 </div>
@@ -515,7 +515,7 @@ function renderReplies(replies, comentarioId) {
                 return;
               }
               // Update like count visually after unlike
-              const currentLikes = parseInt(likeCount.textContent);
+              const currentLikes = parseInt(likesCount.textContent);
               likeCount.textContent = currentLikes > 0 ? currentLikes - 1 : 0;
               likedUsers.delete(likeKey);
               return;
