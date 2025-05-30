@@ -1,8 +1,11 @@
+
 import express from "express";
 import * as userController from "../controllers/userController.js";
 import multer from "multer";
+import { authenticateJWT } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
 
 // Multer config for file storage
 const storage = multer.diskStorage({
@@ -25,9 +28,9 @@ router.post("/login", userController.login);
 router.post("/forgot-password", userController.forgotPassword);
 router.post("/reset-password", userController.resetPassword);
 
-router.get("/", userController.getAllUsers);
+router.get("/", authenticateJWT, userController.getAllUsers);
 router.get("/:id", userController.getUserById);
-router.put("/rol/:id", userController.updateRol);
+router.put("/rol/:id", authenticateJWT, userController.updateRol);
 router.put("/:id", upload.fields([
   { name: "fotoPerfil", maxCount: 1 },
   { name: "portadaUsuario", maxCount: 1 }
@@ -41,8 +44,8 @@ router.get("/:userId/club/:clubId/rol", userController.getUserClubRole);
 router.delete("/:userId/club/:clubId/remove-miembro", userController.removeClubMember);
 
 router.post("/:userId/insignia/:insigniaId/add", userController.addInsigniaToUser);
-router.post("/sancion", userController.applySanctionAndDeleteComment);
-router.post("/quitarbaneo", userController.removeBan);
-router.get("/check-ban/:id", userController.checkBan);
+router.post("/sancion", authenticateJWT, userController.applySanctionAndDeleteComment);
+router.post("/quitarbaneo", authenticateJWT, userController.removeBan);
+router.get("/check-ban/:id", authenticateJWT, userController.checkBan);
 
 export default router;

@@ -756,10 +756,14 @@
 <script>
 document.getElementById('btnSubirLibro').addEventListener('click', async () => {
   const form = document.getElementById('formSubirLibro');
+  const subirLibroBtn = document.getElementById('btnSubirLibro');
+
   if (!form.checkValidity()) {
     form.reportValidity(); // Muestra los mensajes nativos del navegador
     return;
   }
+
+  subirLibroBtn.disabled = true;
 
   const titulo = document.getElementById('tituloLibro').value;
   const autor = document.getElementById('autorLibro').value;
@@ -776,6 +780,7 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
       icon: 'warning',
       confirmButtonText: 'Cerrar'
     });
+    subirLibroBtn.disabled = false;
     return;
   }
 
@@ -820,6 +825,7 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
         icon: 'error',
         confirmButtonText: 'Intentar de nuevo'
       });
+      subirLibroBtn.disabled = false;
     }
   } catch (error) {
     Swal.fire({
@@ -828,6 +834,7 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
       icon: 'error',
       confirmButtonText: 'Intentar de nuevo'
     });
+    subirLibroBtn.disabled = false;
   }
 });
 </script>

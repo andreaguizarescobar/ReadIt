@@ -160,11 +160,11 @@ function renderReplies(replies, comentarioId) {
 
     return replies.map(reply => {
         const replyUserName = (reply.User && reply.User.length > 0 && reply.User[0].name) ? reply.User[0].name : 'Usuario';
-        const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
+        const replyAvatarURL = (reply.User && reply.User.length > 0 && reply.User[0].picture) ? reply.User[0].picture : '/images/fotoperfil.jpg';
         const replyTimeAgo = timeAgo(reply.fecha);
         const replyLikes = reply.likes || 0;
         return `
-            <div class="d-flex mb-2 ps-3 border-start" data-comentario-id="${comentarioId}" data-respuesta-id="${reply._id || reply.id}">
+            <div class="d-flex mb-2 ps-3 border-start" data-comentario-id="${comentarioId}" data-respuesta-id="${reply.fecha}">
                 <img src="${replyAvatarURL}"
                      class="rounded-circle me-2 mt-1" style="width: 30px; height: 30px; cursor: pointer;" alt="avatar" onclick="verPerfil('${reply.User[0]._id}')">
                 <div class="flex-grow-1 bg-body-secondary p-2 rounded">
@@ -668,7 +668,7 @@ function renderReplies(replies, comentarioId) {
         }
   
         // Append reply to UI
-        const replyAvatarURL = (button.closest(".flex-grow-1").querySelector(".replies img")) ? button.closest(".flex-grow-1").querySelector(".replies img").src : `https://i.pravatar.cc/30?img=${Math.floor(Math.random() * 70) + 1}`;
+        const replyAvatarURL = user.picture;
   
         const replyDiv = document.createElement("div");
         replyDiv.classList.add("d-flex", "mb-2", "ps-3", "border-start");
@@ -692,6 +692,7 @@ function renderReplies(replies, comentarioId) {
         repliesContainer.appendChild(replyDiv);
         input.value = "";
   
+        fetchComments();
       } catch (error) {
         alert(error.message);
       }

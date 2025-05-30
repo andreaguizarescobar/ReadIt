@@ -144,7 +144,7 @@ export const getUserById = async (id) => {
 };
 
 export const getAllUsers = async () => {
-  const users = await User.find({tipo: {$nin: ['asociacion', 'adminPrincipal']}});
+  const users = await User.find({tipo: {$nin: ['asociacion', 'adminPrincipal']}, emailVerified: true});
   return users;
 };
 

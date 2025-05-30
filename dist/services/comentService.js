@@ -57,7 +57,7 @@ export const incrementLikeComentario = async (comentarioId, userId) => {
 export const incrementLikeRespuesta = async (comentarioId, respuestaId, userId) => {
   const comentario = await Comentario.findById(comentarioId);
   if (!comentario) throw new Error("Comentario no encontrado");
-  const respuesta = comentario.respuestas.id(respuestaId);
+  const respuesta = comentario.respuestas.fecha(respuestaId);
   if (!respuesta) throw new Error("Respuesta no encontrada");
 
   // Check if user already liked
@@ -86,7 +86,7 @@ export const decrementLikeComentario = async (comentarioId, userId) => {
 export const decrementLikeRespuesta = async (comentarioId, respuestaId, userId) => {
   const comentario = await Comentario.findById(comentarioId);
   if (!comentario) throw new Error("Comentario no encontrado");
-  const respuesta = comentario.respuestas.id(respuestaId);
+  const respuesta = comentario.respuestas.fecha(respuestaId);
   if (!respuesta) throw new Error("Respuesta no encontrada");
 
   // Check if user has liked

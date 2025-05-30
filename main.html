@@ -79,45 +79,51 @@
             return date.toISOString().split('T')[0];
         }
 
+        
         function fetchReportes() {
-            fetch("https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte")
-                .then(response => response.json())
-                .then(reportes => {
-                    reportesTableBody.innerHTML = ""; // Clear existing rows
-                    reportes.forEach(reporte => {
-                        const estado = reporte.estado || "Pendiente";
-                        let estadoBadgeClass = "badge-success";
-                        if (estado === "Pendiente") estadoBadgeClass = "badge-warning";
-                        else if (estado === "Suspendido") estadoBadgeClass = "badge-warning";
-                        else if (estado === "Baneado") estadoBadgeClass = "badge-danger";
-                        else if (estado === "Resuelto") estadoBadgeClass = "badge-success";
-                        else if (estado === "Activo") estadoBadgeClass = "badge-success";
+            const token = localStorage.getItem('jwtToken');
+            fetch("https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(reportes => {
+                reportesTableBody.innerHTML = ""; // Clear existing rows
+                reportes.forEach(reporte => { if(reporte.comentario){
+                    const estado = reporte.estado || "Pendiente";
+                    let estadoBadgeClass = "badge-success";
+                    if (estado === "Pendiente") estadoBadgeClass = "badge-warning";
+                    else if (estado === "Suspendido") estadoBadgeClass = "badge-warning";
+                    else if (estado === "Baneado") estadoBadgeClass = "badge-danger";
+                    else if (estado === "Resuelto") estadoBadgeClass = "badge-success";
+                    else if (estado === "Activo") estadoBadgeClass = "badge-success";
 
-                        const sancionText = reporte.sancion ? reporte.sancion : "Sin aplicar";
-                        const quitarSancionDisabled = sancionText === "Sin aplicar" || sancionText === "Resuelto" ? "disabled" : "";
+                    const sancionText = reporte.sancion ? reporte.sancion : "Sin aplicar";
+                    const quitarSancionDisabled = sancionText === "Sin aplicar" || sancionText === "Resuelto" ? "disabled" : "";
 
-                        const row = document.createElement("tr");
-                        row.setAttribute("data-usuario", reporte.usuario.name || "Desconocido");
-                        row.innerHTML = `
-                        <td>${reporte.usuario.name || "Desconocido"}</td>
-                        <td>${reporte.motivo || ""}</td>
-                        <td>"${reporte.comentario.comentario || ""}"</td>
-                        <td>${formatDate(reporte.fecha) || ""}</td>
-                        <td class="estado"><span class="badge ${estadoBadgeClass}">${estado}</span></td>
-                        <td class="sancion">${sancionText}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info" onclick="abrirModalSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte.comentario._id}', '${reporte._id}')">Resolver</button>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="quitarSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte._id}')" ${quitarSancionDisabled}>Quitar sanción</button>
-                        </td>
-                    `;
-                        reportesTableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error fetching reportes:", error);
-                });
+                    const row = document.createElement("tr");
+                    row.setAttribute("data-usuario", reporte.usuario.name || "Desconocido");
+                    row.innerHTML = `
+                    <td>${reporte.usuario.name || "Desconocido"}</td>
+                    <td>${reporte.motivo || ""}</td>
+                    <td>"${reporte.comentario.comentario || ""}"</td>
+                    <td>${formatDate(reporte.fecha) || ""}</td>
+                    <td class="estado"><span class="badge ${estadoBadgeClass}">${estado}</span></td>
+                    <td class="sancion">${sancionText}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="abrirModalSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte.comentario._id}', '${reporte._id}')">Resolver</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="quitarSancion('${reporte.usuario.name}', '${reporte.usuario._id}', '${reporte._id}')" ${quitarSancionDisabled}>Quitar sanción</button>
+                    </td>
+                `;
+                    reportesTableBody.appendChild(row);
+                }});
+            })
+            .catch(error => {
+                console.error("Error fetching reportes:", error);
+            });
         }
 
         fetchReportes();
@@ -654,13 +660,16 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    function crearClub() {
+function crearClub() {
         const form = document.getElementById("formCrearClub");
+        const crearBtn = document.querySelector("#modalCrearClub .btn-primary");
 
         if (!form.checkValidity()) {
             form.reportValidity(); // Muestra los mensajes de validación nativos del navegador
             return;
         }
+
+        crearBtn.disabled = true;
 
         const nombre = document.getElementById("nombreClub").value.trim();
         const genero = document.getElementById("generoClub").value.trim();
@@ -698,6 +707,7 @@
                     timer: 4000,
                     confirmButtonText: 'Aceptar'
                }).then(() => {
+                crearBtn.disabled = false;
                 hideModal("modalCrearClub");
                 fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${tokenData.id}/insignia/680e4e3d4d4e9715973c6ac6/add`, {
                     method: 'POST',
@@ -707,6 +717,7 @@
                });
             })
             .catch(error => {
+                crearBtn.disabled = false;
                 console.error("Error al crear el club:", error);
                 Swal.fire({
                     title: 'Hubo un error al crear el club',
@@ -939,10 +950,12 @@
                 finBan
             };
 
+            const token = localStorage.getItem('jwtToken');
             fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/sancion', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(data)
             })
@@ -950,10 +963,12 @@
             .then(result => {
                 if (result.message) {
                     // Update report status to "Resuelto"
+                    const token = localStorage.getItem('jwtToken');
                     fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporteSeleccionado}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ estado: data.status, sancion: textoSancion })
                     })
@@ -1045,22 +1060,26 @@
         });
 
         // Optionally, send request to backend to remove ban and update user estado
+        const token = localStorage.getItem('jwtToken');
         fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/quitarbaneo', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ userId: userId })
         })
         .then(response => response.json())
         .then(data => {
-                    fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporte}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
-                    })
+            const token = localStorage.getItem('jwtToken');
+            fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/reporte/${reporte}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ estado: 'Resuelto', sancion: 'Resuelto' })
+            })
         })
         .catch(error => {
             console.error('Error removing ban:', error);
