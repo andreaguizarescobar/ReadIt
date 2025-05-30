@@ -584,3 +584,37 @@ max-width: 100%;
 .btn-report:hover {
     background-color: #f33712;
 }
+
+table {
+  table-layout: fixed; /* Fuerza que la tabla tenga ancho fijo y las columnas no crezcan según contenido */
+  width: 100%; /* Que ocupe todo el ancho disponible */
+}
+
+table th, table td {
+  word-wrap: break-word; /* Permite partir palabras largas */
+  overflow-wrap: break-word; /* Lo mismo para navegadores más nuevos */
+  white-space: normal; /* Permite el quiebre de línea */
+}
+
+.modalLibro {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Evita scroll fuera del modal */
+   display: none; /* Oculto por defecto */
+  /* Resto de estilos para centrar modal, fondo oscuro, etc. */
+}
+
+.modal-contentLibro {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  
+  max-height: 80vh;   /* Máximo alto, relativo al viewport */
+  width: 80%;
+  overflow-y: auto; /* Scroll vertical si contenido es mucho */
+  box-sizing: border-box;
+}
