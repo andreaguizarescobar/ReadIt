@@ -515,7 +515,7 @@ function renderReplies(replies, comentarioId) {
                 return;
               }
               // Update like count visually after unlike
-              const currentLikes = parseInt(likesCount.textContent);
+              const currentLikes = parseInt(likeCount.textContent);
               likeCount.textContent = currentLikes > 0 ? currentLikes - 1 : 0;
               likedUsers.delete(likeKey);
               return;
