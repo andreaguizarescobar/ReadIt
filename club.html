@@ -1,17 +1,28 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Configuración de codificación y diseño responsive -->
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+    <!-- Título del documento -->
     <title>ReadIt Club</title>
+
+    <!-- Favicon -->
     <link rel="icon" href="images/logo.png">
+
+    <!-- Importación de estilos y fuentes externas -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-    <!-- SweetAlert2 CDN -->
+    
+    <!-- Biblioteca para alertas -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link href="styles.css" rel="stylesheet"> <!-- Archivo CSS externo -->
+    <!-- Estilos personalizados -->
+    <link href="styles.css" rel="stylesheet">
 
+    <!-- Script para verificar si el token JWT ha expirado -->
     <script>
         function isTokenExpired(token) {
             if (!token) return true;
@@ -26,6 +37,7 @@
             }
         }
 
+        // Decodifica el token JWT para obtener los datos del usuario
         function decodeToken(token) {
             if (!token) return null;
             try {
@@ -40,27 +52,34 @@
 
         let tokenData;
         let rol;
+
+        // Validación de sesión al cargar el documento
         document.addEventListener('DOMContentLoaded', () => {
-          const token = localStorage.getItem('jwtToken');
-          if (!token || isTokenExpired(token)) {
-              Swal.fire({
-                  icon: 'warning',
-                  title: 'Sesión expirada',
-                  text: 'Por favor, inicia sesión de nuevo.',
-                  confirmButtonText: 'Ir a iniciar sesión'
-              }).then(() => {
-                  window.location.href = 'signing.html';
-              });
-              return; // Evita continuar si el token no es válido
-          }
-          let img = document.getElementById('imgperfil');
-          if(tokenData && tokenData.picture) {
-              img.src = tokenData.picture;
-          }
-          tokenData = decodeToken(token);
-      });
+            const token = localStorage.getItem('jwtToken');
+            if (!token || isTokenExpired(token)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sesión expirada',
+                    text: 'Por favor, inicia sesión de nuevo.',
+                    confirmButtonText: 'Ir a iniciar sesión'
+                }).then(() => {
+                    window.location.href = 'signing.html';
+                });
+                return;
+            }
+
+            // Mostrar imagen de perfil si existe en el token
+            let img = document.getElementById('imgperfil');
+            tokenData = decodeToken(token);
+            if (tokenData && tokenData.picture) {
+                img.src = tokenData.picture;
+            }
+        });
     </script>
+
+    <!-- Script para manejo de secciones y menús -->
     <script>
+        // Alternar entre pestañas principales
         function showSection(sectionId, tabId) {
             document.getElementById('informacion').style.display = 'none';
             document.getElementById('lecturas').style.display = 'none';
@@ -72,6 +91,8 @@
             document.getElementById('tab-eventos').classList.remove('active-tab');
             document.getElementById(tabId).classList.add('active-tab');
         }
+
+        // Alternar entre subtabs de lecturas
         function showSection2(sectionId, tabId) {
             document.getElementById('libro-curso').style.display = 'none';
             document.getElementById('proxima-lectura').style.display = 'none';
@@ -82,6 +103,7 @@
             document.getElementById(tabId).classList.add('active-tab');
         }
 
+        // Muestra u oculta campos según el tipo de evento seleccionado
         function toggleEvento() {
             let tipoEvento = document.getElementById("tipoEvento").value;
             let campoVirtual = document.getElementById("campoVirtual");
@@ -96,40 +118,49 @@
             }
         }
 
+        // Mostrar u ocultar menú de perfil
         function toggleProfileMenu() {
             let menu = document.getElementById('profile-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        // Mostrar u ocultar menú de notificaciones
         function toggleNotificationMenu() {
             let menu = document.getElementById('notification-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        // Mostrar u ocultar menú de opciones específicas por ID
         function toggleOptionsMenu(menuId) {
             const menu = document.getElementById(menuId);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        // Mostrar un modal
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
         }
 
+        // Ocultar un modal
         function hideModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
+        // Redirigir a la página principal del club
         function goToClubPage() {
             window.location.href = 'club.html';
         }
 
+        // Guardar libro seleccionado y redirigir a discusión
         function goToDiscussion(libroId) {
             localStorage.setItem('selectedLibroId', libroId);
             window.location.href = 'discusion.html';
         }
     </script>
 </head>
+
 <body class="bg-light">
+<!-- ENCABEZADO -->
 <header class="bg-warning p-4 d-flex justify-content-between align-items-center" style="height: 13vh; position: relative; z-index: 10;">
     <a href="main.html">
         <div class="d-flex align-items-center">
@@ -138,10 +169,11 @@
         </div>
     </a>  
 
+    <!-- Perfil del usuario con menú desplegable -->
     <div class="d-flex justify-content-between align-items-center mb-3">   
         <div class="profile-container d-flex align-items-center" onclick="toggleProfileMenu()">
             <img id="imgperfil" src="images/fotoperfil.jpg" alt="Perfil" class="rounded-circle" style="width: 6vh; object-fit: cover; cursor: pointer;">
-            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2 "></i>
+            <i id="profile-arrow" class="fas fa-chevron-down text-dark ml-2"></i>
             <div id="profile-menu" class="profile-menu">
                 <a href="myprofile.html">Mi perfil</a>
                 <a href="#" onclick="logout()">Cerrar sesión</a>
@@ -149,8 +181,14 @@
         </div>
     </div>
 </header>
+
+<!-- Separador visual -->
 <div class="d-flex align-items-center bg-primary" style="height: 5px;"></div>
+
+<!-- Imagen del banner del club -->
 <img alt="Club Romántica" class="card-img-top club-banner" src="https://storage.googleapis.com/a1aa/image/zrtnSTdJfTjgSJ6YfnlvKs-GNyU8JoToDo1kETZvyK4.jpg"/>
+
+<!-- Nombre del club dinámico -->
 <div class="d-flex justify-content-center align-items-center bg-primary px-3 py-2">
   <h2 class="text-white font-weight-bold text-center" id="NombreClub"
       style="font-size: 6vh; word-break: break-word; overflow-wrap: break-word; white-space: normal;">
@@ -159,130 +197,156 @@
 
 <div class="container-fluid">
   <div class="row align-items-center">
-    <!-- Género literario alineado a la izquierda -->
+    <!-- Sección izquierda: muestra el género literario del club -->
     <div class="col-6">
       <h6 class="text-dark font-weight-bold ml-2" style="margin-top: 10px;">Género literario del club: </h6>
-      <h4 class="text-dark font-weight-bold ml-2" id="genero"></h4>
+      <h4 class="text-dark font-weight-bold ml-2" id="genero"></h4> <!-- Aquí se insertará dinámicamente el género -->
     </div>
 
-    <!-- Botón y Me gusta alineados a la derecha con margen superior -->
-    <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3" >
+    <!-- Sección derecha: botones para unirse, editar o eliminar el club -->
+    <div class="col-6 d-flex justify-content-end align-items-center flex-wrap mt-3">
+        <!-- Botón para unirse o salir del club (visible según el rol del usuario) -->
         <button class="btn btn-primary join-btn" onclick="toggleMembership(this)" id="Miembro" style="display: none;">Unirse al Club</button>
+        
+        <!-- Botón visible solo para administradores: permite editar el club -->
         <button class="btn btn-primary join-btn" onclick="mostrarModalEditar()" id="btn-admin" style="display: none;">Editar Club</button>
+        
+        <!-- Botón visible solo para administradores: permite eliminar el club -->
         <button class="btn btn-danger join-btn" onclick="confirmDeleteClub()" id="btn-delete" style="display: none; margin-left: 10px;">Eliminar Club</button>
-      <script>
+
+        <script>
+        // Obtener el token JWT del almacenamiento local
         const token = localStorage.getItem('jwtToken');
-        tokenData = decodeToken(token);
+        tokenData = decodeToken(token); // Decodificar token para obtener datos del usuario
+
+        // Obtener ID del club desde la URL o del sessionStorage
         const params = new URLSearchParams(window.location.search);
         club = params.get("_id") || sessionStorage.getItem('selectedClub');
+
+        // Consultar el rol del usuario en el club (none, member o admin)
         fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/rol`)
             .then(response => response.json())
             .then(data => {
                 const rol = data.role;
+
+                // Si no pertenece al club
                 if (rol === 'none') {
                     const miembroElem = document.getElementById("Miembro");
                     const votacion = document.getElementById("voteButtons");
-                    votacion.style.display = "none";
-                    miembroElem.style.display = "block";
+                    votacion.style.display = "none"; // Ocultar votación
+                    miembroElem.style.display = "block"; // Mostrar botón de unirse
                     miembroElem.classList.remove("btn-primary");
                     miembroElem.classList.add("btn-success");
                     miembroElem.textContent = "Unirse al club";
+
+                    // Acción al hacer clic en "Unirse al club"
                     miembroElem.onclick = () => {
                         fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/add-miembro`, {
                             method: 'POST',
                         })
                         .then(response => {
-                              if (response.ok) {
+                            if (response.ok) {
+                                // Añadir insignia al usuario al unirse
                                 fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${tokenData.id}/insignia/680e4e964d4e9715973c6ac8/add`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
                                 });
+                                // Confirmación de éxito
                                 Swal.fire({
-                                  icon: 'success',
-                                  title: '¡Éxito!',
-                                  text: 'Te has unido al club.',
-                                  timer: 3000,
-                                  confirmButtonText: 'Aceptar'
+                                    icon: 'success',
+                                    title: '¡Éxito!',
+                                    text: 'Te has unido al club.',
+                                    timer: 3000,
+                                    confirmButtonText: 'Aceptar'
                                 }).then(() => {
-                                  location.reload();
+                                    location.reload(); // Recargar la página
                                 });
                             } else {
-                              Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                timer: 3000,
-                                text: 'Error al unirse al club.',
-                              });
+                                // Error al unirse
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    timer: 3000,
+                                    text: 'Error al unirse al club.',
+                                });
                             }
                         })
                         .catch(() => {
+                            // Error de red al unirse
                             Swal.fire({
-                              icon: 'error',
-                              title: 'Error',
-                              timer: 3000,
-                              text: 'Error al unirse al club. Verifica tu conexión.',
+                                icon: 'error',
+                                title: 'Error',
+                                timer: 3000,
+                                text: 'Error al unirse al club. Verifica tu conexión.',
                             });
-                          });
+                        });
                     };
-                } else if (rol === 'member') {
+                }
+                // Si ya es miembro del club
+                else if (rol === 'member') {
                     const miembroElem = document.getElementById("Miembro");
                     miembroElem.style.display = "block";
                     miembroElem.classList.add("btn-primary");
                     miembroElem.classList.remove("btn-success");
                     miembroElem.textContent = "Salir del club";
+
+                    // Acción al hacer clic en "Salir del club"
                     miembroElem.onclick = () => {
                         fetch(`https://read-it-es-e4ec0ccdc25d.herokuapp.com/usuarios/${encodeURIComponent(tokenData.id)}/club/${encodeURIComponent(club)}/remove-miembro`, {
                             method: 'DELETE',
                         })
                         .then(response => {
-                          if (response.ok) {
-                              Swal.fire({
-                                icon: 'success',
-                                title: 'Has salido del club',
-                                text: 'Esperamos verte de nuevo pronto.',
-                                timer: 4000,
-                                confirmButtonText: 'Aceptar'
-                              }).then(() => {
-                                location.reload();
-                              });
-                          } else {
-                            Swal.fire({
-                              icon: 'error',
-                              title: 'Error',
-                              timer: 5000,
-                              text: 'No se pudo salir del club.',
-                            });
-                          }
+                            if (response.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Has salido del club',
+                                    text: 'Esperamos verte de nuevo pronto.',
+                                    timer: 4000,
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    timer: 5000,
+                                    text: 'No se pudo salir del club.',
+                                });
+                            }
                         })
                         .catch(() => {
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'Error de red',
-                            timer: 5000,
-                            text: 'Ocurrió un problema al intentar salir del club.',
-                          });
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error de red',
+                                timer: 5000,
+                                text: 'Ocurrió un problema al intentar salir del club.',
+                            });
                         });
-                      };
-                } else if (rol === 'admin') {
+                    };
+                }
+                // Si es administrador del club
+                else if (rol === 'admin') {
                     const adminElem = document.getElementById("btn-admin");
                     const deleteElem = document.getElementById("btn-delete");
                     const libro = document.getElementById("subirLibro");
                     const evento = document.getElementById("crearEvento");
                     const votacion = document.getElementById("crearVotacion");
+
+                    // Mostrar botones de administración
                     adminElem.style.display = "block";
                     deleteElem.style.display = "block";
                     libro.style.display = "block";
                     evento.style.display = "block";
                     votacion.style.display = "block";
-                    adminElem.onclick = () => {
-                        mostrarModalEditar();
-                    };
-                    deleteElem.onclick = () => {
-                        confirmDeleteClub();
-                    };
+
+                    // Asociar eventos a los botones
+                    adminElem.onclick = () => mostrarModalEditar();
+                    deleteElem.onclick = () => confirmDeleteClub();
                 }
             });
 
+        // Confirmación para eliminar el club (modal de advertencia)
         function confirmDeleteClub() {
             Swal.fire({
                 title: '¿Estás seguro?',
@@ -295,11 +359,12 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteClub();
+                    deleteClub(); // Si se confirma, llama a la función para eliminar
                 }
             });
         }
 
+        // Función que elimina el club desde la API
         async function deleteClub() {
             try {
                 const token = localStorage.getItem('jwtToken');
@@ -317,7 +382,7 @@
                         timer: 3000,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = 'main.html';
+                        window.location.href = 'main.html'; // Redirigir al inicio
                     });
                 } else {
                     const errorData = await response.json();
@@ -337,123 +402,146 @@
             }
         }
 
-            function logout() {
+        // Función para cerrar sesión
+        function logout() {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('username');
             window.location.href = 'signing.html'; // Redirige al login
         }
       </script>
-
     </div>
   </div>
 </div>
 
+<!-- Barra de navegación principal del club -->
 <nav class="bg-white shadow-sm" style="margin-top: 2vh;">
     <ul class="nav justify-content-right p-3">
+        <!-- Opción de pestaña: Información del club -->
         <li class="nav-item">
             <a id="tab-informacion" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection('informacion', 'tab-informacion')">Información</a>
         </li>
+        <!-- Opción de pestaña: Lecturas del club -->
         <li class="nav-item">
             <a id="tab-lecturas" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('lecturas', 'tab-lecturas')">Lecturas</a>
         </li>
+        <!-- Opción de pestaña: Eventos del club -->
         <li class="nav-item">
           <a id="tab-eventos" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection('seccionEventos', 'tab-eventos')">Eventos</a>
-      </li>
+        </li>
     </ul>
 </nav>
+
 <main class="p-4">
+    <!-- Sección de información general del club -->
     <section id="informacion">
         <h2 class="font-weight-bold mb-3">Descripción</h2>
         <p class="text-muted"></p>
     
+        <!-- Información sobre el administrador y número de miembros -->
         <section class="mt-5">
             <h2 class="font-weight-bold mb-3">Sobre el club</h2>
-                <!-- Administrador y Miembros -->
-                <p class="mt-2" id="admin">Administrado por: <strong></strong></p>
-                <p>Miembros: <strong id="memberCount"></strong></p>
+            <p class="mt-2" id="admin">Administrado por: <strong></strong></p>
+            <p>Miembros: <strong id="memberCount"></strong></p>
         </section>
     </section>
     
+    <!-- Sección de lecturas (oculta por defecto) -->
     <section id="lecturas" style="display: none;">
+        <!-- Submenú de navegación para las lecturas -->
         <nav class="bg-white shadow-sm">
             <ul class="nav justify-content-right p-3">
+                <!-- Libros que se están leyendo actualmente -->
                 <li class="nav-item">
                     <a id="tab-libro-curso" class="nav-link text-warning active-tab" href="javascript:void(0);" onclick="showSection2('libro-curso', 'tab-libro-curso')">Libros en curso</a>
                 </li>
+                <!-- Votación para elegir la próxima lectura -->
                 <li class="nav-item">
                     <a id="tab-proxima-lectura" class="nav-link text-dark" href="javascript:void(0);" onclick="showSection2('proxima-lectura', 'tab-proxima-lectura')">Votación próxima lectura</a>
                 </li>
             </ul>
         </nav>
 
-    <section id="libro-curso" >
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="font-weight-bold">Lecturas del club</h3>
-            <button class="btn btn-success" onclick="showModal('modalSubirLibro')" id="subirLibro" style="display: none;">
-                <i class="fas fa-plus"></i> Subir libro
-            </button>
-        </div>
-  
-      <div class="container mt-4" id="libros"></div>    
-  </section>  
+        <!-- Subsección de libros en curso -->
+        <section id="libro-curso">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="font-weight-bold">Lecturas del club</h3>
+                <!-- Botón para subir nuevo libro (visible solo para admin) -->
+                <button class="btn btn-success" onclick="showModal('modalSubirLibro')" id="subirLibro" style="display: none;">
+                    <i class="fas fa-plus"></i> Subir libro
+                </button>
+            </div>
+            <!-- Contenedor dinámico para mostrar los libros -->
+            <div class="container mt-4" id="libros"></div>    
+        </section>  
 
-  <section id="proxima-lectura" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="font-weight-bold">Votaciones del club en curso</h3>
-      <button class="btn btn-success" onclick="showModal('modalCrearVotacion')" id="crearVotacion" style="display: none;">
-        <i class="fas fa-plus"></i> Crear votación
-      </button>
-    </div>
+        <!-- Subsección de votación para la próxima lectura -->
+        <section id="proxima-lectura" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="font-weight-bold">Votaciones del club en curso</h3>
+                <!-- Botón para crear nueva votación (visible solo para admin) -->
+                <button class="btn btn-success" onclick="showModal('modalCrearVotacion')" id="crearVotacion" style="display: none;">
+                    <i class="fas fa-plus"></i> Crear votación
+                </button>
+            </div>
 
-    <div class="card text-center">
-      <h5>Gráfico de votación entre títulos</h5>
-      <div id="chart" class="bg-light border rounded p-3">
-        <div class="bar-container" id="barContainer">
-          <!-- Barras generadas dinámicamente -->
-        </div>
-      </div>
-    
-      <div class="vote-buttons" id="voteButtons">
-        <!-- Botones generados dinámicamente -->
-      </div>
-    </div>
-  
-    <div class="mensaje" id="mensajeVoto"></div>
-  </section>
-</section>
+            <!-- Contenedor para el gráfico de barras de votación -->
+            <div class="card text-center">
+                <h5>Gráfico de votación entre títulos</h5>
+                <div id="chart" class="bg-light border rounded p-3">
+                    <div class="bar-container" id="barContainer">
+                        <!-- Barras generadas dinámicamente con JS -->
+                    </div>
+                </div>
 
-</section>
+                <!-- Botones de votación generados dinámicamente -->
+                <div class="vote-buttons" id="voteButtons"></div>
+            </div>
 
-<!-- Modal Crear Votacion -->
+            <!-- Mensaje de confirmación o error de voto -->
+            <div class="mensaje" id="mensajeVoto"></div>
+        </section>
+    </section>
+</main>
+
+<!-- Modal para crear una nueva votación -->
 <div class="modal" id="modalCrearVotacion" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
       <div class="modal-content">
+          <!-- Encabezado del modal -->
           <div class="modal-header">
               <h5 class="modal-title">Crear votación</h5>
               <button type="button" class="close" onclick="hideModal('modalCrearVotacion')" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
           </div>
+          
+          <!-- Cuerpo del modal con el formulario -->
           <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
               <form id="formCrearVotacion">
                 <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
 
+                  <!-- Campo para ingresar días de votación -->
                   <div class="form-group">
-                      <label for="diasVotacion">Dias de votacion</label>
-                      <input type="text" class="form-control" id="diasVotacion" placeholder="Ingrese el número de dias de votación" required>
+                      <label for="diasVotacion">Días de votación</label>
+                      <input type="text" class="form-control" id="diasVotacion" placeholder="Ingrese el número de días de votación" required>
                   </div>
+                  <!-- Campo para ingresar el primer título -->
                   <div class="form-group">
                       <label for="titulo1">Título 1</label>
                       <input type="text" class="form-control" id="titulo1" placeholder="Ingrese el primer título" required>
                   </div>
+                  <!-- Campo para ingresar el segundo título -->
                   <div class="form-group">
                       <label for="titulo2">Título 2</label>
                       <input type="text" class="form-control" id="titulo2" placeholder="Ingrese el segundo título" required>
                   </div>
+                  <!-- Contenedor dinámico para más títulos -->
                   <div id="titulosAdicionales"></div>
                   <button type="button" class="btn btn-link" id="btnAgregarTitulo">Agregar otro título</button>
               </form>
           </div>
+
+          <!-- Botones de acción del modal -->
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearVotacion')">Cancelar</button>
               <button type="button" class="btn btn-primary" id="btnCrearVotacion">Crear votación</button>
@@ -462,43 +550,58 @@
   </div>
 </div>
 
-  <script>
+<script>
+  // Agrega un nuevo campo de título al formulario de votación
   document.getElementById('btnAgregarTitulo').addEventListener('click', () => {
     const titulosContainer = document.getElementById('titulosAdicionales');
+    
+    // Calcula el número del siguiente título, partiendo de los dos primeros (1 y 2)
     const count = titulosContainer.children.length + 3;
+
+    // Crea un nuevo div con un input para un nuevo título
     const div = document.createElement('div');
     div.className = 'form-group';
     div.innerHTML = `
       <label for="titulo${count}">Título ${count}</label>
       <input type="text" class="form-control" id="titulo${count}" placeholder="Ingrese el título ${count}">
     `;
+
+    // Agrega el nuevo campo al contenedor de títulos adicionales
     titulosContainer.appendChild(div);
   });
 
+  // Maneja el evento de creación de una nueva votación
   document.getElementById('btnCrearVotacion').addEventListener('click', async () => {
     const diasVotacion = document.getElementById('diasVotacion').value.trim();
+
+    // Validación: Verifica que el número de días haya sido ingresado
     if (!diasVotacion) {
-    return Swal.fire({
-      icon: 'warning',
-      title: 'Campo obligatorio',
-      text: 'Por favor, ingrese el número de días de votación.',
-    });
-  }
-
-    const titulos = [];
-    const titulo1 = document.getElementById('titulo1').value.trim();
-    const titulo2 = document.getElementById('titulo2').value.trim();
-
-    if (!titulo1 || !titulo2) {
       return Swal.fire({
-      icon: 'warning',
-      title: 'Campos obligatorios',
-      text: 'Debe ingresar al menos dos títulos.',
+        icon: 'warning',
+        title: 'Campo obligatorio',
+        text: 'Por favor, ingrese el número de días de votación.',
       });
     }
 
+    const titulos = [];
+
+    // Obtiene los dos primeros títulos obligatorios
+    const titulo1 = document.getElementById('titulo1').value.trim();
+    const titulo2 = document.getElementById('titulo2').value.trim();
+
+    // Validación: Verifica que los dos primeros títulos hayan sido ingresados
+    if (!titulo1 || !titulo2) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Campos obligatorios',
+        text: 'Debe ingresar al menos dos títulos.',
+      });
+    }
+
+    // Agrega los dos títulos iniciales al arreglo
     titulos.push(titulo1, titulo2);
 
+    // Recorre los títulos adicionales (si los hay) y los agrega si no están vacíos
     const titulosAdicionales = document.getElementById('titulosAdicionales').children;
     for (let i = 0; i < titulosAdicionales.length; i++) {
       const input = titulosAdicionales[i].querySelector('input');
@@ -507,113 +610,65 @@
       }
     }
 
-    // Calculate start and end dates based on current date and diasVotacion
+    // Calcula las fechas de inicio y fin de la votación
     const fechaInicio = new Date();
     const fechaFin = new Date();
     fechaFin.setDate(fechaInicio.getDate() + parseInt(diasVotacion));
+
+    // Prepara el objeto de datos para enviar al backend
     const votacionData = {
-      Libro: titulos.map(titulo => ({ name: titulo, votos: 0 })),
-      F_Inicio: fechaInicio.toISOString().split('T')[0],
+      Libro: titulos.map(titulo => ({ name: titulo, votos: 0 })), // Cada libro inicia con 0 votos
+      F_Inicio: fechaInicio.toISOString().split('T')[0], // Fecha en formato YYYY-MM-DD
       F_Fin: fechaFin.toISOString().split('T')[0],
-      clubId: club 
+      clubId: club // Variable `club` debe estar definida globalmente
     };
 
     try {
+      // Obtiene el token JWT del almacenamiento local
       const token = localStorage.getItem('jwtToken');
+
+      // Envía los datos de votación al servidor
       const response = await fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/votaciones', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}` // Autenticación con JWT
         },
         body: JSON.stringify(votacionData)
       });
 
+      // Si la solicitud fue exitosa
       if (response.ok) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Votación creada',
-        text: 'La votación se creó exitosamente.',
-        confirmButtonText: 'OK'
-      }).then(() => {
-        hideModal('modalCrearVotacion');
-        location.reload();
-      });
-    } else {
-      const errorData = await response.json();
+        Swal.fire({
+          icon: 'success',
+          title: 'Votación creada',
+          text: 'La votación se creó exitosamente.',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          hideModal('modalCrearVotacion'); // Cierra el modal
+          location.reload(); // Recarga la página para reflejar los cambios
+        });
+
+      // Si hubo un error del servidor
+      } else {
+        const errorData = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al crear la votación',
+          text: errorData.error || 'Error desconocido',
+        });
+      }
+
+    // Si ocurre un error de red o inesperado
+    } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Error al crear la votación',
-        text: errorData.error || 'Error desconocido',
+        title: 'Error de red',
+        text: error.message,
       });
     }
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error de red',
-      text: error.message,
-    });
-  }
-});
+  });
 </script>
-
-  <section id="seccionEventos" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="font-weight-bold">Próximos Eventos</h3>
-        <button class="btn btn-success" onclick="showModal('modalCrearEvento')" id="crearEvento" style="display: none;">
-            <i class="fas fa-plus"></i> Crear Evento
-        </button>
-    </div>
-    <div id="eventos">
-
-    </div>
-             
-    </section>
-    
-</main>
-
-
-<footer class="bg-dark text-white text-center py-3">
-  <div class="container">
-  <p class="mb-1">
-      📚 connectReadit@gmail.com | 
-      <a id="acerca-link" style="color: #4FC3F7; text-decoration: none;">Acerca de</a> | 
-      © 2025 Read-it
-      </p>
-  </div>
-</footer>
-
-<!-- Modal -->
-<div id="modal">
-  <div id="modal-content">
-  <h2>Sobre el Equipo</h2>
-  <img src="images/logo.png" style="height: 90px;">
-  <p>Somos Read-it, un equipo apasionado por compartir el amor por la lectura. 📚✨</p>
-  <div class="row my-5">
-      <div class="col-md-6 mb-4">
-          <div class="card border-0 shadow-sm h-100">
-              <div class="card-body text-center">
-                  <img src="images/equipo/andrea.png" class="rounded-circle mb-3" width="100" height="100" alt="Andrea Escobar">
-                  <h3 class="font-weight-bold">Andrea Escobar</h3>
-                  <p class="font-weight-bold mb-0">ProductOwner</p>
-                  <p class="text-muted">Desarrollo Frontend</p>
-              </div>
-          </div>
-      </div>
-      <div class="col-md-6 mb-4">
-          <div class="card border-0 shadow-sm h-100">
-              <div class="card-body text-center">
-                  <img src="images/equipo/erik.png" class="rounded-circle mb-3" width="100" height="100" alt="Erik Moreno">
-                  <h3 class="font-weight-bold">Erik Moreno</h3>
-                  <p class="font-weight-bold mb-0">ScrumMaster</p>
-                  <p class="text-muted">Desarrollo Backend.</p>
-              </div>
-          </div>
-      </div>
-  </div>
-  <button id="cerrar-modal">Cerrar</button>
-</div>
-</div>
 
 <script>
   document.getElementById('acerca-link').addEventListener('click', function() {
@@ -633,198 +688,80 @@
   });
   </script>
 
-<!-- Modal Actualizar Club -->
+<!-- Modal para editar los datos de un club existente -->
 <div class="modal" id="modalActualizarClub" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar club</h5>
-                <button type="button" class="close" onclick="hideModal('modalActualizarClub')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="formActualizarClub">
-                  <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
-
-                  <div class="form-group">
-                      <label for="nombreClub">Nombre del club</label>
-                      <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
-                  </div>
-                  <div class="form-group">
-                      <label for="generoClub">Género del club</label>
-                      <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club" required>
-                  </div>
-                  <div class="form-group">
-                      <label for="descripcionClub">Descripción</label>
-                      <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club" required></textarea>
-                  </div>
-                  <div class="form-group">
-                      <label for="portadaClub">Portada</label>
-                      <input type="file" class="form-control-file" id="portadaClub">
-                  </div>
-              </form>
-            
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideModal('modalActualizarClub')">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="actualizarClub()">Editar club</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Subir Libro -->
-<div class="modal" id="modalSubirLibro" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Subir libro</h5>
-              <button type="button" class="close" onclick="hideModal('modalSubirLibro')" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-            <form id="formSubirLibro">
-                <div class="form-group">
-                    <label for="tituloLibro">Título del libro</label>
-                    <input type="text" class="form-control" id="tituloLibro" placeholder="Ingrese el título del libro" required>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                </div>
-                <div class="form-group">
-                    <label for="autorLibro">Autor</label>
-                    <input type="text" class="form-control" id="autorLibro" placeholder="Ingrese el autor del libro" required>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                  </div>
-                <div class="form-group">
-                    <label for="descripcionLibro">Descripción</label>
-                    <textarea class="form-control" id="descripcionLibro" rows="3" placeholder="Breve descripción del libro" required></textarea>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                </div>
-                <div class="form-group">
-                    <label for="fechaInicioLibro">Fecha de inicio</label>
-                    <input type="date" class="form-control" id="fechaInicioLibro" required>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                </div>
-                <div class="form-group">
-                    <label for="fechaFinLibro">Fecha de fin</label>
-                    <input type="date" class="form-control" id="fechaFinLibro" required>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                </div>
-                <div class="form-group">
-                    <label for="portadaLibro">Portada</label>
-                    <input type="file" class="form-control-file" id="portadaLibro" accept="image/*" required>
-                    <small class="form-text text-muted">* Este campo es obligatorio.</small>
-                </div>
-                <div class="form-group">
-                  <label for="archivoLibro">Archivo del libro (Opcional)</label>
-                  <input type="file" class="form-control-file" id="archivoLibro">
-                  <small class="form-text text-muted">
-                    * Readit no se hace responsable por la distribución ilegal de libros compartidos por los usuarios.
-                  </small>
-                </div>
-                
-            </form>
-          
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onclick="hideModal('modalSubirLibro')">Cancelar</button>
-              <button type="button" class="btn btn-primary" id="btnSubirLibro">Subir libro</button>
-          </div>
+    <div class="modal-content">
+
+      <!-- Encabezado del modal -->
+      <div class="modal-header">
+        <h5 class="modal-title">Editar club</h5>
+        <!-- Botón para cerrar el modal -->
+        <button type="button" class="close" onclick="hideModal('modalActualizarClub')" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+
+      <!-- Cuerpo del modal con el formulario -->
+      <div class="modal-body">
+        <form id="formActualizarClub">
+          <!-- Mensaje informativo -->
+          <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
+
+          <!-- Campo: nombre del club (deshabilitado, no editable) -->
+          <div class="form-group">
+            <label for="nombreClub">Nombre del club</label>
+            <input type="text" class="form-control" id="nombreClub" placeholder="Ingrese el nombre del club" disabled>
+          </div>
+
+          <!-- Campo: género del club -->
+          <div class="form-group">
+            <label for="generoClub">Género del club</label>
+            <input type="text" class="form-control" id="generoClub" placeholder="Ingrese el género literario del club" required>
+          </div>
+
+          <!-- Campo: descripción del club -->
+          <div class="form-group">
+            <label for="descripcionClub">Descripción</label>
+            <textarea class="form-control" id="descripcionClub" rows="3" placeholder="Ingrese una descripción del club" required></textarea>
+          </div>
+
+          <!-- Campo: archivo de portada -->
+          <div class="form-group">
+            <label for="portadaClub">Portada</label>
+            <input type="file" class="form-control-file" id="portadaClub">
+          </div>
+        </form>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="hideModal('modalActualizarClub')">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="actualizarClub()">Editar club</button>
+      </div>
+    </div>
   </div>
 </div>
-
-
-<!-- Modal Crear Evento -->
-<div class="modal" id="modalCrearEvento" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Crear evento</h5>
-              <button type="button" class="close" onclick="hideModal('modalCrearEvento')" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          
-          <!-- Agregamos un contenedor con scroll para evitar que el modal sea muy largo -->
-          <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-              <form id="formCrearEvento">
-                <small class="form-text text-muted" style="text-align: right">* Todos los campos son obligatorios *</small>
-
-                <div class="form-group">
-                    <label for="nombreEvento">Nombre del evento</label>
-                    <input type="text" class="form-control" id="nombreEvento" placeholder="Ingrese el nombre del evento" required>
-                </div>
-            
-                <div class="form-group">
-                    <label for="descripcionEvento">Descripción del evento</label>
-                    <textarea class="form-control" id="descripcionEvento" rows="3" placeholder="Agregue una descripción del evento" required></textarea>
-                </div>
-            
-                <div class="form-group">
-                    <label for="fechaEvento">Fecha del evento</label>
-                    <input type="date" class="form-control" id="fechaEvento" required>
-                </div>
-            
-                <div class="form-group">
-                    <label for="horaEvento">Hora del evento</label>
-                    <input type="time" class="form-control" id="horaEvento" required>
-                </div>
-                <div class="form-group">
-                    <label for="horaFin">Hora de Fin</label>
-                    <input type="time" class="form-control" id="horaFin" required>
-                </div>
-            
-                <div class="form-group">
-                    <label>Tipo de evento</label>
-                    <div>
-                        <input type="radio" id="virtual" name="tipoEvento" value="virtual" checked onclick="toggleLugar()" required>
-                        <label for="virtual">Virtual</label>
-            
-                        <input type="radio" id="presencial" name="tipoEvento" value="presencial" onclick="toggleLugar()" required>
-                        <label for="presencial">Presencial</label>
-                    </div>
-                </div>
-            
-                <div class="form-group">
-                    <label id="labelLugar">Link a videollamada</label>
-                    <input type="text" class="form-control" id="lugarEvento" placeholder="Ingrese el enlace a la videollamada" required>
-                </div>
-            
-                <div class="form-group">
-                    <label for="portadaEvento">Portada</label>
-                    <input type="file" class="form-control-file" id="portadaEvento">
-                </div>
-            </form>
-          
-          </div>
-
-          <!-- Fijar el footer para que siempre se vea -->
-          <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10;">
-              <button type="button" class="btn btn-secondary" onclick="hideModal('modalCrearEvento')">Cancelar</button>
-              <button type="button" class="btn btn-primary" id="btnCrearEvento">Crear evento</button>
-          </div>
-      </div>
-  </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-</script>
+<!-- Inclusión de librerías necesarias -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> <!-- jQuery slim (no incluye AJAX) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script> <!-- Popper.js (usado para tooltips y popovers de Bootstrap) -->
 
 <script>
+// Evento al hacer clic en el botón "Subir libro"
 document.getElementById('btnSubirLibro').addEventListener('click', async () => {
   const form = document.getElementById('formSubirLibro');
   const subirLibroBtn = document.getElementById('btnSubirLibro');
 
+  // Validar formulario con validación nativa del navegador
   if (!form.checkValidity()) {
-    form.reportValidity(); // Muestra los mensajes nativos del navegador
+    form.reportValidity(); 
     return;
   }
 
+  // Desactivar el botón para evitar envíos múltiples
   subirLibroBtn.disabled = true;
 
+  // Obtener valores de los campos del formulario
   const titulo = document.getElementById('tituloLibro').value;
   const autor = document.getElementById('autorLibro').value;
   const descripcion = document.getElementById('descripcionLibro').value;
@@ -833,6 +770,7 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
   const portadaFile = document.getElementById('portadaLibro').files[0];
   const archivoFile = document.getElementById('archivoLibro').files[0];
 
+  // Validación adicional
   if (!titulo || !autor || !descripcion || !fechaInicio || !fechaFin) {
     Swal.fire({
       title: '¡Campos incompletos!',
@@ -844,31 +782,29 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
     return;
   }
 
+  // Crear un objeto FormData para enviar datos como multipart/form-data
   const formData = new FormData();
   formData.append('Libro', titulo);
   formData.append('Autor', autor);
   formData.append('descripcion', descripcion);
   formData.append('F_Inicio', fechaInicio);
   formData.append('F_Fin', fechaFin);
-  if (portadaFile) {
-    formData.append('portadaLibro', portadaFile);
-  }
-  if (archivoFile) {
-    formData.append('archivoLibro', archivoFile);
-  }
-  // Append clubId to formData
-  formData.append('clubId', club);
+  if (portadaFile) formData.append('portadaLibro', portadaFile);
+  if (archivoFile) formData.append('archivoLibro', archivoFile);
+  formData.append('clubId', club); // ID del club (variable global)
 
   try {
+    // Obtener token JWT del almacenamiento local
     const token = localStorage.getItem('jwtToken');
+
+    // Enviar solicitud POST al servidor
     const response = await fetch('https://read-it-es-e4ec0ccdc25d.herokuapp.com/libros', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
       body: formData
     });
 
+    // Verificar respuesta
     if (response.ok) {
       Swal.fire({
         title: '¡Éxito!',
@@ -898,13 +834,19 @@ document.getElementById('btnSubirLibro').addEventListener('click', async () => {
   }
 });
 </script>
+
 <script>
+// Evento al hacer clic en el botón "Crear evento"
 document.getElementById('btnCrearEvento').addEventListener('click', () => {
   const form = document.getElementById('formCrearEvento');
+  
+  // Validar formulario
   if (!form.checkValidity()) {
-    form.reportValidity(); // Muestra mensajes nativos de validación del navegador
+    form.reportValidity();
     return;
   }
+
+  // Obtener datos del formulario
   const nombreEvento = document.getElementById('nombreEvento').value.trim();
   const descripcionEvento = document.getElementById('descripcionEvento').value.trim();
   const fechaEvento = document.getElementById('fechaEvento').value;
@@ -914,6 +856,7 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
   const lugarEvento = document.getElementById('lugarEvento').value.trim();
   const portadaEventoFile = document.getElementById('portadaEvento').files[0];
 
+  // Validación manual
   if (!nombreEvento || !descripcionEvento || !fechaEvento || !horaEvento || !lugarEvento || !horaFin) {
     Swal.fire({
       title: '¡Error!',
@@ -924,11 +867,13 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
     return;
   }
 
+  // Si se sube una portada, convertirla a base64 para enviarla en JSON
   if (portadaEventoFile) {
     const reader = new FileReader();
     reader.onload = async function(event) {
       const portadaBase64 = event.target.result;
 
+      // Crear objeto con los datos del evento
       const eventoData = {
         Evento: nombreEvento,
         Descripcion: descripcionEvento,
@@ -981,8 +926,9 @@ document.getElementById('btnCrearEvento').addEventListener('click', () => {
         });
       }
     };
-    reader.readAsDataURL(portadaEventoFile);
+    reader.readAsDataURL(portadaEventoFile); // Leer archivo como base64
   } else {
+    // Si no hay imagen, enviar datos sin la portada
     const eventoData = {
       Evento: nombreEvento,
       Descripcion: descripcionEvento,
