@@ -75,14 +75,9 @@ npm install --save-dev nodemon
 
 En dos terminales diferentes:
 
-### Terminal 1
+### Terminal
 ```bash
-npm run dev
-```
-
-### Terminal 2
-```bash
-npx serve . -l 61398
+npm start
 ```
 
 # https://read-it-es-e4ec0ccdc25d.herokuapp.com/
