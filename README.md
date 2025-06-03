@@ -87,5 +87,10 @@ npx serve . -l 61398
 
 # https://read-it-es-e4ec0ccdc25d.herokuapp.com/
 
+## Equipo Read-it
+- Guizar Escobar Andrea Vianney
+- Moreno Duran Erik
+
 ## ¿Tienes preguntas o sugerencias? ¡Nos encantaría saber de ti!
 ### Escríbenos a: connectreadit@gmail.
+

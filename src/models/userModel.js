@@ -47,9 +47,9 @@ const userSchema = new mongoose.Schema({
     ref: 'Clubes',
   }],
   estado: {
-    status: { type: String, default: "Activo" }, // e.g., "Activo", "Suspendido", "Baneado"
+    status: { type: String, default: "Activo" }, // "Activo", "Suspendido", "Baneado"
     razon: { type: String, default: "" },
-    duracion: { type: String, default: "" }, // duration in days
+    duracion: { type: String, default: "" },
     finBan: { type: Date, default: null }
   },
   resetPasswordToken: {

@@ -16,11 +16,11 @@ export const updateReporte = async (req, res) => {
     const data = req.body;
     const updatedReporte = await reporteService.updateReporte(IdReporte, data);
     if (!updatedReporte) {
-      return res.status(404).json({ message: "Reporte not found" });
+      return res.status(404).json({ message: "Reporte no encontrado" });
     }
     res.status(200).json(updatedReporte);
   } catch (error) {
-    res.status(500).json({ message: "Error updating reporte", error: error.message });
+    res.status(500).json({ message: "Error actualizando reporte", error: error.message });
   }
 };
 

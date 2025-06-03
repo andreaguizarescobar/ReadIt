@@ -1,96 +1,100 @@
 import User from "../models/userModel.js";
+
+// Importación del cliente OAuth2 de Google
 import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcrypt";
 
 const GOOGLE_CLIENT_ID = '442472453936-ihjkn2bismfff6safne168lj91mtolrb.apps.googleusercontent.com';
 const CLIENT_URL = 'https://read-it-es-e4ec0ccdc25d.herokuapp.com';
+
+// Inicializa cliente OAuth2
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+// Verifica el token de Google e identifica al usuario
 async function verifyGoogleToken(idToken) {
     const ticket = await client.verifyIdToken({
       idToken,
       audience: GOOGLE_CLIENT_ID,
     });
-  
-    const payload = ticket.getPayload();
-  
-    const userData = {
-      sub: payload.sub,
-      name: payload.name,
-      email: payload.email,
-      picture: payload.picture,
-    };
-  
-    // Guardar o actualizar usuario en la base de datos
-    let user = await User.findOne({ sub: userData.sub });
-    if (user) {
 
-    } else {
-      // Check if email already exists with different sub
+    const payload = ticket.getPayload(); // Datos extraídos del token
+
+    const userData = {
+      sub: payload.sub,         // ID único de Google
+      name: payload.name,       // Nombre del usuario
+      email: payload.email,     // Correo electrónico
+      picture: payload.picture  // URL de la imagen de perfil
+    };
+
+    // Verifica si ya existe un usuario con ese ID de Google
+    let user = await User.findOne({ sub: userData.sub });
+
+    if (!user) {
+      // Si existe otro usuario con el mismo email pero diferente sub, rechaza el registro
       const existingEmailUser = await User.findOne({ email: userData.email });
       if (existingEmailUser) {
-        // Throw error if email already registered
         const error = new Error('El correo electrónico ya está registrado con otra cuenta');
         error.code = 'EMAIL_ALREADY_REGISTERED';
         throw error;
       }
+
+      // Crea el nuevo usuario con los datos de Google
       user = await User.create(userData);
     }
-  
+
     return user;
 }
 
+// Registra a un usuario con Google
 export const registerUser = async (token) => {
     const user = await verifyGoogleToken(token);
     return user;
 };
 
+// Importación de Nodemailer para envío de correos
 import nodemailer from "nodemailer";
 
+// Registro manual (email/contraseña)
 export const register = async(data) =>{
   const existingUser = await User.findOne({ email: data.email });
+
   if (existingUser) {
     throw new Error('El email ya está registrado');
   }
-  // Hash password before saving
+
+  // Cifrado de la contraseña
   const hashedPassword = await bcrypt.hash(data.password, 10);
+
   const nuevoUser = new User({
     ...data,
     password: hashedPassword,
   });
+
   const savedUser = await nuevoUser.save();
 
+  // Envío de correo de verificación
   await sendVerificationEmail(savedUser.email, savedUser.name, savedUser._id);
 
   return savedUser;
 }
 
+// Importación de funciones de token JWT personalizadas
 import { generateToken, verifyToken } from "../utils/jwtUtils.js";
 
+// Envío de correo de verificación de cuenta
 async function sendVerificationEmail(email, name, userId) {
   let transporter = nodemailer.createTransport({
     service: "gmail",  
     auth: {
       user: "connectReadit@gmail.com",
-      pass: "addalnjufqpnkwoi"
+      pass: "addalnjufqpnkwoi" // ⚠️ Deberías usar variables de entorno aquí
     },
-});
-
-/*async function sendVerificationEmail(email, name, userId) {
-    let transporter = nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
-      auth: {
-        user: "8a296281b32d18",
-        pass: "1c64f8690d0223"
-      },
   });
-*/
+
   const verificationToken = generateToken({ id: userId, email });
 
   const verificationUrl = `${CLIENT_URL}/verify-email.html?token=${verificationToken}`;
 
-  // Email content
   let mailOptions = {
     from: "ReadIt",
     to: email,
@@ -99,42 +103,51 @@ async function sendVerificationEmail(email, name, userId) {
     html: `<p>Hola ${name},</p><p>Por favor verifica tu correo electrónico para completar el registro haciendo clic en el siguiente enlace:</p><p><a href="${verificationUrl}">${verificationUrl}</a></p><p>Gracias!</p>`,
   };
 
-  // Send mail
   await transporter.sendMail(mailOptions);
 }
 
+// Verifica el token de email y activa el usuario
 export const verifyEmail = async (token) => {
   const decoded = verifyToken(token);
   if (!decoded) {
     throw new Error('Token de verificación inválido o expirado');
   }
+
   const user = await User.findById(decoded.id);
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
+
   if (user.emailVerified) {
     return user;
   }
+
   user.emailVerified = true;
   await user.save();
+
   return user;
 };
 
+// Login tradicional por correo y contraseña
 export const login = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
+
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
     throw new Error('Contraseña incorrecta');
   }
+
   if (!user.emailVerified) {
     throw new Error('Correo electrónico no verificado');
   }
+
   return user;
 };
 
+// Obtener usuario por ID
 export const getUserById = async (id) => {
   const user = await User.findById(id);
   if (!user) {
@@ -143,38 +156,39 @@ export const getUserById = async (id) => {
   return user;
 };
 
+// Obtener todos los usuarios verificados, excluyendo asociaciones y admins
 export const getAllUsers = async () => {
   const users = await User.find({tipo: {$nin: ['asociacion', 'adminPrincipal']}, emailVerified: true});
   return users;
 };
 
+// Actualiza el tipo de rol del usuario
 export const updateRol = async (id, tipo) => {
   const user = await User.findByIdAndUpdate(id, {tipo: tipo}, {new: true});
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
-    return user;
-}
+  return user;
+};
 
+// Actualiza información básica del perfil del usuario
 export const updateUser = async (id, data) => {
   const user = await User.findById(id);
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
 
-  // Update fields from data
   if (data.name !== undefined) user.name = data.name;
   if (data.descripcion !== undefined) user.descripcion = data.descripcion;
   if (data.ubicacion !== undefined) user.ubicacion = data.ubicacion;
   if (data.picture !== undefined) user.picture = data.picture;
   if (data.portada !== undefined) user.portada = data.portada;
 
-  // Add other fields as needed
-
   await user.save();
   return user;
 };
 
+// Aplica sanción al usuario
 export const applySanctionToUser = async (userId, sanctionData) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -184,10 +198,12 @@ export const applySanctionToUser = async (userId, sanctionData) => {
   user.estado.razon = sanctionData.razon || "";
   user.estado.duracion = sanctionData.duracion || "";
   user.estado.finBan = sanctionData.finBan || null;
+
   await user.save();
   return user;
 };
 
+// Elimina la sanción de un usuario
 export const removeBanFromUser = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -197,11 +213,12 @@ export const removeBanFromUser = async (userId) => {
   user.estado.razon = "";
   user.estado.duracion = "";
   user.estado.finBan = null;
+
   await user.save();
   return user;
 };
 
-// Add club as member to user
+// Añadir usuario como miembro de un club
 export const addClubMember = async (userId, clubId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error('Usuario no encontrado');
@@ -213,7 +230,7 @@ export const addClubMember = async (userId, clubId) => {
   return user;
 };
 
-// Add club as admin to user
+// Añadir usuario como administrador de un club
 export const addClubAdmin = async (userId, clubId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error('Usuario no encontrado');
@@ -225,7 +242,7 @@ export const addClubAdmin = async (userId, clubId) => {
   return user;
 };
 
-// Get user's role in a club: "admin", "member", or "none"
+// Obtener el rol del usuario en un club específico
 export const getUserClubRole = async (userId, clubId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error('Usuario no encontrado');
@@ -235,7 +252,7 @@ export const getUserClubRole = async (userId, clubId) => {
   return "none";
 };
 
-// Remove club member from user
+// Remover a un usuario como miembro de un club
 export const removeClubMember = async (userId, clubId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error('Usuario no encontrado');
@@ -245,6 +262,7 @@ export const removeClubMember = async (userId, clubId) => {
   return user;
 };
 
+// Añadir una insignia al perfil del usuario
 export const addInsigniaToUser = async (userId, insigniaId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error('Usuario no encontrado');
@@ -256,31 +274,30 @@ export const addInsigniaToUser = async (userId, insigniaId) => {
   return user;
 };
 
-// Forgot password function
+// Importación de la librería crypto para tokens
 import crypto from "crypto";
 
+// Solicitud para restablecer contraseña
 export const forgotPassword = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
 
-  // Generate reset token
   const resetToken = crypto.randomBytes(32).toString('hex');
   const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-  // Set reset token and expiration (1 hour)
   user.resetPasswordToken = resetTokenHash;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
 
   await user.save();
 
-  // Send reset email
   await sendResetPasswordEmail(user.email, user.name, resetToken);
 
   return true;
 };
 
+// Enviar correo con link para restablecer contraseña
 async function sendResetPasswordEmail(email, name, token) {
   let transporter = nodemailer.createTransport({
     service: "gmail",  
@@ -303,6 +320,7 @@ async function sendResetPasswordEmail(email, name, token) {
   await transporter.sendMail(mailOptions);
 }
 
+// Cambia la contraseña usando el token recibido
 export const resetPassword = async (token, newPassword) => {
   const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
@@ -315,11 +333,9 @@ export const resetPassword = async (token, newPassword) => {
     throw new Error('Token inválido o expirado');
   }
 
-  // Hash new password and update
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   user.password = hashedPassword;
 
-  // Clear reset token fields
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
 
