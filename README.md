@@ -79,8 +79,14 @@ En dos terminales diferentes:
 ```bash
 npm start
 ```
+# Link a despliegue
+## https://read-it-es-e4ec0ccdc25d.herokuapp.com/
 
-# https://read-it-es-e4ec0ccdc25d.herokuapp.com/
+# Vídeo explicación
+## https://youtu.be/5cKqUAGwXj8
+
+# Link a manuales de usuario
+## https://drive.google.com/drive/folders/1conJjV4LixXkSJjUtYEpF2WuGPlHpK8q?usp=drive_link
 
 ## Equipo Read-it
 - Guizar Escobar Andrea Vianney

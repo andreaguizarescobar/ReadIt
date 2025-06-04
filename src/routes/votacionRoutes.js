@@ -1,17 +1,21 @@
 import express from "express";
 import * as votacionController from "../controllers/votacionController.js";
 
-const router = express.Router();
+const router = express.Router(); // Crear un router de Express para las rutas de votación
 
-router.post("/", votacionController.createVotacion);
-router.get("/:id", votacionController.getVotacionById);
+router.post("/", votacionController.createVotacion); 
+// Ruta para crear una nueva votación
 
-// New route to get current votacion for a club
-router.get("/club/:clubId/current", votacionController.getCurrentVotacionByClubId);
+router.get("/:id", votacionController.getVotacionById); 
+// Ruta para obtener una votación por su ID
 
-// New route to save a user's vote
-router.post("/:votacionId/vote", votacionController.saveUserVote);
+// Nueva ruta para obtener la votación actual de un club específico
+router.get("/club/:clubId/current", votacionController.getCurrentVotacionByClubId); 
 
-router.get("/:votacionId/user/:userId", votacionController.hasUserVoted);
+// Nueva ruta para guardar el voto de un usuario en una votación específica
+router.post("/:votacionId/vote", votacionController.saveUserVote); 
 
-export default router;
+// Ruta para verificar si un usuario ya ha votado en una votación específica
+router.get("/:votacionId/user/:userId", votacionController.hasUserVoted); 
+
+export default router; // Exportar el router para integrarlo en la aplicación principal

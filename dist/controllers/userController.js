@@ -1,12 +1,14 @@
+// Importa las funciones del servicio de usuarios
 import * as userService from "../services/userServices.js";
+// Importa función para generar token JWT
 import { generateToken } from "../utils/jwtUtils.js";
+
+// Registro e inicio de sesión con token (por ejemplo, de Google)
 export const registerUser = async (req, res) => {
   try {
-    const {
-      token
-    } = req.body;
-    const user = await userService.registerUser(token);
-    const jwtToken = generateToken({
+    const { token } = req.body; // Obtiene el token del cuerpo de la solicitud
+    const user = await userService.registerUser(token); // Registra o verifica el usuario con el token
+    const jwtToken = generateToken({ // Genera un JWT con datos del usuario
       id: user._id,
       email: user.email,
       name: user.name,
@@ -14,118 +16,124 @@ export const registerUser = async (req, res) => {
       sub: user.sub,
       tipo: user.tipo
     });
-    res.json({
+    res.json({ // Devuelve el usuario y el token generado
       message: 'Login exitoso',
       user,
       token: jwtToken
     });
   } catch (err) {
-    console.error(err);
-    res.status(401).json({
+    console.error(err); // Muestra el error en consola
+    res.status(401).json({ // Devuelve error si el token es inválido
       message: 'Token inválido'
     });
   }
 };
+
+// Registro manual de usuario con datos en el cuerpo
 export const register = async (req, res) => {
   try {
-    const nuevoUser = await userService.register(req.body);
-    const jwtToken = generateToken({
+    const nuevoUser = await userService.register(req.body); // Registra el usuario con los datos recibidos
+    const jwtToken = generateToken({ // Genera token JWT
       id: nuevoUser._id,
       email: nuevoUser.email,
       name: nuevoUser.name,
       picture: nuevoUser.picture
     });
-    res.json({
+    res.json({ // Devuelve el usuario registrado y el token
       message: 'Login exitoso',
       user: nuevoUser,
       token: jwtToken
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(500).json({ // Error del servidor
       error: error.message
     });
   }
 };
+
+// Verificación de correo electrónico con token
 export const verifyEmail = async (req, res) => {
   try {
-    const {
-      token
-    } = req.query;
-    const user = await userService.verifyEmail(token);
-    res.json({
+    const { token } = req.query; // Token desde la query string
+    const user = await userService.verifyEmail(token); // Verifica el correo
+    res.json({ // Devuelve el usuario verificado
       message: 'Correo verificado exitosamente',
       user
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(400).json({ // Error en la verificación
       error: error.message
     });
   }
 };
+
+// Inicio de sesión con email y contraseña
 export const login = async (req, res) => {
   try {
-    const {
-      email,
-      password
-    } = req.body;
-    const user = await userService.login(email, password);
-    const jwtToken = generateToken({
+    const { email, password } = req.body; // Credenciales del cuerpo de la solicitud
+    const user = await userService.login(email, password); // Verifica credenciales
+    const jwtToken = generateToken({ // Genera JWT
       id: user._id,
       email: user.email,
       name: user.name,
       picture: user.picture,
       tipo: user.tipo
     });
-    res.json({
+    res.json({ // Devuelve usuario y token
       message: 'Login exitoso',
       user,
       token: jwtToken
     });
   } catch (error) {
-    res.status(401).json({
+    res.status(401).json({ // Error de autenticación
       message: error.message
     });
   }
 };
+
+// Obtener usuario por su ID
 export const getUserById = async (req, res) => {
   try {
-    const user = await userService.getUserById(req.params.id);
-    res.status(200).json(user);
+    const user = await userService.getUserById(req.params.id); // Busca usuario por ID
+    res.status(200).json(user); // Devuelve usuario
   } catch (error) {
-    res.status(404).json({
+    res.status(404).json({ // Usuario no encontrado
       message: error.message
     });
   }
 };
+
+// Obtener todos los usuarios
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers(); // Obtiene todos los usuarios
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({
+    res.status(500).json({ // Error del servidor
       message: error.message
     });
   }
 };
+
+// Actualizar rol de un usuario
 export const updateRol = async (req, res) => {
   try {
-    const {
-      id
-    } = req.params;
-    const {
-      tipo
-    } = req.body;
-    const user = await userService.updateRol(id, tipo);
+    const { id } = req.params;
+    const { tipo } = req.body; // Nuevo tipo (rol)
+    const user = await userService.updateRol(id, tipo); // Actualiza el rol
     res.status(200).json(user);
   } catch (error) {
-    res.status(404).json({
+    res.status(404).json({ // Usuario no encontrado
       message: error.message
     });
   }
 };
+
+// Actualizar datos de usuario, incluyendo imágenes si se suben
 export const updateUser = async (req, res) => {
   try {
     const updateData = req.body;
+    // Procesar archivos subidos si existen
     if (req.files) {
       if (req.files.fotoPerfil && req.files.fotoPerfil.length > 0) {
         let picPath = req.files.fotoPerfil[0].path;
@@ -136,21 +144,23 @@ export const updateUser = async (req, res) => {
         updateData.portada = coverPath;
       }
     }
-    const updatedUser = await userService.updateUser(req.params.id, updateData);
+    const updatedUser = await userService.updateUser(req.params.id, updateData); // Actualiza usuario
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(404).json({
+    res.status(404).json({ // Error al actualizar
       message: error.message
     });
   }
 };
+
+// Importa controlador de club para actualizar miembros
 import * as clubController from "./clubController.js";
 
-// Add club as member to user
+// Agregar un club como miembro del usuario
 export const addClubMember = async (req, res) => {
   try {
-    const updatedUser = await userService.addClubMember(req.params.userId, req.params.clubId);
-    // Increment club member count
+    const updatedUser = await userService.addClubMember(req.params.userId, req.params.clubId); // Agrega club
+    // Incrementa contador de miembros en el club
     await clubController.incrementMembers({
       params: {
         id: req.params.clubId
@@ -162,17 +172,17 @@ export const addClubMember = async (req, res) => {
     });
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(404).json({
+    res.status(404).json({ // Error
       message: error.message
     });
   }
 };
 
-// Remove club member from user
+// Remover un club como miembro del usuario
 export const removeClubMember = async (req, res) => {
   try {
-    const updatedUser = await userService.removeClubMember(req.params.userId, req.params.clubId);
-    // Decrement club member count
+    const updatedUser = await userService.removeClubMember(req.params.userId, req.params.clubId); // Elimina club
+    // Disminuye contador de miembros en el club
     await clubController.decrementMembers({
       params: {
         id: req.params.clubId
@@ -184,16 +194,16 @@ export const removeClubMember = async (req, res) => {
     });
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(404).json({
+    res.status(404).json({ // Error
       message: error.message
     });
   }
 };
 
-// Add club as admin to user
+// Asignar a usuario como administrador de un club
 export const addClubAdmin = async (req, res) => {
   try {
-    const updatedUser = await userService.addClubAdmin(req.params.userId, req.params.clubId);
+    const updatedUser = await userService.addClubAdmin(req.params.userId, req.params.clubId); // Agrega como admin
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(404).json({
@@ -202,10 +212,10 @@ export const addClubAdmin = async (req, res) => {
   }
 };
 
-// Get user's role in a club
+// Obtener el rol del usuario dentro de un club
 export const getUserClubRole = async (req, res) => {
   try {
-    const role = await userService.getUserClubRole(req.params.userId, req.params.clubId);
+    const role = await userService.getUserClubRole(req.params.userId, req.params.clubId); // Consulta rol
     res.status(200).json({
       role
     });
@@ -215,13 +225,12 @@ export const getUserClubRole = async (req, res) => {
     });
   }
 };
+
+// Agregar una insignia al usuario
 export const addInsigniaToUser = async (req, res) => {
   try {
-    const {
-      userId,
-      insigniaId
-    } = req.params;
-    const updatedUser = await userService.addInsigniaToUser(userId, insigniaId);
+    const { userId, insigniaId } = req.params;
+    const updatedUser = await userService.addInsigniaToUser(userId, insigniaId); // Asigna insignia
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(404).json({
@@ -229,7 +238,11 @@ export const addInsigniaToUser = async (req, res) => {
     });
   }
 };
+
+// Importa servicio de comentarios
 import * as comentService from "../services/comentService.js";
+
+// Aplicar sanción a usuario y eliminar comentario
 export const applySanctionAndDeleteComment = async (req, res) => {
   try {
     const {
@@ -240,13 +253,15 @@ export const applySanctionAndDeleteComment = async (req, res) => {
       duracion,
       finBan
     } = req.body;
+
+    // Verifica que se envíen los datos necesarios
     if (!userId || !comentarioId) {
       return res.status(400).json({
         message: "userId and comentarioId are required"
       });
     }
 
-    // Apply sanction to user with detailed data
+    // Aplica la sanción al usuario
     const sanctionedUser = await userService.applySanctionToUser(userId, {
       status,
       razon,
@@ -254,7 +269,7 @@ export const applySanctionAndDeleteComment = async (req, res) => {
       finBan
     });
 
-    // Remove comment reference from libro (do not delete comment)
+    // Elimina la referencia del comentario (no borra el comentario)
     await comentService.removeComentarioReferenceFromLibro(comentarioId);
     res.status(200).json({
       message: "Sanction applied and comment reference removed",
@@ -267,17 +282,17 @@ export const applySanctionAndDeleteComment = async (req, res) => {
     });
   }
 };
+
+// Eliminar sanción (ban) de un usuario
 export const removeBan = async (req, res) => {
   try {
-    const {
-      userId
-    } = req.body;
+    const { userId } = req.body;
     if (!userId) {
       return res.status(400).json({
         message: "userId is required"
       });
     }
-    const updatedUser = await userService.removeBanFromUser(userId);
+    const updatedUser = await userService.removeBanFromUser(userId); // Quita la sanción
     res.status(200).json({
       message: "Ban removed",
       user: updatedUser
@@ -289,17 +304,17 @@ export const removeBan = async (req, res) => {
     });
   }
 };
+
+// Enviar correo de recuperación de contraseña
 export const forgotPassword = async (req, res) => {
   try {
-    const {
-      email
-    } = req.body;
+    const { email } = req.body;
     if (!email) {
       return res.status(400).json({
         message: "Email is required"
       });
     }
-    await userService.forgotPassword(email);
+    await userService.forgotPassword(email); // Envía correo de recuperación
     res.status(200).json({
       message: "Correo de restablecimiento enviado"
     });
@@ -309,18 +324,17 @@ export const forgotPassword = async (req, res) => {
     });
   }
 };
+
+// Restablecer la contraseña usando token
 export const resetPassword = async (req, res) => {
   try {
-    const {
-      token,
-      newPassword
-    } = req.body;
+    const { token, newPassword } = req.body;
     if (!token || !newPassword) {
       return res.status(400).json({
         message: "Token and new password are required"
       });
     }
-    await userService.resetPassword(token, newPassword);
+    await userService.resetPassword(token, newPassword); // Cambia la contraseña
     res.status(200).json({
       message: "Contraseña actualizada exitosamente"
     });
